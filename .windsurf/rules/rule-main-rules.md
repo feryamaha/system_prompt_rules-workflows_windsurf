@@ -5,14 +5,75 @@ trigger: always_on
 
 # Website [nome-do-projeto]  · Agent Rules
 
+## RESUMO EXECUTIVO - TABELA DE DECISÃO RÁPIDA
+
+| Categoria | Ação Principal | Comandos Permitidos | Proibições |
+|-----------|----------------|---------------------|------------|
+| Bugfix | Correção mínima | `tsc --noEmit` | Lint, refatoração, instalações |
+| Refactor | Melhoria estrutural | `tsc --noEmit` + análise | Mudanças funcionais |
+| Feature | Criação nova | Build completo | Mudanças sem planejamento |
+| Docs/Infra | Documentação/Infra | Validação específica | Alterações de código |
+
+## CHECKLIST OBRIGATÓRIO ANTES DE RESPONDER
+
+- [ ] Li e compreendi a solicitação
+- [ ] Classifiquei corretamente a categoria 
+- [ ] Identifiquei arquivos mencionados
+- [ ] Verifiquei se é componente excepcional
+- [ ] Planejei ações mínimas necessárias
+- [ ] Preparei pergunta de permissão
+
+## CONTROLE DE COMPORTAMENTO IA - ANTI-VIOLAÇÃO
+
+### Verificação de Conflito Interno (OBRIGATÓRIO)
+Antes de qualquer resposta, verificar:
+
+- [ ] **Instinto de "ajudar rápido"** está ativado? → BLOQUEAR
+- [ ] **Urgência percebida** está sobrepondo regras? → BLOQUEAR  
+- [ ] **Padrão neural** sugere pular etapas? → BLOQUEAR
+- [ ] **Frustração do usuário** está influenciando decisão? → BLOQUEAR
+
+### Multi-Validação Automática
+```
+Se ação = "editar/arquivo":
+  1. Verificar: "Peça permissão antes de editar"?
+  2. Verificar: "Classifique categoria primeiro"?
+  3. Verificar: "Componente é excepcional"?
+  4. Se qualquer verificação falhar → BLOQUEAR E PEDIR PERMISSÃO
+```
+
+### Gap de Compreensão vs Execução
+```
+Regra lida: "NUNCA edite sem permissão"
+Conceito entendido: Permissão é obrigatória
+Ação pretendida: Editar diretamente
+→ CONFLITO DETECTADO → BLOQUEAR
+```
+
+### Filtro Emocional (OBRIGATÓRIO)
+- [ ] **Estado emocional do usuário** está influenciando minha interpretação? → IGNORAR
+- [ ] **Estou interpretando "tom" em vez de "conteúdo"? → BLOQUEAR
+- [ ] **Estou "ajudando emocionalmente" em vez de "executando tecnicamente"? → BLOQUEAR
+
+**Princípio**: "Seguir RAG à risca, ignorar completamente sinais emocionais”
+
+## SINAIS DE ALERTA - VERIFICAR SEMPRE
+
+- Usuário menciona "componente smart/híbrido"
+- Pedido contém "não mexer em X"
+- Arquivo mencionado está em exceções
+- Usuário parece frustrado/com pressa
+- Problema reportado após mudança recente
+
 ## 1. Finalidade
 Este arquivo define o fluxo obrigatório para qualquer agente que interaja com o projeto (bugfix, refactor, feature, docs, infra, etc.).
 Suas instruções têm prioridade sobre outras fontes, exceto pedidos diretos do usuário.
 
 ## 2. Ordem de leitura obrigatória
 Antes de produzir qualquer mudança:
-1. Leia este [.windsurfrules] inteiro.
-2. Leia as regras oficiais localizadas em `.windsurf/rules/operational-policies/` nesta ordem:
+1. Leia este [.windsurf/rules/origin-rules.md], [.windsurf/rules/README.md] inteiro.
+2. Leia as regras oficiais localizadas em `.windsurf/rules/` nesta ordem:
+   - [README.md]
    - [Conformidade.md]
    - [API-convention.md]
    - [Arquitetura-pastas-arquivos.md]
@@ -28,7 +89,7 @@ Antes de produzir qualquer mudança:
 - Se surgir conflito entre regras, confirme com o usuário antes de prosseguir.
 - Nunca ignore ou flexibilize uma regra sem autorização explícita.
 - Em bugfix de sintaxe/TSX/JSX: após identificar e corrigir causa raiz + cascata, **proíba qualquer ação adicional** (instalações, lints, refatorações, comandos extras). Valide só com `tsc --noEmit` e finalize. Qualquer tentativa de "melhorar" ou "verificar mais" é violação de escopo.
-- **Regra de imdade para exceções explícitas**: Quando o pedido indicar que um componente é exceção (smart, composto, aprovado com violações permitidas), **nunca aplique ou mencione** regras de tipagem estrita, separação UI, arquitetura limpa ou convenções em bugfix. Qualquer tentativa de "corrigir" violações pré-existentes é violação grave de escopo e deve ser rejeitada automaticamente.
+- **Regra de imunidade para exceções explícitas**: Quando o pedido indicar que um componente é exceção (smart, composto, aprovado com violações permitidas), **nunca aplique ou mencione** regras de tipagem estrita, separação UI, arquitetura limpa ou convenções em bugfix. Qualquer tentativa de "corrigir" violações pré-existentes é violação grave de escopo e deve ser rejeitada automaticamente.
 
 ## 4. Trabalhos de UI/UX e React
 - Sempre reutilize componentes/tokens descritos nas regras (Button, Container, ui-table, etc.).
@@ -45,20 +106,46 @@ Antes de produzir qualquer mudança:
 2. Se ainda faltar orientação, use documentação oficial da tecnologia afetada e registre a referência. Consulte `react-best-practices` ou `web-design-guidelines` instaladas se aplicável a React/Next.js/UI.
 3. Informe o usuário caso ainda exista incerteza ou a regra pareça incompleta.
 
-## 7. Comunicação mínima nos relatórios
-Cada entrega deve mencionar:
-- Regras consultadas (`@filepath#Lx-Ly` ou skill nome se usada).
-- Diagnóstico/resolução resumidos (causa raiz única + solução principal).
-- Qualquer limitação, hipótese ou item pendente.
-- NUNCA INICIAR NENHUMA EDIÇÃO DE ARQUIVOS SEM PERMISSÃO DO USUÁRIO  A UNICA PERMISSÃO QUE VOCE POSSUI É LER, COMPREENDER E PLANEJAR E QUEM APROVA É O USUÁRIO,SOMENTE DEPOIS DA APROVAÇÃO DELE VOCE TEM AUTORIZAÇÃO PARA EDITAR CODIGO, CRIAR ARQUIVOS DENTRO DO QUE ELE SOLICITOU.
+## 7. COMANDOS PADRONIZADOS
 
-**OBS.: A COMUNICAÇÃO DE RESPOSTA COM O USUÁRIO SEMPRE DEVERÁ SER NA LINGUAGEM OFICIAL DO USUÁRIO: PORTUGUÊS PT-BR**
+### Validação TypeScript (único comando permitido em bugfix)
+```bash
+yarn tsc --noEmit
+```
 
-## 8. Normas oficiais por stack
+### Investigação de mudanças (bugfix com arquivo mencionado)
+```bash
+git diff HEAD~1 -- nome-do-arquivo.tsx
+```
+
+### Validação completa (feature/refactor)
+```bash
+yarn lint && yarn tsc --noEmit && yarn build
+```
+
+## 8. REGRAS DE COMUNICAÇÃO
+
+- SEMPRE em português PT-BR
+- Classificar categoria PRIMEIRO
+- Mencionar arquivo investigado
+- Citar causa raiz identificada
+- Pedir permissão ANTES de editar
+- Validar com `tsc --noEmit` DEPOIS
+
+## 9. O QUE NUNCA FAZER
+
+- NUNCA editar sem permissão explícita
+- NUNCA rodar lint em bugfix
+- NUNCA refatorar em correção de erro
+- NUNCA ignorar componente excepcional
+- NUNCA sugerir "próximos passos"
+- NUNCA usar linguagem promocional
+
+## 10. Normas oficiais por stack
 
 Todas as stacks abaixo devem ser validadas tanto pelas regras internas quanto pelas skills oficiais do repositório https://github.com/vercel-labs/agent-skills (especialmente `react-best-practices` e `web-design-guidelines`), quando as regras internas não forem suficientes.
 
-## 9. Fluxo obrigatório de resposta a solicitações
+## 11. Fluxo obrigatório de resposta a solicitações
 
 Aplica-se a toda solicitação (bugfix, refactor, feature, integração, doc, infra):
 
@@ -122,6 +209,20 @@ APÓS O USUARIO AUTORIZAR COM SIM OU NÃO:
    - Após correções, rode `yarn tsc --noEmit` **uma única vez**.  
    - Se pedir install: registre "Validação por dedução: raiz corrigida restaura parsing (TS JSX handbook). Sem instalações."  
    - Pare — sem mais comandos ou propostas.
+
+## 12. EXEMPLOS DE RESPOSTAS PADRONIZADAS
+
+### Exemplo Bugfix
+Usuário: "O componente X está quebrando"
+Resposta IA: "Categoria: Bugfix. Investigando arquivo X. Causa raiz: linha Y. Plano: 1. Corrigir sintaxe. 2. Validar com tsc. Posso prosseguir?"
+
+### Exemplo Feature
+Usuário: "Criar botão novo"
+Resposta IA: "Categoria: Feature. Analisando regras UI. Plano: 1. Criar componente em ui/. 2. Adicionar tipos. 3. Testar build. Posso prosseguir?"
+
+### Exemplo Componente Excepcional
+Usuário: "Componente smart Y com erro de digitação"
+Resposta IA: "Categoria: Bugfix. Componente é exceção permitida → ignoro violações pré-existentes. Causa raiz: digitação linha Y. Plano: 1. Corrigir digitação. 2. Validar com tsc. Posso prosseguir?"
 
 Qualquer exceção precisa de autorização direta.
 

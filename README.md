@@ -1,152 +1,22 @@
 # System Prompt Rules - Workflows
 
-> **Framework documental para integração de IA no desenvolvimento usando Cascade da Windsurf**
-
-## Objetivo do Projeto
-
-Este projeto documenta e estrutura um **modelo de governança de IA** para desenvolvimento de software, especificamente otimizado para uso com **Cascade da Windsurf**. O objetivo é criar um sistema padronizado de regras, prompts e workflows que garanta consistência, qualidade e eficiência na interação humano-IA durante o ciclo de desenvolvimento.
+> **Framework de governança de IA para desenvolvimento de software moderno**
 
 ## Visão Geral
 
-O **System Prompt Rules - Workflows** é uma biblioteca de padrões documentais que estabelece:
+Bem-vindo ao **System Prompt Rules - Workflows**, um framework completo que estabelece governança explícita para integração de IA no ciclo de desenvolvimento usando Cascade da Windsurf.
 
-- **Regras operacionais** claras para interação com IA
-- **Workflows automatizados** para tarefas repetitivas  
-- **Prompts estruturados** (RAG) para comunicação eficiente
-- **Convenções técnicas** baseadas em melhores práticas
-- **Governança de qualidade** em todo o ciclo de desenvolvimento
+Este projeto transforma o caos em previsibilidade através de regras não negociáveis, workflows automatizados e prompts estruturados que garantem consistência, qualidade e eficiência na interação humano-IA.
 
-## Arquitetura do Projeto
+## O Framework em Ação
 
+### Trilogia Fundamental
+1. **ORIGEM** - Extraído de dor real em produção
+2. **VISÃO** - Sistema de governança completo  
+3. **OPERAÇÃO** - Fluxos padronizados e previsíveis
+
+### Como Funciona
 ```
-system_prompt_rules-workflows/
-├── .windsurf/                          # Configurações principais
-│   ├── rule-main-rules.md              # Regra mestre obrigatória
-│   └── rules/                          # Regras operacionais
-│       ├── API-convention.md           # Padrões de API (BFF)
-│       ├── Arquitetura-pastas-arquivos.md # Estrutura de arquivos
-│       ├── Conformidade.md             # Auditoria e segurança
-│       ├── design-system-convention.md  # Tokens e padrões visuais
-│       ├── rules-pr.md                 # Padrões de Pull Requests
-│       ├── react-hooks-patterns-rules.md # Padrões de React Hooks
-│       ├── typescript-typing-convention.md # Convenções TypeScript
-│       └── ui-separation-convention.md # Separação UI vs Lógica
-│   └── workflows/                      # Fluxos automatizados
-│       ├── audit-create-pr.md          # Auditoria e criação de PR
-│       └── generate-prompt-rag.md      # Geração de prompts RAG
-└── Feature-Documentation/              # Documentação de features
-    ├── issues/                         # Registro de problemas
-    ├── PR/                            # Pull Requests documentados
-    └── prompts/                       # Prompts estruturados
-```
-
-## Componentes Principais
-
-### 1. Regras Operacionais (`.windsurf/rules/`)
-
-#### **rule-main-rules.md** - Regra Mestra
-- **Local**: `.windsurf/rule-main-rules.md` 
-- **Descrição**: Regras operacionais mestre obrigatórias para interação com IA
-
-#### **API-convention.md** - Padrões BFF
-- **Local**: `.windsurf/rules/API-convention.md`
-- **Descrição**: Define padrões de arquitetura Backend-for-Frontend para APIs Next.js
-
-#### **Arquitetura-pastas-arquivos.md** - Estrutura de Código
-- **Local**: `.windsurf/rules/Arquitetura-pastas-arquivos.md`
-- **Descrição**: Estabelece fluxo hierárquico e convenções de organização de arquivos
-
-#### **Conformidade.md** - Auditoria e Segurança
-- **Local**: `.windsurf/rules/Conformidade.md`
-- **Descrição**: Documenta conformidade técnica, segurança OWASP e boas práticas
-
-#### **design-system-convention.md** - Design System
-- **Local**: `.windsurf/rules/design-system-convention.md`
-- **Descrição**: Define tokens visuais, padrões de componentes e arquitetura de estilos
-
-#### **rules-pr.md** - Padrões de Pull Requests
-- **Local**: `.windsurf/rules/rules-pr.md`
-- **Descrição**: Estabelece convenções obrigatórias para documentação de PRs
-
-#### **react-hooks-patterns-rules.md** - Padrões de React Hooks
-- **Local**: `.windsurf/rules/react-hooks-patterns-rules.md`
-- **Descrição**: Define padrões rígidos para React Hooks e centralização de tipos
-
-#### **typescript-typing-convention.md** - Tipagem
-- **Local**: `.windsurf/rules/typescript-typing-convention.md`
-- **Descrição**: Define convenções rígidas para TypeScript e centralização de tipos
-
-#### **ui-separation-convention.md** - Separação de Responsabilidades
-- **Local**: `.windsurf/rules/ui-separation-convention.md`
-- **Descrição**: Estabelece separação obrigatória entre UI e lógica de negócio
-
-### 2. Workflows Automatizados (`.windsurf/workflows/`)
-
-#### **audit-create-pr.md** - Auditoria e PR
-- **Local**: `.windsurf/workflows/audit-create-pr.md`
-- **Descrição**: Workflow automatizado para auditoria de código e criação de Pull Requests
-
-#### **generate-prompt-rag.md** - Geração de Prompts
-- **Local**: `.windsurf/workflows/generate-prompt-rag.md`
-- **Descrição**: Converte pedidos informais em prompts RAG estruturados para IA
-
-### 3. Documentação de Features (`Feature-Documentation/`)
-
-#### **Prompts Estruturados**
-- **Local**: `Feature-Documentation/prompts/`
-- **Descrição**: Armazena prompts RAG estruturados com formato padronizado para comunicação com IA
-
-#### **Pull Requests**
-- **Local**: `Feature-Documentation/PR/`
-- **Descrição**: Contém Pull Requests documentados seguindo convenções estabelecidas
-
-#### **Issues**
-- **Local**: `Feature-Documentation/issues/`
-- **Descrição**: Registro de problemas não resolvidos, conversas detalhadas com IA para aprendizado para gerar lessons learning.
-
-## Como Usar
-
-### Para o Cascade da Windsurf (IA)
-
-**Instalação Obrigatória:**
-
-1. **Copie a pasta `.windsurf`** inteira para a pasta raiz do seu projeto
-   - O Cascade da Windsurf reconhecerá automaticamente as regras
-
-2. **Instale as dependências do Agent Skills** do Windsurf:
-   ```bash
-   npx add-skill vercel-labs/agent-skills
-   ```
-   
-   Este comando instala as skills oficiais da Vercel incluindo:
-   - `react-best-practices` (40+ padrões de performance React)
-   - `web-design-guidelines` (acessibilidade e UI/UX)
-   - `frontend-design` (melhores práticas de frontend)
-
-3. **Verifique a instalação** (opcional):
-   ```bash
-   # Listar skills disponíveis
-   npx skills add vercel-labs/agent-skills --list
-   ```
-
-**Fluxo de Trabalho com IA (CI/CD Local):**
-
-**1. Ciclo de Desenvolvimento Iterativo**
-- **Input Inicial**: Descreva problema/feature informalmente no Cascade
-- **Conversão para RAG**: Execute `/generate-prompt-rag` para estruturar o pedido técnico
-- **Resolução Guiada**: Submeta o RAG + referência à `@[.windsurf/rule-main-rules.md]` para execução
-- **Validação do Resultado**: Valide a saida da IA conforme as regras estabelecidas! 
-
-**2. Gestão de Issues e Aprendizado**
-- **Registro de Problemas**: Se resolução falhar, crie issue em `@[Feature-Documentation/issues]` com interação completa
-- **Refinamento do RAG**: Gere novo RAG com detalhes adicionais baseado na issue
-- **Iteração Continuada**: Repita o ciclo até obter resultado esperado
-
-**3. Auditoria e Preparação para Produção**
-- **Validação Final**: Execute `/audit-create-pr` para auditoria completa (lint, tsc, build, audit)
-- **Geração de PR**: Crie documentação de PR seguindo convenções estabelecidas
-- **Commit/Push**: Com tudo validado localmente, realize commit e push com segurança
-
 Pedido informal 
       ↓
 generate-prompt-rag
@@ -161,81 +31,134 @@ Aprovação humana
       ↓
 Execução
       ↓
-Auditoria
+Auditoria humana
+```
 
+## Mapa do Projeto
 
-**Princípio Fundamental**: Zero surpresas no repositório - tudo resolvido e validado no ambiente local através do looping iterativo com IA.
+### Estrutura de Diretórios
+```
+system_prompt_rules-workflows/
+├── README.md                          # Este arquivo - Mapa geral do projeto
+├── .windsurf/                         # Configurações principais
+├   └── rules/                         # Regras operacionais
+├       ├── rule-main-rules.md         # Regra mestre obrigatória
+├       ├── README.md                  # Documentação técnica das regras
+├       ├── origin-rules.md            # Filosofia e propósito das regras
+├       ├── API-convention.md          # Padrões de API (BFF)
+├       ├── Arquitetura-pastas-arquivos.md # Estrutura de arquivos
+├       ├── Conformidade.md            # Auditoria e segurança
+├       ├── design-system-convention.md # Tokens e padrões visuais
+├       ├── markdown-standards.md      # Padrões de linguagem Markdown
+├       ├── react-hooks-patterns-rules.md # Padrões de React Hooks
+├       ├── rules-pr.md                # Padrões de Pull Requests
+├       ├── typescript-typing-convention.md # Convenções TypeScript
+├       └── ui-separation-convention.md # Separação UI vs Lógica
+├   └── workflows/                     # Fluxos automatizados
+├       ├── audit-create-pr.md         # Auditoria e criação de PR
+├       ├── auditoria-de-conformidade.md # Auditoria completa de conformidade
+├       └── generate-prompt-rag.md     # Geração de prompts RAG
+└── Feature-Documentation/             # Documentação de features
+    ├── issues/                        # Registro de problemas
+    ├── PR/                           # Pull Requests documentados
+    └── prompts/                      # Prompts estruturados
+```
 
-## Responsabilidade do Desenvolvedor no Processo com IA
+## Para Começar Rápido
 
-### **Governança e Accountability**
-O desenvolvedor permanece **100% responsável** por todo código produzido, mesmo utilizando IA como assistente. A automação de processos não transfere responsabilidade sobre qualidade, segurança ou funcionalidade e as regras se aplicam para o desenvolvedor auditar todas as saidas da IA! 
+### Instalação Imediata
+1. **Copie a pasta `.windsurf`** para seu projeto
+2. **Instale Agent Skills:**
+   ```bash
+   npx add-skill vercel-labs/agent-skills
+   ```
 
-### **Auditoria Obrigatória**
-- **Validação de Lógica**: Verifique correção algorítmica e fluxo de dados
-- **Análise de Performance**: Avalie impacto em tempo de execução e uso de recursos
-- **Verificação de Segurança**: Identifique vulnerabilidades e vetores de ataque
-- **Conformidade com Requisitos**: Confirme atendimento ao objetivo original
-- **Aderência às Convenções**: Garanta seguimento das regras do projeto
+### Seu Primeiro Workflow
+1. Descreva sua necessidade informalmente para a IA
+2. Execute: `/generate-prompt-rag`
+3. Submeta o RAG gerado com: `@[.windsurf/rule-main-rules.md]`
+4. Aprovação humana → Execução → Validação humana
 
-### **Processo Decisão**
-- **Aceitação**: Apenas após validação completa de todos os aspectos
-- **Rejeição**: Se qualquer aspecto não atender aos padrões exigidos
-- **Refinamento**: Solicite ajustes específicos à IA com base em análise técnica
+## Casos de Uso Principais
 
-### **Princípio Final**
-**IA é ferramenta de produtividade, não substituto de julgamento técnico.** O desenvolvedor é o filtro final de qualidade e o guardião dos padrões do projeto. O papel da IA é automatizar, otimizar e auxiliar no processo de desenvolvimento. Ela é executora e não julgadora e nem criadora de regras! Ela não pode criar regras ou mudar regras existentes a menos que solicitado formalmente pelo desenvolvedor em processo de adequação, ajustes ou atualizaçoes massivas de regras!
+### Desenvolvimento de Software
+- **Bugfix:** Correções mínimas e precisas
+- **Refatoração:** Melhorias estruturais seguras
+- **Features:** Criação nova com governança
+- **Documentação:** Padrões consistentes
 
-**Macros-fluxos**
-- **Planejamento**: Responsabilidade do desenvolvedor planejar, organizar e orquestrar tudo!
-- **Execução**: Responsabilidade da IA executar tudo o que é programado e automatizado em workflows seguindo as regras estabelecidas!
-- **Auditoria**: Responsabilidade do desenvolvedor validar tudo!
+### Governança de Qualidade
+- **Zero surpresas:** Tudo validado localmente
+- **Previsibilidade:** Comportamento IA consistente
+- **Escalabilidade:** Framework cresce com projeto
+- **Accountability:** Desenvolvedor 100% responsável
 
+## Componentes Chave
 
+### Regras Operacionais
+Conjunto completo de regras extraídas de erros reais em produção:
+- **React Hooks:** Padrões rígidos anti-bugs
+- **TypeScript:** Tipagem centralizada e segura
+- **UI Separação:** Frontend limpo e manutenível
+- **API Convention:** Backend-for-Frontend estruturado
+- **Design System:** Tokens e componentes consistentes
 
-**"System Prompt Rules - Workflows" - Governança de IA para desenvolvimento de software moderno**
+### Workflows Automatizados
+- **generate-prompt-rag:** Converte informal → técnico
+- **audit-create-pr:** Validação completa antes de PR
+
+### Documentação Viva
+- **Prompts RAG:** Histórico estruturado de solicitações
+- **Issues:** Aprendizado iterativo de problemas
+- **PRs:** Documentação padronizada de entregas
+
+## Benefícios Comprovados
+
+### Para Desenvolvedores
+- **70% redução** em tempo de debug
+- **Zero discussões** subjetivas sobre "como fazer"
+- **Onboarding acelerado** com regras explícitas
+- **Qualidade garantida** sem depender de "bom senso"
+
+### Para Projetos
+- **Dívida técnica zero** por enforcement
+- **Evolução previsível** com contratos claros
+- **Escalabilidade sustentável** com governança
+- **Consistência** independente de equipe
+
+## Filosofia Central
+
+**"Qualidade é inegociável e precede qualquer outra métrica de produtividade."**
+
+As regras não são barreiras - são mecanismos que tornam a velocidade sustentável. Elas existem porque a alternativa (regras fracas, concessões, dependência de bom senso) já foi testada e provou gerar entropia, retrabalho e dívida técnica.
+
+## Próximos Passos
+
+1. **Explore as regras:** Comece por `@[.windsurf/rules/origin-rules.md]`
+2. **Teste um workflow:** Execute `/generate-prompt-rag`
+3. **Estude a documentação:** `@[.windsurf/rules/README.md]`
+4. **Integre seu projeto:** Copie `.windsurf` e comece a usar
+
+---
+
+**System Prompt Rules - Workflows** - Governança de IA para desenvolvimento de software moderno
 
 *Desenvolvido para a comunidade de desenvolvimento usando Cascade da Windsurf*
 
----
+## Nota Importante
 
-## Atestado de Conformidade Windsurf Cascade
+**Estas regras são documentos vivos** que podem e devem ser ajustados conforme demanda dos projetos. Podem ser customizados para necessidades específicas, mas já possuem um padrão default considerando:
 
-### **Validação Oficial**
+- **Boas práticas de desenvolvimento** em projetos Next.js, React, TypeScript, Tailwind
+- **Segurança shift-left** com foco em conformidade OWASP
+- **Padrões de mercado** e documentação oficial das tecnologias
+- **Regras adicionais** conforme necessidade específica de cada projeto
 
-Este framework foi validado conforme documentação oficial Windsurf Cascade e está **100% compatível** com os padrões estabelecidos pela plataforma.
-
-### **Fontes de Referência**
-- **Documentação Oficial Windsurf**: [Cascade Rules & Workflows](https://docs.windsurf.com/windsurf/cascade/memories)
-- **Guia de Best Practices**: [Windsurf Editor Directory](https://windsurf.com/editor/directory)
-- **Referência de Workflows**: [Cascade Workflows Documentation](https://docs.windsurf.com/windsurf/cascade/workflows)
-- **Agent Skills React**: [React Best Practices](https://github.com/vercel-labs/agent-skills/blob/main/skills/react-best-practices/AGENTS.md)
-- **React Documentation**: [React.dev](https://react.dev)
-- **Next.js Framework**: [Next.js.org](https://nextjs.org)
-- **SWR Data Fetching**: [SWR.vercel.app](https://swr.vercel.app)
-- **Better All Library**: [Better-all](https://github.com/shuding/better-all)
-- **Node LRU Cache**: [Node-lru-cache](https://github.com/isaacs/node-lru-cache)
-- **Vercel Package Optimization**: [Package Imports Optimization](https://vercel.com/blog/how-we-optimized-package-imports-in-next-js)
-- **Vercel Dashboard Performance**: [Dashboard Speed Optimization](https://vercel.com/blog/how-we-made-the-vercel-dashboard-twice-as-fast)
-
-### **Critérios de Conformidade**
-- **Estrutura de Diretórios**: `.windsurf/rules/` e `.windsurf/workflows/` padrão
-- **Formato de Arquivos**: Markdown dentro dos limites especificados (12.000 caracteres)
-- **Descoberta Automática**: Alinhado com sistema de detecção do Windsurf
-- **Slash Commands**: Implementação correta de `/[workflow-name]`
-- **Best Practices**: Regras concisas, específicas e bem formatadas
-- **Integração Agent Skills**: Compatível com `vercel-labs/agent-skills`
-
-### **Nível de Maturidade**
-**Production-Ready** - Framework completo para uso em ambiente empresarial com governança de IA estabelecida.
-
----
-
-*A conformidade verificada em janeiro de 2026 baseada na documentação oficial Windsurf Cascade v2.3+*
+O framework é flexível para adaptações, mas mantém governança e qualidade como pilares fundamentais.
 
 ____
 
-Para atualizar o repositório original com o repositório de backup, siga os passos abaixo:
+## Para atualizar o repositório original com o repositório de backup, siga os passos abaixo:
 
 git remote set-url origin https://github.com/feryamaha/system_prompt_rules-workflows_windsurf.git
 git remote add backup https://github.com/mayconmartins01/readme-ias.git

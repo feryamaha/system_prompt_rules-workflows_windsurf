@@ -2,6 +2,7 @@
 name: PR Rules
 status: stable
 last_updated: 2026-01-26
+trigger: always_on
 ---
 
 # Padrão de Documentação de Pull Requests (Feature-Documentation/PR/)
