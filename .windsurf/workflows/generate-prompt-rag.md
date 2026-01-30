@@ -40,6 +40,18 @@ Este workflow aplica o conceito de **Refinamento Iterativo**. A função da IA a
 4. **Problema original (resumido):** Ao converter para o Problema Resumido, substitua termos vagos (ex: 'coisa em cima da outra') por terminologia técnica precisa (ex: 'conflito de z-index' ou 'sobreposição de contexto de empilhamento'). 
 5. **Expectativas:** O que o usuário espera como resultado
 
+**Componentes de um prompt de alta qualidade:**
+- Objetivo ou resultado claro
+   - O que o modelo de IA deve gerar?
+   - Você está pedindo ao modelo de IA um plano? Para um novo código? Ou para uma refatoração?
+**Todos os contextos relevantes para a execução da(s) tarefa(s)**
+- Você utilizou as menções (@) corretamente para incluir o contexto adequado?
+- Existe algum contexto específico do cliente que possa não estar claro em relação ao windsurf?
+**Especificações necessárias**
+- Existem frameworks, bibliotecas ou linguagens específicas que devem ser utilizadas?
+- Existem requisitos relacionados à complexidade de armazenamento ou tempo?
+- Há algum aspecto de segurança que precise ser considerado?
+
 ### 4. Verificar Último Prompt Existente
 1. **Executar comando para verificar último prompt:**
    ```powershell
