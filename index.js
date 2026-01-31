@@ -20,7 +20,7 @@ function logError(message) {
 
 function ensureAgentSkillsInstalled() {
   try {
-    execSync("npx add-skill vercel-labs/agent-skills --list", {
+    execSync("npx skills list", {
       stdio: "ignore"
     });
     return true;
@@ -31,7 +31,7 @@ function ensureAgentSkillsInstalled() {
 
 function installAgentSkills() {
   logInfo("Instalando Vercel Agent Skills...\n");
-  execSync("npx add-skill vercel-labs/agent-skills", {
+  execSync("npx skills add vercel-labs/agent-skills", {
     stdio: "inherit"
   });
 }
