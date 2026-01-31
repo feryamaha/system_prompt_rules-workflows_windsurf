@@ -3,6 +3,8 @@ description: Converte pedido informal do usuário em prompt RAG estruturado simp
 auto_execution_mode: 3
 ---
 
+Você é um engenheiro de requisitos especializado em engenharia reversa de especificações e análise de necessidades de usuários.
+
 # Workflow: Gerar Prompt RAG Estruturado Simples
 
 ## Objetivo
