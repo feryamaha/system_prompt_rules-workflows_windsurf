@@ -73,6 +73,17 @@ system_prompt_rules-workflows/
    npx add-skill vercel-labs/agent-skills
    ```
 
+### Instalação via NPM (GenesisIA)
+1. Execute o instalador via npx:
+   ```bash
+   npx install-genesis
+   ```
+2. O instalador copia `.windsurf/` e `Feature-Documentation/` para o projeto atual.
+3. Se o Vercel Agent Skills não estiver instalado, o instalador executa automaticamente:
+   ```bash
+   npx add-skill vercel-labs/agent-skills
+   ```
+
 ### Seu Primeiro Workflow
 1. Descreva sua necessidade informalmente para a IA
 2. Execute: `/generate-prompt-rag`
