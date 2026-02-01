@@ -32,10 +32,10 @@
 - **Tarefa:** Configurar metadados para publicação NPM
 - **Status:** Concluida
 
-### 6. [PENDENTE] Validacao Build
+### 6. [CONCLUIDA] Validacao Build
 - **Local:** Projeto completo
 - **Tarefa:** Testar build e funcionamento do pacote
-- **Status:** Pendente
+- **Status:** Concluida
 
 ---
 

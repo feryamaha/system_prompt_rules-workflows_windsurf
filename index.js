@@ -134,13 +134,22 @@ function copyDirectory(sourceDir, targetDir) {
     process.exit(1);
   }
 
+  // Verificar se source e target sao o mesmo
+  const sourcePath = path.resolve(sourceDir);
+  const targetPath = path.resolve(targetDir);
+  
+  if (sourcePath === targetPath) {
+    logError(`Source e destination nao podem ser o mesmo: ${sourceDir}`);
+    return;
+  }
+
   fs.copySync(sourceDir, targetDir, {
     overwrite: true,
     errorOnExist: false
   });
 }
 
-function runInstallation() {
+async function runInstallation() {
   logInfo("Iniciando instalacao do GenesisIA Skills SPRW...\n");
 
   // Carregar configuração
@@ -158,12 +167,14 @@ function runInstallation() {
     logInfo("Vercel Agent Skills ja instalado.\n");
   }
 
-  SOURCE_DIRS.forEach((dirName) => {
-    const sourceDir = path.join(PACKAGE_ROOT, dirName);
-    const targetDir = path.join(ROOT_DIR, dirName);
-    logInfo(`Copiando ${dirName}...`);
-    copyDirectory(sourceDir, targetDir);
-  });
+  // Copiar estrutura .windsurf/
+  copyDirectory('.windsurf', path.join(ROOT_DIR, '.windsurf'));
+  
+  // Copiar Feature-Documentation/
+  copyDirectory('Feature-Documentation', path.join(ROOT_DIR, 'Feature-Documentation'));
+  
+  // Copiar src/workflow-enforcement/
+  copyDirectory('src/workflow-enforcement', path.join(ROOT_DIR, 'src/workflow-enforcement'));
 
   // Criar arquivo de configuração se não existir
   const configDir = path.dirname(CONFIG_FILE);
