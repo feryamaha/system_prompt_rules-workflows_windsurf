@@ -1,0 +1,73 @@
+# Genesis Framework Configuration
+# Este arquivo controla como o Genesis é instalado e configurado
+
+[genesis]
+# Configurações globais de instalação
+auto_gitignore = true          # Atualiza .gitignore automaticamente
+backup_existing = true         # Cria backup de arquivos existentes
+verbose_output = false         # Mostra logs detalhados durante instalação
+create_config = true           # Cria este arquivo de configuração
+
+[workflows]
+# Quais workflows instalar (todos por enquanto)
+# Futuro: permitirá seleção individual
+generate_prompt_rag = true     # Workflow para gerar prompts RAG
+audit_create_pr = true         # Workflow para auditoria e criação de PR
+auditoria_conformidade = true  # Workflow para auditoria de conformidade
+
+[skills]
+# Quais skills instalar (todos por enquanto)
+# Futuro: permitirá seleção por stack/linguagem
+vercel_agent_skills = true     # Skills da Vercel (react-best-practices, web-design-guidelines)
+react_best_practices = true    # Padrões React específicos
+web_design_guidelines = true  # Guias de acessibilidade e UI/UX
+
+[ide_detection]
+# Configuração de detecção de IDE (futuro)
+# Por enquanto: instala suporte para todas as IDEs detectadas
+auto_detect = true              # Detecta IDEs automaticamente
+fallback_to_prompt = true       # Pergunta ao usuário se não detectar
+supported_ides = ["windsurf", "cursor", "copilot", "claude", "aider"]
+
+[feature_documentation]
+# Estrutura de documentação a criar
+create_issues_folder = true     # Cria pasta Feature-Documentation/issues/
+create_pr_folder = true         # Cria pasta Feature-Documentation/PR/
+create_prompts_folder = true    # Cria pasta Feature-Documentation/prompts/
+
+# ====================================================================
+# EXPANSÕES FUTURAS (quando o projeto tiver variações):
+# ====================================================================
+
+# [project_type]
+# # Tipo de projeto (futuro)
+# frontend = true               # Projeto frontend (React, Next.js, etc.)
+# backend = true                # Projeto backend (Node.js, Python, etc.)
+# fullstack = true              # Projeto full stack
+# mobile = true                 # Projeto mobile (React Native, etc.)
+
+# [stack_specific]
+# # Configurações específicas por stack (futuro)
+# react = {
+#   version = "18"
+#   typescript = true
+#   tailwind = true
+# }
+# python = {
+#   version = "3.11"
+#   fastapi = true
+#   sqlalchemy = true
+# }
+
+# [user_preferences]
+# # Preferências do usuário (futuro)
+# installation_mode = "automatic"  # "automatic" | "interactive" | "custom"
+# update_frequency = "weekly"      # "daily" | "weekly" | "monthly"
+# telemetry = false               # Envia dados anônimos de uso
+
+# [advanced]
+# # Configurações avançadas (futuro)
+# custom_rules_path = "./custom-rules/"
+# exclude_workflows = []         # Workflows para excluir
+# custom_skills = []              # Skills customizados adicionais
+# integration_mode = "standard"   # "standard" | "enterprise" | "minimal"
