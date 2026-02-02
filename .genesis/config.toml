@@ -1,7 +1,7 @@
-# Genesis Framework Configuration
-# Este arquivo controla como o Genesis é instalado e configurado
+# Nemesis Framework Configuration
+# Este arquivo controla como o Nemesis é instalado e configurado
 
-[genesis]
+[nemesis]
 # Configurações globais de instalação
 auto_gitignore = true          # Atualiza .gitignore automaticamente
 backup_existing = true         # Cria backup de arquivos existentes
