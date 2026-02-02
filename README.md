@@ -84,7 +84,44 @@ system_prompt_rules-workflows/
    npx add-skill vercel-labs/agent-skills
    ```
 
+### Fluxo de Instalação Seletiva
+
+O instalador GenesisIA diferencia entre arquivos elementares e templates para evitar sobrescrita acidental de documentação do usuário:
+
+**Arquivos Core (sempre sobrescrevem):**
+- `.windsurf/rules/` - Regras de governança (atualizáveis)
+- `.windsurf/workflows/` - Workflows automatizados (atualizáveis)
+- `src/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
+
+**Arquivos Templates (instalados apenas se não existirem):**
+- `Feature-Documentation/` - Apenas arquivos com "template" ou "exemplo-template" no nome
+- `Feature-Documentation/issues/` - Apenas templates
+- `Feature-Documentation/PR/` - Apenas templates
+- `Feature-Documentation/prompts/` - Apenas templates
+- `Feature-Documentation/to-do-list/` - Apenas templates
+
+**Arquivos ignorados (nunca copiados):**
+- Qualquer arquivo em `Feature-Documentation/` que não contenha "template" no nome
+
+**Fluxo de Decisão:**
+```
+Início da Instalação
+       ↓
+Projeto tem Genesis instalado?
+       ↓
+NÃO → Instala tudo (core sobrescreve, templates copiam, ignora não-templates)
+       ↓
+SIM → Lista o que existe → Pergunta "Deseja sobrescrever? (s/N)"
+       ↓
+Usuário confirma?
+       ↓
+SIM → Core sobrescreve, templates copiam, não-templates ignorados
+       ↓
+NÃO → Cancela instalação
+```
+
 ### Seu Primeiro Workflow
+
 1. Descreva sua necessidade informalmente para a IA
 2. Execute: `/generate-prompt-rag`
 3. Submeta o RAG gerado com: `@[.windsurf/rule-main-rules.md]`

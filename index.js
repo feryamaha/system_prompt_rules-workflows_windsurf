@@ -2,6 +2,7 @@
 const path = require("path");
 const fs = require("fs-extra");
 const { execSync } = require("child_process");
+const readline = require("readline");
 
 const ROOT_DIR = process.cwd();
 const PACKAGE_ROOT = path.resolve(__dirname);
@@ -149,10 +150,159 @@ function copyDirectory(sourceDir, targetDir) {
   });
 }
 
+function isTemplateFile(relativePath) {
+  // Templates estao apenas em Feature-Documentation/
+  if (!relativePath.startsWith('Feature-Documentation')) {
+    return false;
+  }
+  
+  // Arquivos com "template" ou "exemplo-template" no nome sao templates
+  const fileName = path.basename(relativePath).toLowerCase();
+  return fileName.includes('template') || fileName.includes('exemplo-template');
+}
+
+function shouldCopyFile(sourcePath, targetPath, relativePath, isCoreDirectory) {
+  // Arquivos core sempre sobrescrevem
+  if (isCoreDirectory) {
+    return true;
+  }
+  
+  // Em Feature-Documentation, verificar se eh template
+  if (isTemplateFile(relativePath)) {
+    // Template so copia se nao existir
+    return !fs.existsSync(targetPath);
+  }
+  
+  // Arquivos nao-template em Feature-Documentation sao ignorados
+  return false;
+}
+
+function copyFileSelective(sourceFile, targetFile, relativePath, isCoreDirectory) {
+  if (!shouldCopyFile(sourceFile, targetFile, relativePath, isCoreDirectory)) {
+    return false; // Arquivo ignorado ou ja existe (template)
+  }
+  
+  fs.ensureDirSync(path.dirname(targetFile));
+  fs.copySync(sourceFile, targetFile, { overwrite: true });
+  return true;
+}
+
+function copyDirectorySelective(sourceDir, targetDir, isCoreDirectory) {
+  if (!fs.existsSync(sourceDir)) {
+    logError(`Diretorio nao encontrado: ${sourceDir}`);
+    process.exit(1);
+  }
+
+  const sourcePath = path.resolve(sourceDir);
+  const targetPath = path.resolve(targetDir);
+  
+  if (sourcePath === targetPath) {
+    logError(`Source e destination nao podem ser o mesmo: ${sourceDir}`);
+    return;
+  }
+
+  const files = fs.readdirSync(sourceDir, { recursive: true });
+  let copiedCount = 0;
+  let skippedCount = 0;
+  
+  for (const file of files) {
+    const fullSourcePath = path.join(sourceDir, file);
+    const fullTargetPath = path.join(targetDir, file);
+    const relativePath = path.join(path.basename(sourceDir), file);
+    
+    if (fs.statSync(fullSourcePath).isDirectory()) {
+      continue; // Diretorios sao criados sob demanda
+    }
+    
+    const copied = copyFileSelective(fullSourcePath, fullTargetPath, relativePath, isCoreDirectory);
+    if (copied) {
+      copiedCount++;
+    } else {
+      skippedCount++;
+    }
+  }
+  
+  return { copied: copiedCount, skipped: skippedCount };
+}
+
+function checkExistingInstallation() {
+  const genesisPaths = [
+    path.join(ROOT_DIR, '.windsurf'),
+    path.join(ROOT_DIR, 'Feature-Documentation'),
+    path.join(ROOT_DIR, 'src/workflow-enforcement'),
+    path.join(ROOT_DIR, '.genesis')
+  ];
+  
+  const existingPaths = genesisPaths.filter(p => fs.existsSync(p));
+  return existingPaths.length > 0 ? existingPaths : null;
+}
+
+function askUserConfirmation(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim().toLowerCase() === 's');
+    });
+  });
+}
+
+function createDefaultConfig(configPath) {
+  const configDir = path.dirname(configPath);
+  fs.ensureDirSync(configDir);
+  
+  const defaultConfigContent = `[genesis]
+auto_gitignore = true
+backup_existing = true
+verbose_output = false
+create_config = true
+
+[workflows]
+generate_prompt_rag = true
+audit_create_pr = true
+auditoria_conformidade = true
+
+[skills]
+vercel_agent_skills = true
+react_best_practices = true
+web_design_guidelines = true
+
+[ide_detection]
+auto_detect = true
+fallback_to_prompt = true
+supported_ides = ["windsurf", "cursor", "copilot", "claude", "aider"]
+
+[feature_documentation]
+create_issues_folder = true
+create_pr_folder = true
+create_prompts_folder = true
+`;
+  
+  fs.writeFileSync(configPath, defaultConfigContent, 'utf8');
+}
+
 async function runInstallation() {
   logInfo("Iniciando instalacao do GenesisIA Skills SPRW...\n");
 
-  // Carregar configuração
+  // Verificar instalacao existente
+  const existingPaths = checkExistingInstallation();
+  if (existingPaths) {
+    logInfo("Genesis ja instalado. Caminhos encontrados:");
+    existingPaths.forEach(p => logInfo(`  - ${p}`));
+    
+    const shouldOverwrite = await askUserConfirmation("\nDeseja sobrescrever? (s/N): ");
+    if (!shouldOverwrite) {
+      logInfo("\nInstalacao cancelada pelo usuario.");
+      process.exit(0);
+    }
+    logInfo("\nProsseguindo com sobrescricao...\n");
+  }
+
+  // Carregar configuracao
   const config = loadConfig();
 
   // Atualizar .gitignore se configurado
@@ -167,20 +317,39 @@ async function runInstallation() {
     logInfo("Vercel Agent Skills ja instalado.\n");
   }
 
-  // Copiar estrutura .windsurf/
-  copyDirectory(path.join(PACKAGE_ROOT, '.windsurf'), path.join(ROOT_DIR, '.windsurf'));
+  // Copiar estrutura .windsurf/ (core - sempre sobrescreve)
+  logInfo("\nInstalando arquivos core (.windsurf/rules, .windsurf/workflows)...");
+  const windsurfResult = copyDirectorySelective(
+    path.join(PACKAGE_ROOT, '.windsurf'), 
+    path.join(ROOT_DIR, '.windsurf'),
+    true // isCoreDirectory = true
+  );
+  logInfo(`  ✓ ${windsurfResult.copied} arquivos core instalados`);
   
-  // Copiar Feature-Documentation/
-  copyDirectory(path.join(PACKAGE_ROOT, 'Feature-Documentation'), path.join(ROOT_DIR, 'Feature-Documentation'));
+  // Copiar Feature-Documentation/ (templates - seletivo)
+  logInfo("\nInstalando templates (Feature-Documentation)...");
+  const featureResult = copyDirectorySelective(
+    path.join(PACKAGE_ROOT, 'Feature-Documentation'), 
+    path.join(ROOT_DIR, 'Feature-Documentation'),
+    false // isCoreDirectory = false (templates)
+  );
+  logInfo(`  ✓ ${featureResult.copied} templates novos instalados`);
+  if (featureResult.skipped > 0) {
+    logInfo(`  ℹ ${featureResult.skipped} arquivos ignorados (ja existem ou nao sao templates)`);
+  }
   
-  // Copiar src/workflow-enforcement/
-  copyDirectory(path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), path.join(ROOT_DIR, 'src/workflow-enforcement'));
+  // Copiar src/workflow-enforcement/ (core - sempre sobrescreve)
+  logInfo("\nInstalando workflow enforcement...");
+  const workflowResult = copyDirectorySelective(
+    path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), 
+    path.join(ROOT_DIR, 'src/workflow-enforcement'),
+    true // isCoreDirectory = true
+  );
+  logInfo(`  ✓ ${workflowResult.copied} arquivos de workflow instalados`);
 
-  // Criar arquivo de configuração se não existir
-  const configDir = path.dirname(CONFIG_FILE);
+  // Criar arquivo de configuracao se nao existir
   if (!fs.existsSync(CONFIG_FILE)) {
-    fs.ensureDirSync(configDir);
-    fs.copySync(path.join(PACKAGE_ROOT, ".genesis", "config.toml"), CONFIG_FILE);
+    createDefaultConfig(CONFIG_FILE);
     logInfo("✓ Arquivo de configuracao criado: .genesis/config.toml");
   }
 
@@ -189,9 +358,13 @@ async function runInstallation() {
 }
 
 try {
-  runInstallation();
+  runInstallation().catch(error => {
+    logError("Falha durante a instalacao.");
+    logError(error instanceof Error ? error.message : "Erro desconhecido.");
+    process.exit(1);
+  });
 } catch (error) {
-  logError("Falha durante a instalacao.");
+  logError("Falha durante a inicializacao.");
   logError(error instanceof Error ? error.message : "Erro desconhecido.");
   process.exit(1);
 }
