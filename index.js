@@ -58,9 +58,9 @@ function loadConfig() {
 function updateGitignore() {
   const gitignorePath = path.join(ROOT_DIR, ".gitignore");
   
-  const genesisSection = `
-# START Genesis Generated Files
-# Arquivos gerados pela instalação do Genesis (bloquear para não versionar)
+  const nemesisSection = `
+# START Nemesis Generated Files
+# Arquivos gerados pela instalação do Nemesis (bloquear para nao versionar)
 .windsurf/mcp_config.json
 .vscode/mcp.json
 CLAUDE.md
@@ -84,16 +84,16 @@ CLAUDE.md
 .opencode.json
 .gemini/settings.json
 .qwen/settings.json
-# END Genesis Generated Files`;
+# END Nemesis Generated Files`;
 
   let gitignoreContent = '';
   if (fs.existsSync(gitignorePath)) {
     gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
   }
 
-  // Remover seção antiga do Genesis (se existir)
-  const startMarker = '# START Genesis Generated Files';
-  const endMarker = '# END Genesis Generated Files';
+  // Remover seção antiga do Nemesis (se existir)
+  const startMarker = '# START Nemesis Generated Files';
+  const endMarker = '# END Nemesis Generated Files';
   const startIndex = gitignoreContent.indexOf(startMarker);
   const endIndex = gitignoreContent.indexOf(endMarker);
   
@@ -104,11 +104,11 @@ CLAUDE.md
   }
 
   // Adicionar nova seção
-  gitignoreContent += genesisSection;
+  gitignoreContent += nemesisSection;
 
   // Escrever .gitignore atualizado
   fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n');
-  logInfo("✓ .gitignore atualizado com regras do Genesis");
+  logInfo("✓ .gitignore atualizado com regras do Nemesis");
 }
 
 function ensureAgentSkillsInstalled() {
@@ -229,7 +229,7 @@ function checkExistingInstallation() {
   const genesisPaths = [
     path.join(ROOT_DIR, '.windsurf'),
     path.join(ROOT_DIR, 'Feature-Documentation'),
-    path.join(ROOT_DIR, 'src/workflow-enforcement'),
+    path.join(ROOT_DIR, '.genesis', 'workflow-enforcement'),
     path.join(ROOT_DIR, '.genesis')
   ];
   
@@ -286,12 +286,12 @@ create_prompts_folder = true
 }
 
 async function runInstallation() {
-  logInfo("Iniciando instalacao do GenesisIA Skills SPRW...\n");
+  logInfo("Iniciando instalacao do Nemesis Framework...\n");
 
   // Verificar instalacao existente
   const existingPaths = checkExistingInstallation();
   if (existingPaths) {
-    logInfo("Genesis ja instalado. Caminhos encontrados:");
+    logInfo("Nemesis ja instalado. Caminhos encontrados:");
     existingPaths.forEach(p => logInfo(`  - ${p}`));
     
     const shouldOverwrite = await askUserConfirmation("\nDeseja sobrescrever? (s/N): ");
@@ -338,11 +338,11 @@ async function runInstallation() {
     logInfo(`  ℹ ${featureResult.skipped} arquivos ignorados (ja existem ou nao sao templates)`);
   }
   
-  // Copiar src/workflow-enforcement/ (core - sempre sobrescreve)
+  // Copiar .genesis/workflow-enforcement/ (core - sempre sobrescreve)
   logInfo("\nInstalando workflow enforcement...");
   const workflowResult = copyDirectorySelective(
     path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), 
-    path.join(ROOT_DIR, 'src/workflow-enforcement'),
+    path.join(ROOT_DIR, '.genesis', 'workflow-enforcement'),
     true // isCoreDirectory = true
   );
   logInfo(`  ✓ ${workflowResult.copied} arquivos de workflow instalados`);

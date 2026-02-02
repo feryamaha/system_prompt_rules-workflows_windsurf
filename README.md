@@ -73,10 +73,10 @@ system_prompt_rules-workflows/
    npx add-skill vercel-labs/agent-skills
    ```
 
-### Instalação via NPM (GenesisIA)
+### Instalação via NPM (Nemesis)
 1. Execute o instalador via npx:
    ```bash
-   npx install-genesis
+   npx install-nemesis
    ```
 2. O instalador copia `.windsurf/` e `Feature-Documentation/` para o projeto atual.
 3. Se o Vercel Agent Skills não estiver instalado, o instalador executa automaticamente:
@@ -86,12 +86,12 @@ system_prompt_rules-workflows/
 
 ### Fluxo de Instalação Seletiva
 
-O instalador GenesisIA diferencia entre arquivos elementares e templates para evitar sobrescrita acidental de documentação do usuário:
+O instalador Nemesis diferencia entre arquivos elementares e templates para evitar sobrescrita acidental de documentação do usuário:
 
 **Arquivos Core (sempre sobrescrevem):**
 - `.windsurf/rules/` - Regras de governança (atualizáveis)
 - `.windsurf/workflows/` - Workflows automatizados (atualizáveis)
-- `src/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
+- `.genesis/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
 
 **Arquivos Templates (instalados apenas se não existirem):**
 - `Feature-Documentation/` - Apenas arquivos com "template" ou "exemplo-template" no nome
@@ -107,7 +107,7 @@ O instalador GenesisIA diferencia entre arquivos elementares e templates para ev
 ```
 Início da Instalação
        ↓
-Projeto tem Genesis instalado?
+Projeto tem Nemesis instalado?
        ↓
 NÃO → Instala tudo (core sobrescreve, templates copiam, ignora não-templates)
        ↓

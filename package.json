@@ -1,11 +1,11 @@
 {
-  "name": "genesisia-skills-sprw",
+  "name": "nemesis-framework",
   "version": "0.1.0",
-  "description": "Framework de governanca de IA com regras e workflows para Windsurf",
+  "description": "Framework de governanca de IA com regras e workflows para Windsurf - Nemesis",
   "license": "UNLICENSED",
   "main": "index.js",
   "bin": {
-    "install-genesis": "index.js"
+    "install-nemesis": "index.js"
   },
   "files": [
     ".windsurf",
