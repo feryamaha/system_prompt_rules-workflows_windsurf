@@ -168,13 +168,13 @@ async function runInstallation() {
   }
 
   // Copiar estrutura .windsurf/
-  copyDirectory('.windsurf', path.join(ROOT_DIR, '.windsurf'));
+  copyDirectory(path.join(PACKAGE_ROOT, '.windsurf'), path.join(ROOT_DIR, '.windsurf'));
   
   // Copiar Feature-Documentation/
-  copyDirectory('Feature-Documentation', path.join(ROOT_DIR, 'Feature-Documentation'));
+  copyDirectory(path.join(PACKAGE_ROOT, 'Feature-Documentation'), path.join(ROOT_DIR, 'Feature-Documentation'));
   
   // Copiar src/workflow-enforcement/
-  copyDirectory('src/workflow-enforcement', path.join(ROOT_DIR, 'src/workflow-enforcement'));
+  copyDirectory(path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), path.join(ROOT_DIR, 'src/workflow-enforcement'));
 
   // Criar arquivo de configuração se não existir
   const configDir = path.dirname(CONFIG_FILE);
