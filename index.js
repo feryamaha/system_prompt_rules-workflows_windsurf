@@ -20,6 +20,112 @@ function logError(message) {
   process.stderr.write(`${message}\n`);
 }
 
+function checkDependencyInstalled(dependencyName) {
+  try {
+    execSync(`node -e "require.resolve('${dependencyName}')"`, {
+      cwd: ROOT_DIR,
+      stdio: "ignore"
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function ensureDependencies() {
+  const dependencies = [
+    { name: "typescript", type: "dev" },
+    { name: "ts-node", type: "dev" },
+    { name: "@types/node", type: "dev" }
+  ];
+
+  logInfo("\nVerificando dependencias necessarias...");
+
+  for (const dep of dependencies) {
+    const isInstalled = checkDependencyInstalled(dep.name);
+
+    if (isInstalled) {
+      logInfo(`  ✓ ${dep.name} ja instalado`);
+    } else {
+      logInfo(`  ⏳ Instalando ${dep.name}...`);
+      try {
+        execSync(`yarn add -D ${dep.name}`, {
+          cwd: ROOT_DIR,
+          stdio: "inherit"
+        });
+        logInfo(`  ✓ ${dep.name} instalado com sucesso`);
+      } catch (error) {
+        try {
+          execSync(`npm install -D ${dep.name}`, {
+            cwd: ROOT_DIR,
+            stdio: "inherit"
+          });
+          logInfo(`  ✓ ${dep.name} instalado com sucesso`);
+        } catch (npmError) {
+          logError(`  ❌ Falha ao instalar ${dep.name}`);
+          process.exit(1);
+        }
+      }
+    }
+  }
+}
+
+function validateNemesisStructure() {
+  const requiredFiles = [
+    ".nemesis/workflow-enforcement/cli/enforce.ts",
+    ".nemesis/workflow-enforcement/cli/validate.ts",
+    ".nemesis/workflow-enforcement/cli/test-all-workflows.ts"
+  ];
+
+  logInfo("\nValidando estrutura do Nemesis...");
+
+  for (const file of requiredFiles) {
+    const filePath = path.join(ROOT_DIR, file);
+    if (!fs.existsSync(filePath)) {
+      logError(`❌ Arquivo obrigatorio nao encontrado: ${file}`);
+      logError("   Reinstale o Nemesis ou verifique a instalacao");
+      process.exit(1);
+    }
+  }
+
+  logInfo("  ✓ Todos os arquivos CLI estao presentes");
+}
+
+function updatePackageJsonScripts() {
+  const packageJsonPath = path.join(ROOT_DIR, "package.json");
+
+  if (!fs.existsSync(packageJsonPath)) {
+    logError("❌ package.json nao encontrado no diretorio atual");
+    logError("   Execute o comando na raiz do projeto");
+    process.exit(1);
+  }
+
+  const packageContent = fs.readFileSync(packageJsonPath, "utf8");
+  const packageJson = JSON.parse(packageContent);
+
+  if (!packageJson.scripts) {
+    packageJson.scripts = {};
+  }
+
+  const nemesisScripts = Object.keys(packageJson.scripts).filter(
+    key => key.startsWith("nemesis:")
+  );
+  nemesisScripts.forEach(key => {
+    delete packageJson.scripts[key];
+  });
+
+  packageJson.scripts["nemesis:validate"] = "npx ts-node .nemesis/workflow-enforcement/cli/validate.ts";
+  packageJson.scripts["nemesis:enforce"] = "npx ts-node .nemesis/workflow-enforcement/cli/enforce.ts";
+  packageJson.scripts["nemesis:test"] = "npx ts-node .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
+
+  logInfo(`✓ Scripts nemesis atualizados no package.json`);
+  logInfo(`  - nemesis:validate`);
+  logInfo(`  - nemesis:enforce`);
+  logInfo(`  - nemesis:test`);
+}
+
 function loadConfig() {
   const defaultConfig = {
     nemesis: {
@@ -310,6 +416,9 @@ async function runInstallation() {
     updateGitignore();
   }
 
+  // Garantir dependencias de runtime
+  ensureDependencies();
+
   const skillsInstalled = ensureAgentSkillsInstalled();
   if (!skillsInstalled) {
     installAgentSkills();
@@ -346,6 +455,12 @@ async function runInstallation() {
     true // isCoreDirectory = true
   );
   logInfo(`  ✓ ${workflowResult.copied} arquivos de workflow instalados`);
+
+  // Validar estrutura antes de injetar scripts
+  validateNemesisStructure();
+
+  // Atualizar package.json com scripts nemesis
+  updatePackageJsonScripts();
 
   // Criar arquivo de configuracao se nao existir
   if (!fs.existsSync(CONFIG_FILE)) {
