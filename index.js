@@ -35,7 +35,7 @@ function checkDependencyInstalled(dependencyName) {
 function ensureDependencies() {
   const dependencies = [
     { name: "typescript", type: "dev" },
-    { name: "ts-node", type: "dev" },
+    { name: "tsx", type: "dev" },
     { name: "@types/node", type: "dev" }
   ];
 
@@ -114,9 +114,9 @@ function updatePackageJsonScripts() {
     delete packageJson.scripts[key];
   });
 
-  packageJson.scripts["nemesis:validate"] = "npx ts-node .nemesis/workflow-enforcement/cli/validate.ts";
-  packageJson.scripts["nemesis:enforce"] = "npx ts-node .nemesis/workflow-enforcement/cli/enforce.ts";
-  packageJson.scripts["nemesis:test"] = "npx ts-node .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
+  packageJson.scripts["nemesis:validate"] = "yarn tsx .nemesis/workflow-enforcement/cli/validate.ts";
+  packageJson.scripts["nemesis:enforce"] = "yarn tsx .nemesis/workflow-enforcement/cli/enforce.ts";
+  packageJson.scripts["nemesis:test"] = "yarn tsx .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 
