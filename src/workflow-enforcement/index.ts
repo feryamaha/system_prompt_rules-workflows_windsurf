@@ -19,7 +19,6 @@ export { WorkflowCatalog } from './workflow-catalog';
 export { CommandExtractor } from './command-extractor';
 export { WorkflowValidators } from './workflow-validators';
 export { WorkflowEnforcer } from './workflow-enforcer';
-export { JustBashRunner } from './just-bash-runner';
 export { BashToolAdapter } from './bash-tool-adapter';
 export { PermissionGate } from './permission-gate';
 export { ViolationLogger } from './violation-logger';
@@ -59,7 +58,7 @@ export function createEnforcementConfig(overrides: Partial<EnforcementConfig> = 
     logViolations: true,
     requirePermissionForFileEdits: true,
     allowedLanguages: ['bash', 'javascript', 'typescript', 'python', 'markdown'],
-    mandatoryRules: ['@[.windsurf/rule-main-rules.md]'],
+    mandatoryRules: ['.windsurf/rules/rule-main-rules.md'],
     ...overrides
   };
 }

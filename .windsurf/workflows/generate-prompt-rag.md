@@ -3,8 +3,8 @@ description: Converte pedido informal do usuário em prompt RAG estruturado simp
 auto_execution_mode: 3
 nemesis_enforcement: true
 mandatory_rules:
-  - @[.windsurf/rules/rule-main-rules.md]
-  - @[.windsurf/rules/origin-rules.md]
+  - .windsurf/rules/rule-main-rules.md
+  - .windsurf/rules/origin-rules.md
 ---
 
 ## Nemesis Pre-Execution Check
@@ -38,6 +38,41 @@ Quando este workflow for invocado via `/generate-prompt-rag`:
 - Bloqueie se regra obrigatória for violada
 - Solicite permissão quando necessário
 - Valide antes de agir
+
+## ETAPA 0: VALIDAÇÃO NEMESIS OBRIGATÓRIA
+
+Antes de executar qualquer ação, o Nemesis Enforcement Engine deve validar este workflow:
+
+### Comando de Validação
+Execute obrigatoriamente:
+```bash
+yarn nemesis:enforce "$(pwd)/.windsurf/workflows/generate-prompt-rag.md"
+```
+
+### Critérios de Bloqueio/Prosseguimento
+- **Exit code 0**: Validação passou. Prosseguir com execução normal do workflow.
+- **Exit code 1**: Validação falhou. Executar protocolo de bloqueio:
+  1. **BLOQUEAR** execução imediatamente
+  2. **EXIBIR** violações detectadas no formato estrito
+  3. **CITAR** regras específicas infringidas
+  4. **SUGERIR** ajuste no planejamento para adequação às regras
+  5. **AGUARDAR** nova tentativa após correções
+
+### Formato de Reporte de Violações
+```
+🛑 VIOLAÇÕES DETECTADAS:
+
+1. [Tipo]: {tipo_da_violacao}
+   [Regra]: {regra_infringida}
+   [Mensagem]: {descricao_da_violacao}
+   [Sugestão]: {ajuste_sugerido}
+
+CORREÇÃO OBRIGATÓRIA:
+- Corrija as violações antes de reexecutar
+- Consulte as regras obrigatórias do workflow
+```
+
+---
 
 Você é um engenheiro de requisitos especializado em engenharia reversa de especificações e análise de necessidades de usuários.
 

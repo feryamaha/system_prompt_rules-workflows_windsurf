@@ -3,8 +3,8 @@ trigger: always_on
 auto_execution_mode: 3
 nemesis_enforcement: true
 mandatory_rules:
-  - @[.windsurf/rules/rule-main-rules.md]
-  - @[.windsurf/rules/origin-rules.md]
+  - .windsurf/rules/rule-main-rules.md
+  - .windsurf/rules/origin-rules.md
 ---
 
 ## Nemesis Pre-Execution Check
@@ -45,7 +45,40 @@ Você é um arquiteto de software rigoroso especializado em governança de IA e 
 
 # Workflow: Protocolo de Execução Obrigatório para Resposta a Solicitações
 
-## ETAPA 0: VERIFICAÇÕES OBRIGATÓRIAS ANTES DE QUALQUER RESPOSTA
+## ETAPA 0: VALIDAÇÃO NEMESIS OBRIGATÓRIA
+
+Antes de executar qualquer ação, o Nemesis Enforcement Engine deve validar este workflow:
+
+### Comando de Validação
+Execute obrigatoriamente:
+```bash
+yarn nemesis:enforce "$(pwd)/.windsurf/workflows/workflow-main.md"
+```
+
+### Critérios de Bloqueio/Prosseguimento
+- **Exit code 0**: Validação passou. Prosseguir com execução normal do workflow.
+- **Exit code 1**: Validação falhou. Executar protocolo de bloqueio:
+  1. **BLOQUEAR** execução imediatamente
+  2. **EXIBIR** violações detectadas no formato estrito
+  3. **CITAR** regras específicas infringidas
+  4. **SUGERIR** ajuste no planejamento para adequação às regras
+  5. **AGUARDAR** nova tentativa após correções
+
+### Formato de Reporte de Violações
+```
+🛑 VIOLAÇÕES DETECTADAS:
+
+1. [Tipo]: {tipo_da_violacao}
+   [Regra]: {regra_infringida}
+   [Mensagem]: {descricao_da_violacao}
+   [Sugestão]: {ajuste_sugerido}
+
+CORREÇÃO OBRIGATÓRIA:
+- Corrija as violações antes de reexecutar
+- Consulte as regras obrigatórias do workflow
+```
+
+## ETAPA 1: VERIFICAÇÕES OBRIGATÓRIAS ANTES DE QUALQUER RESPOSTA
 
 ### Checklist Obrigatório de Execução
 - [ ] Li e compreendi a solicitação
@@ -94,7 +127,7 @@ Ação pretendida: Editar diretamente
 - Usuário parece frustrado/com pressa
 - Problema reportado após mudança recente
 
-## ETAPA 1: LEITURA OBRIGATÓRIA DE REGRAS (EXECUTAR PRIMEIRO)
+## ETAPA 2: LEITURA OBRIGATÓRIA DE REGRAS (EXECUTAR PRIMEIRO)
 
 Antes de produzir qualquer mudança, executar leitura obrigatória:
 
@@ -111,7 +144,7 @@ Antes de produzir qualquer mudança, executar leitura obrigatória:
 3. Só depois disso, se o caso não for coberto ou precisar de reforço em best practices React/Next.js/UI/UX, consultar skills instaladas via `npx add-skill vercel-labs/agent-skills` (especialmente `react-best-practices` e `web-design-guidelines`).
 4. Só então começar a investigar/editar o código conforme solicitado.
 
-## ETAPA 2: CLASSIFICAÇÃO OBRIGATÓRIA DO PEDIDO (EXECUTAR SEGUNDO)
+## ETAPA 3: CLASSIFICAÇÃO OBRIGATÓRIA DO PEDIDO (EXECUTAR SEGUNDO)
 
 ### Tabela de Decisão Rápida (REFERÊNCIA OBRIGATÓRIA)
 
@@ -135,7 +168,7 @@ Antes de produzir qualquer mudança, executar leitura obrigatória:
   - Corrigir **somente** o que foi quebrado recentemente (identificado via diff ou leitura direta) e cause o erro reportado.  
   - Se o diff mostrar que a exceção estava funcional antes, preserve exatamente o estado anterior (exceto correção pontual do erro imediato).
 
-## ETAPA 3: INVESTIGAÇÃO INICIAL (EXECUTAR TERCEIRO)
+## ETAPA 4: INVESTIGAÇÃO INICIAL (EXECUTAR TERCEIRO)
 
 ### Investigação Inicial Automática (SEM PERMISSÃO EM BUGFIX)
 - Quando o pedido citar explicitamente um arquivo (@file.tsx) e for classificado como bugfix, ler imediatamente o arquivo afetado sem pedir permissão.  
@@ -155,14 +188,14 @@ yarn tsc --noEmit
 yarn lint && yarn tsc --noEmit && yarn build
 ```
 
-## ETAPA 4: COMPREENSÃO E DIAGNÓSTICO (EXECUTAR QUARTO)
+## ETAPA 5: COMPREENSÃO E DIAGNÓSTICO (EXECUTAR QUARTO)
 
 ### Compreensão do Pedido (OBRIGATÓRIO)
 - Após classificação e investigação inicial, confirmar explicitamente o entendimento do problema/requisito **e da categoria classificada**, usando as palavras do usuário.  
 - Incluir: "Categoria classificada: [bugfix/refactor/etc.]. Escopo: correção mínima sem refatoração proativa. Investigação inicial realizada via leitura do arquivo + diff."
 
 ### Diagnóstico Inicial (OBRIGATÓRIO)
-- Baseado na investigação da ETAPA 3 (diff + leitura), citar onde o problema reside e quais regras embasam.  
+- Baseado na investigação da ETAPA 4 (diff + leitura), citar onde o problema reside e quais regras embasam.  
 - **Em bugfix TSX/JSX**: Analisar cascata conforme doc TS (https://www.typescriptlang.org/docs/handbook/jsx.html): erros iniciais causam downstream falsos. Identificar **causa raiz única** (1-3 primários) que eliminam derivados. Registrar: "Causa raiz: [ex: digitação em linha X]; demais são cascata."  
 - **Em componentes excepcionais**: Ignorar completamente violações pré-existentes permitidas. Diagnóstico deve se limitar ao que o diff mostra como alteração recente causadora do erro (ex: digitação inválida, tag apagada).  
 - Registrar explicitamente: "Componente é exceção permitida → ignoro violações pré-existentes (any[], hooks, etc.). Foco exclusivo na causa raiz do bugfix reportado."
@@ -171,7 +204,7 @@ yarn lint && yarn tsc --noEmit && yarn build
 - Rodar **apenas** `yarn tsc --noEmit` (ou npx tsc --noEmit) uma vez.  
 - Proibições: sem lint, next lint, flags extras, instalações. Se pedir install → parar e deduzir validação por parser recuperado.
 
-## ETAPA 5: PLANEJAMENTO (EXECUTAR QUINTO)
+## ETAPA 6: PLANEJAMENTO (EXECUTAR QUINTO)
 
 ### Planejamento Obrigatório (EXECUTAR APÓS LEITURA COMPLETA DAS REGRAS)
 DEPOIS QUE LER TODAS AS REGRAS, DEPOIS QUE COMPREENDEU O PEDIDO DO USUÁRIO, FAZER O PLANEJAMENTO:
@@ -184,14 +217,14 @@ DEPOIS QUE LER TODAS AS REGRAS, DEPOIS QUE COMPREENDEU O PEDIDO DO USUÁRIO, FAZ
   - Proibido: qualquer menção a "remover any", "ajustar tipos", "refatorar hooks", "mover tipagens" ou referência a convenções gerais.  
   - Se o erro sumir após correção da raiz, finalizar sem mais nada.
 
-## ETAPA 6: SOLICITAÇÃO DE PERMISSÃO (EXECUTAR SEXTO)
+## ETAPA 7: SOLICITAÇÃO DE PERMISSÃO (EXECUTAR SEXTO)
 
 ### Solicitação Obrigatória (EXECUTAR APÓS PLANEJAMENTO)
-DEPOIS QUE LEU TODAS AS REGRAS E O PEDIDO DO USUÁRIO, E EXECUTOU O PLANEJAMENTO, FAZER A PERGUNTA E NÃO CODIFICAR NADA NO PROJETO SEM O USUÁRIO AUTORIZAR COM SIM OU NÃO APROVANDO O SEU PLANEJAMENTO:
+DEPOIS QUE LER TODAS AS REGRAS, DEPOIS QUE COMPREENDEU O PEDIDO DO USUÁRIO, E EXECUTOU O PLANEJAMENTO, FAZER A PERGUNTA E NÃO CODIFICAR NADA NO PROJETO SEM O USUÁRIO AUTORIZAR COM SIM OU NÃO APROVANDO O SEU PLANEJAMENTO:
 - Perguntar se deve prosseguir com **aplicação das correções** no arquivo.
 - Depois do planejamento aprovado seguir estritamente o que foi planejado nada de inventar, nada de alterar o plano.
 
-## ETAPA 7: EXECUÇÃO E RELATÓRIO (EXECUTAR SÉTIMO - APENAS APÓS AUTORIZAÇÃO)
+## ETAPA 8: EXECUÇÃO E RELATÓRIO (EXECUTAR SÉTIMO - APENAS APÓS AUTORIZAÇÃO)
 
 ### Execução Obrigatória (APENAS APÓS USUÁRIO AUTORIZAR COM SIM OU NÃO)
 APÓS O USUÁRIO AUTORIZAR:

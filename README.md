@@ -1,19 +1,24 @@
 # System Prompt Rules - Workflows
 
-> **Framework de governança de IA para desenvolvimento de software moderno**
+> **Framework de Governança com Engine de Enforcement para desenvolvimento assistido por IA**
 
 ## Visão Geral
 
-Bem-vindo ao **System Prompt Rules - Workflows**, um framework completo que estabelece governança explícita para integração de IA no ciclo de desenvolvimento usando Cascade da Windsurf.
+Bem-vindo ao **System Prompt Rules - Workflows**, um framework completo que estabelece governança explícita e enforcement programático para integração de IA no ciclo de desenvolvimento.
 
-Este projeto transforma o caos em previsibilidade através de regras não negociáveis, workflows automatizados e prompts estruturados que garantem consistência, qualidade e eficiência na interação humano-IA.
+Este projeto vai além de simples regras documentais - é um **sistema de governança ativo** que inclui:
+- **Regras operacionais** (documentação de governança)
+- **Workflows estruturados** (fluxos automatizados)
+- **Engine de Enforcement** (código TypeScript executável que valida e bloqueia)
+
+Transforma caos em previsibilidade através de regras não negociáveis, validação automática e prompts estruturados que garantem consistência, qualidade e eficiência na interação humano-IA.
 
 ## O Framework em Ação
 
 ### Trilogia Fundamental
-1. **ORIGEM** - Extraído de dor real em produção
-2. **VISÃO** - Sistema de governança completo  
-3. **OPERAÇÃO** - Fluxos padronizados e previsíveis
+1. **ORIGEM** (`origin-rules.md`) - Por que existimos: Extração de dor real em produção
+2. **VISÃO** (`README.md`) - O que construímos: Sistema de governança completo com enforcement
+3. **OPERAÇÃO** (`rule-main-rules.md`) - Como executamos: Fluxos padronizados com validação automática
 
 ### Como Funciona
 ```
@@ -35,6 +40,17 @@ Auditoria humana
 ```
 
 ## Mapa do Projeto
+
+### O que é este Framework?
+
+**NÃO é apenas um agente de IA** - É um **framework de governança multi-camada** com engine de enforcement:
+
+| Camada | Componente | Tipo | Função |
+|--------|-----------|------|--------|
+| 1 | `.windsurf/rules/` | Regras Documentais | Contratos de governança em Markdown |
+| 2 | `.windsurf/workflows/` | Workflows Estruturados | Fluxos automatizados com frontmatter |
+| 3 | `src/workflow-enforcement/` | Engine de Enforcement | Código TypeScript que valida e bloqueia |
+| 4 | `Feature-Documentation/` | Documentação Viva | Histórico, PRs e prompts estruturados |
 
 ### Estrutura de Diretórios
 ```
@@ -58,6 +74,13 @@ system_prompt_rules-workflows/
 ├       ├── audit-create-pr.md         # Auditoria e criação de PR
 ├       ├── auditoria-de-conformidade.md # Auditoria completa de conformidade
 ├       └── generate-prompt-rag.md     # Geração de prompts RAG
+├── src/workflow-enforcement/          # Engine de Enforcement (TypeScript)
+├   ├── workflow-enforcer.ts           # Validador de workflows
+├   ├── workflow-runner.ts             # Executor de workflows
+├   ├── workflow-validators.ts         # Regras de validação
+├   ├── bash-tool-adapter.ts           # Adaptador de comandos
+├   ├── violation-logger.ts            # Registro de violações
+├   └── cli/                           # Interface de linha de comando
 └── Feature-Documentation/             # Documentação de features
     ├── issues/                        # Registro de problemas
     ├── PR/                           # Pull Requests documentados

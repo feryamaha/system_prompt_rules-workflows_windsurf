@@ -1,52 +1,45 @@
-import { createBashTool } from 'bash-tool';
+import { exec, execSync } from 'child_process';
+import { promisify } from 'util';
 import { ExecutionOptions, CommandResult } from './types';
+import * as fs from 'fs';
+import * as path from 'path';
+
+const execAsync = promisify(exec);
 
 export class BashToolAdapter {
-  private bashTool: any;
-  private tools: any;
+  private executionOptions: ExecutionOptions;
 
   constructor(options: ExecutionOptions = {}) {
-    this.initialize(options);
-  }
-
-  private async initialize(options: ExecutionOptions): Promise<void> {
-    try {
-      const { tools } = await createBashTool({
-        files: options.files || {}
-      });
-
-      this.tools = tools;
-      this.bashTool = tools.bash;
-    } catch (error) {
-      console.error('Failed to initialize bash-tool:', error);
-      throw error;
-    }
+    this.executionOptions = options;
   }
 
   async executeCommand(command: string): Promise<CommandResult> {
     const startTime = Date.now();
 
     try {
-      const result = await this.bashTool({
-        command
+      const { stdout, stderr } = await execAsync(command, {
+        cwd: this.executionOptions.cwd || process.cwd(),
+        env: { ...process.env, ...this.executionOptions.env },
+        timeout: 60000, // 60 second timeout
+        maxBuffer: 1024 * 1024 // 1MB buffer
       });
 
       const executionTime = Date.now() - startTime;
 
       return {
-        stdout: result.stdout || '',
-        stderr: result.stderr || '',
-        exitCode: result.exitCode || 0,
+        stdout: stdout || '',
+        stderr: stderr || '',
+        exitCode: 0,
         executionTime,
         command
       };
-    } catch (error) {
+    } catch (error: any) {
       const executionTime = Date.now() - startTime;
 
       return {
-        stdout: '',
-        stderr: error instanceof Error ? error.message : 'Unknown error',
-        exitCode: 1,
+        stdout: error.stdout || '',
+        stderr: error.stderr || error.message || 'Unknown error',
+        exitCode: error.code || 1,
         executionTime,
         command
       };
@@ -70,131 +63,49 @@ export class BashToolAdapter {
     return results;
   }
 
-  async readFile(path: string): Promise<string> {
+  async readFile(filePath: string): Promise<string> {
     try {
-      const result = await this.tools.readFile({
-        path
-      });
-
-      return result.content || '';
+      const fullPath = path.resolve(this.executionOptions.cwd || process.cwd(), filePath);
+      return fs.readFileSync(fullPath, 'utf-8');
     } catch (error) {
-      throw new Error(`Failed to read file ${path}: ${error}`);
+      throw new Error(`Failed to read file ${filePath}: ${error}`);
     }
   }
 
-  async writeFile(path: string, content: string): Promise<boolean> {
+  async writeFile(filePath: string, content: string): Promise<boolean> {
     try {
-      const result = await this.tools.writeFile({
-        path,
-        content
-      });
-
-      return result.success || false;
-    } catch (error) {
-      throw new Error(`Failed to write file ${path}: ${error}`);
-    }
-  }
-
-  getTools(): any {
-    return this.tools;
-  }
-
-  async createAISDKTool(options: ExecutionOptions = {}): Promise<any> {
-    const { tools } = await createBashTool({
-      files: options.files || {},
-      onBeforeBashCall: ({ command }: { command: string }) => {
-        console.log(`[BASH-TOOL] Executing: ${command}`);
-        return { command };
-      },
-      onAfterBashCall: ({ command, result }: { command: string; result: any }) => {
-        console.log(`[BASH-TOOL] Command completed: ${command} (exit: ${result.exitCode})`);
-        return { result };
+      const fullPath = path.resolve(this.executionOptions.cwd || process.cwd(), filePath);
+      const dir = path.dirname(fullPath);
+      
+      // Create directory if it doesn't exist
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
       }
-    });
-
-    return tools;
+      
+      fs.writeFileSync(fullPath, content, 'utf-8');
+      return true;
+    } catch (error) {
+      console.error(`Failed to write file ${filePath}:`, error);
+      return false;
+    }
   }
 
-  static async createForAIAgent(options: ExecutionOptions = {}): Promise<BashToolAdapter> {
-    const adapter = new BashToolAdapter(options);
-    return adapter;
-  }
-
-  async withNetworkAccess(allowedUrls: string[] = []): Promise<BashToolAdapter> {
-    const networkOptions: ExecutionOptions = {
-      ...this.getOptions(),
-      networkAccess: true,
-      allowedUrls
-    };
-
-    return new BashToolAdapter(networkOptions);
-  }
-
-  private getOptions(): ExecutionOptions {
-    // Return current options (simplified implementation)
+  getExecutionStatistics(): {
+    totalCommands: number;
+    averageExecutionTime: number;
+    successRate: number;
+    totalExecutionTime: number;
+  } {
+    // Simplified statistics - in a full implementation, track history
     return {
-      cwd: '/home/user',
-      env: {
-        PATH: '/usr/local/bin:/usr/bin:/bin',
-        HOME: '/home/user',
-        USER: 'user'
-      }
+      totalCommands: 0,
+      averageExecutionTime: 0,
+      successRate: 0,
+      totalExecutionTime: 0
     };
   }
 
-  async validateEnvironment(): Promise<{
-    isValid: boolean;
-    issues: string[];
-  }> {
-    const issues: string[] = [];
-
-    try {
-      // Test basic command execution
-      const testResult = await this.executeCommand('echo "test"');
-      if (testResult.exitCode !== 0) {
-        issues.push('Basic command execution failed');
-      }
-
-      // Test file operations
-      await this.writeFile('/tmp/test.txt', 'test content');
-      const content = await this.readFile('/tmp/test.txt');
-      if (content !== 'test content') {
-        issues.push('File read/write operations failed');
-      }
-
-      // Clean up test file
-      await this.executeCommand('rm /tmp/test.txt');
-
-    } catch (error) {
-      issues.push(`Environment validation failed: ${error}`);
-    }
-
-    return {
-      isValid: issues.length === 0,
-      issues
-    };
-  }
-
-  async getSystemInfo(): Promise<{
-    platform: string;
-    shell: string;
-    tools: string[];
-  }> {
-    try {
-      const platformResult = await this.executeCommand('uname -s');
-      const shellResult = await this.executeCommand('echo $SHELL');
-
-      return {
-        platform: platformResult.stdout.trim() || 'unknown',
-        shell: shellResult.stdout.trim() || '/bin/bash',
-        tools: ['bash', 'readFile', 'writeFile']
-      };
-    } catch (error) {
-      return {
-        platform: 'unknown',
-        shell: '/bin/bash',
-        tools: ['bash', 'readFile', 'writeFile']
-      };
-    }
+  clearExecutionHistory(): void {
+    // No-op for native implementation
   }
 }

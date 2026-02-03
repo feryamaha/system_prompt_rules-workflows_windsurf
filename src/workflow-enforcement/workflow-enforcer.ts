@@ -12,7 +12,7 @@ export class WorkflowEnforcer {
       logViolations: true,
       requirePermissionForFileEdits: true,
       allowedLanguages: ['bash', 'javascript', 'typescript', 'python', 'markdown'],
-      mandatoryRules: ['@[.windsurf/rule-main-rules.md]'],
+      mandatoryRules: ['.windsurf/rules/rule-main-rules.md'],
       ...config
     };
   }
@@ -27,7 +27,7 @@ export class WorkflowEnforcer {
         ViolationLogger.logViolation({
           type: 'rule_violation',
           message: error.message,
-          rule: `@[.windsurf/rules]`,
+          rule: `.windsurf/rules`,
           timestamp: new Date()
         });
       }
@@ -48,7 +48,7 @@ export class WorkflowEnforcer {
           type: 'rule_violation',
           message: `Command uses unsupported language: ${commandLanguage}`,
           command,
-          rule: `@[.windsurf/rules]`,
+          rule: `.windsurf/rules`,
           timestamp: new Date()
         });
       }
@@ -65,7 +65,7 @@ export class WorkflowEnforcer {
         ViolationLogger.logViolation({
           type: 'rule_violation',
           message: 'Workflow does not reference mandatory rules',
-          rule: `@[.windsurf/rules]`,
+          rule: `.windsurf/rules`,
           timestamp: new Date()
         });
       }
@@ -90,7 +90,7 @@ export class WorkflowEnforcer {
         type: 'permission_denied',
         message: `Permission denied for command: ${command}`,
         command,
-        rule: `@[.windsurf/rule-main-rules.md]`,
+        rule: `.windsurf/rule-main-rules.md`,
         timestamp: new Date()
       });
     }
@@ -145,7 +145,7 @@ export class WorkflowEnforcer {
             type: 'rule_violation',
             message: 'Command blocked due to workflow validation failures',
             command,
-            rule: `@[.windsurf/rules]`,
+            rule: `.windsurf/rules`,
             timestamp: new Date()
           };
           violations.push(violation);

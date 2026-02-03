@@ -2,8 +2,8 @@ import { WorkflowDefinition, ValidationResult, ValidationError, ValidationWarnin
 
 export class WorkflowValidators {
   private static readonly MANDATORY_RULES = [
-    '@[.windsurf/rule-main-rules.md]',
-    '@[.windsurf/rules/origin-rules.md]'
+    '.windsurf/rules/rule-main-rules.md',
+    '.windsurf/rules/origin-rules.md'
   ];
 
   private static readonly ALLOWED_LANGUAGES = [

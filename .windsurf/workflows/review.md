@@ -3,9 +3,9 @@ auto_execution_mode: 3
 description: Revisar mudanças de código para bugs, problemas de segurança e melhorias
 nemesis_enforcement: true
 mandatory_rules:
-  - @[.windsurf/rules/rule-main-rules.md]
-  - @[.windsurf/rules/origin-rules.md]
-  - @[.windsurf/rules/Conformidade.md]
+  - .windsurf/rules/rule-main-rules.md
+  - .windsurf/rules/origin-rules.md
+  - .windsurf/rules/Conformidade.md
 ---
 
 ## Nemesis Pre-Execution Check
@@ -39,6 +39,39 @@ Quando este workflow for invocado via `/review`:
 - Bloqueie se regra obrigatória for violada
 - Solicite permissão quando necessário
 - Valide antes de agir
+
+## ETAPA 0: VALIDACAO NEMESIS OBRIGATORIA
+
+Antes de executar qualquer acao, o Nemesis Enforcement Engine deve validar este workflow:
+
+### Comando de Validacao
+Execute obrigatoriamente:
+```bash
+yarn nemesis:enforce "$(pwd)/.windsurf/workflows/review.md"
+```
+
+### Criterios de Bloqueio/Prosseguimento
+- **Exit code 0**: Validacao passou. Prosseguir com execucao normal do workflow.
+- **Exit code 1**: Validacao falhou. Executar protocolo de bloqueio:
+  1. **BLOQUEAR** execucao imediatamente
+  2. **EXIBIR** violacoes detectadas no formato estrito
+  3. **CITAR** regras especificas infringidas
+  4. **SUGERIR** ajuste no planejamento para adequacao as regras
+  5. **AGUARDAR** nova tentativa apos correcoes
+
+### Formato de Reporte de Violacoes
+```
+🛑 VIOLAÇÕES DETECTADAS:
+
+1. [Tipo]: {tipo_da_violacao}
+   [Regra]: {regra_infringida}
+   [Mensagem]: {descricao_da_violacao}
+   [Sugestao]: {ajuste_sugerido}
+
+CORREÇÃO OBRIGATÓRIA:
+- Corrija as violações antes de reexecutar
+- Consulte as regras obrigatórias do workflow
+```
 
 ---
 
