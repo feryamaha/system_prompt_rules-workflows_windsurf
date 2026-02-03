@@ -1,8 +1,8 @@
-# Framework GenesisIA_Skills_SPRW - Reestruturação Documental e Governança
+# Framework NemesisIA_Skills_SPRW - Reestruturação Documental e Governança
 
 ## Objetivo
 
-Reestruturação completa da documentação do framework System Prompt Rules Workflows, transformando-o em Framework GenesisIA_Skills_SPRW com foco em produto comercializável de consultoria e governança IA-assisted development.
+Reestruturação completa da documentação do framework System Prompt Rules Workflows, transformando-o em Framework NemesisIA_Skills_SPRW com foco em produto comercializável de consultoria e governança IA-assisted development.
 
 ## Arquivos afetados
 

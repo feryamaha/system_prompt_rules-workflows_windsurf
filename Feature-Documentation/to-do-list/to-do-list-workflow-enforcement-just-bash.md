@@ -109,7 +109,7 @@
 
 ## FASE 6: INTEGRAÇÃO GENESIS
 
-### 17. [CONCLUIDA] Atualizar Genesis Installer
+### 17. [CONCLUIDA] Atualizar Nemesis Installer
 - **Local:** index.js
 - **Tarefa:** Incluir cópia de src/workflow-enforcement/ na instalação
 - **Status:** Concluida

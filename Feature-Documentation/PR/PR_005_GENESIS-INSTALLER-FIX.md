@@ -1,15 +1,15 @@
-﻿# Correção do Instalador GenesisIA - Fix de Caminhos Relativos
+﻿# Correção do Instalador NemesisIA - Fix de Caminhos Relativos
 
 ## Objetivo
 
-Corrigir o instalador GenesisIA Skills SPRW que falhava ao copiar as estruturas `.windsurf/`, `Feature-Documentation/` e `src/workflow-enforcement/` para projetos alvo devido ao uso incorreto de caminhos relativos em vez de caminhos absolutos baseados em `PACKAGE_ROOT`.
+Corrigir o instalador NemesisIA Skills SPRW que falhava ao copiar as estruturas `.windsurf/`, `Feature-Documentation/` e `src/workflow-enforcement/` para projetos alvo devido ao uso incorreto de caminhos relativos em vez de caminhos absolutos baseados em `PACKAGE_ROOT`.
 
 ## Arquivos afetados
 
 - `index.js` [modificado]
-- `Feature-Documentation/prompts/003_genesis-installer-corrupted.md` [novo]
-- `Feature-Documentation/to-do-list/to-do-list-genesis-installer-corrupted.md` [novo]
-- `Feature-Documentation/issues/003_issue-genesis-installer-correction.md` [novo]
+- `Feature-Documentation/prompts/003_nemesis-installer-corrupted.md` [novo]
+- `Feature-Documentation/to-do-list/to-do-list-nemesis-installer-corrupted.md` [novo]
+- `Feature-Documentation/issues/003_issue-nemesis-installer-correction.md` [novo]
 - `Feature-Documentation/PR/PR_005_GENESIS-INSTALLER-FIX.md` [novo]
 
 ## Implementações realizadas
@@ -44,13 +44,13 @@ copyDirectory('src/workflow-enforcement', path.join(ROOT_DIR, 'src/workflow-enfo
 copyDirectory(path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), path.join(ROOT_DIR, 'src/workflow-enforcement'))
 ```
 
-### 2. 003_genesis-installer-corrupted.md
-RAG estruturado documentando o problema técnico e solicitando correção do instalador GenesisIA.
+### 2. 003_nemesis-installer-corrupted.md
+RAG estruturado documentando o problema técnico e solicitando correção do instalador NemesisIA.
 
-### 3. to-do-list-genesis-installer-corrupted.md
+### 3. to-do-list-nemesis-installer-corrupted.md
 Lista de tarefas detalhada com análise de causa raiz e plano de execução para correção dos caminhos.
 
-### 4. 003_issue-genesis-installer-correction.md
+### 4. 003_issue-nemesis-installer-correction.md
 Issue completa registrando toda a interação entre usuário e IA, incluindo erros cometidos, acertos e lições aprendidas.
 
 ### 5. PR_005_GENESIS-INSTALLER-FIX.md
@@ -58,7 +58,7 @@ Este arquivo de PR documentando a correção implementada.
 
 ## Benefícios arquiteturais e prontidão para escala
 
-- **Instalação funcional**: O comando `npx install-genesis` agora funciona corretamente
+- **Instalação funcional**: O comando `npx install-nemesis` agora funciona corretamente
 - **Governança preservada**: Toda estrutura de regras e workflows é instalada nos projetos alvo
 - **Documentação completa**: Registro detalhado do problema e solução para referência futura
 - **Validação garantida**: TypeScript validado sem erros

@@ -115,8 +115,8 @@ Thumbs.db
 
 
 
-# START Genesis Generated Files
-# Arquivos gerados pela instalação do Genesis (bloquear para não versionar)
+# START Nemesis Generated Files
+# Arquivos gerados pela instalação do Nemesis (bloquear para não versionar)
 .windsurf/mcp_config.json
 .vscode/mcp.json
 CLAUDE.md
@@ -140,4 +140,4 @@ CLAUDE.md
 .opencode.json
 .gemini/settings.json
 .qwen/settings.json
-# END Genesis Generated Files
+# END Nemesis Generated Files

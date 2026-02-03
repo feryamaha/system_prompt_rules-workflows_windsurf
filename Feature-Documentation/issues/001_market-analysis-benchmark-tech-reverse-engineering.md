@@ -10,7 +10,7 @@
 ## 1. Contexto e Intenção
 
 ### Objetivo Principal
-Realizar análise competitiva profunda do framework GenesisIA_Skills_SPRW contra soluções similares no mercado, identificando oportunidades de melhoria, gaps estratégicos e diferenciais competitivos através de benchmark tecnológico e engenharia reversa.
+Realizar análise competitiva profunda do framework NemesisIA_Skills_SPRW contra soluções similares no mercado, identificando oportunidades de melhoria, gaps estratégicos e diferenciais competitivos através de benchmark tecnológico e engenharia reversa.
 
 ### Motivação Estratégica
 - **Validação de Mercado:** Confirmar posicionamento único do produto
@@ -68,7 +68,7 @@ Realizar análise competitiva profunda do framework GenesisIA_Skills_SPRW contra
 
 ### 4.1. Matriz de Capacidades
 
-| Característica | Ruler | AI Governor | Genesis (Nosso) |
+| Característica | Ruler | AI Governor | Nemesis (Nosso) |
 |---------------|-------|-------------|-----------------|
 | Framework Completo | ❌ | ❌ | ✅ |
 | Pacote NPM | ✅ | ❌ | ✅ |
@@ -93,7 +93,7 @@ Realizar análise competitiva profunda do framework GenesisIA_Skills_SPRW contra
 - **Fraquezas:** Sem implementação, sem produto, sem comunidade
 - **Posicionamento:** Ideia brilhante sem execução
 
-#### Genesis: "Ecossistema Completo"
+#### Nemesis: "Ecossistema Completo"
 - **Forças:** Framework completo, automação, validações, modelo de negócio
 - **Oportunidades:** Construir maturidade e comunidade
 - **Posicionamento:** Solução integrada de governança + qualidade
@@ -129,16 +129,16 @@ Realizar análise competitiva profunda do framework GenesisIA_Skills_SPRW contra
 # Ruler tem:
 ruler apply
 
-# Genesis terá:
-genesis apply --workflow=audit --security=strict --skills=vercel
-genesis init --template=nextjs --security=owasp
-genesis audit --complete --report=quality
-genesis workflow --type=prompt-rag --input=informal
+# Nemesis terá:
+nemesis apply --workflow=audit --security=strict --skills=vercel
+nemesis init --template=nextjs --security=owasp
+nemesis audit --complete --report=quality
+nemesis workflow --type=prompt-rag --input=informal
 ```
 
 ### 6.2. Sistema de Configuração Avançado
 ```toml
-# genesis.toml (melhor que ruler.toml)
+# nemesis.toml (melhor que ruler.toml)
 [project]
 name = "meu-projeto"
 framework = "nextjs"
@@ -168,7 +168,7 @@ security_audit = true
 ### 6.3. Sistema de Skills Único
 ```javascript
 // Ninguém tem:
-const skills = await genesis.loadSkills({
+const skills = await nemesis.loadSkills({
   vercel: true,
   react: true,
   security: 'owasp',
@@ -176,7 +176,7 @@ const skills = await genesis.loadSkills({
 });
 
 // Consulta automática em documentação oficial
-const docs = await genesis.queryDocs({
+const docs = await nemesis.queryDocs({
   react: 'hooks-patterns',
   nextjs: 'app-router',
   tailwind: 'design-system'
@@ -188,7 +188,7 @@ const docs = await genesis.queryDocs({
 ## 7. Estratégia de Posicionamento
 
 ### 7.1. Slogan de Mercado
-**"Ruler distribui regras. Genesis governa desenvolvimento."**
+**"Ruler distribui regras. Nemesis governa desenvolvimento."**
 
 ### 7.2. Proposta Única de Valor
 1. **Zero dívida técnica** (regras + validações automáticas)
@@ -229,7 +229,7 @@ const docs = await genesis.queryDocs({
 ## 9. Conclusão Estratégica
 
 ### 9.1. Posicionamento Atual
-**Genesis está 2 anos na frente** em termos de visão e capacidade técnica, mas precisa acelerar em maturidade e comunidade.
+**Nemesis está 2 anos na frente** em termos de visão e capacidade técnica, mas precisa acelerar em maturidade e comunidade.
 
 ### 9.2. Oportunidade de Mercado
 - **Janela de ouro:** Adoção explosiva de IA coding assistants

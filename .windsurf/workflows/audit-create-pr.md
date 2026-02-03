@@ -2,6 +2,45 @@
 name: create-pr
 description: Analisa branch e cria arquivo de PR seguindo convenção existente
 auto_execution_mode: 3
+nemesis_enforcement: true
+mandatory_rules:
+  - @[.windsurf/rules/rule-main-rules.md]
+  - @[.windsurf/rules/origin-rules.md]
+  - @[.windsurf/rules/rules-pr.md]
+---
+
+## Nemesis Pre-Execution Check
+
+ANTES de prosseguir com qualquer acao deste workflow, o Nemesis Enforcement Engine validara:
+
+- [ ] Todas as regras obrigatorias estao presentes no contexto
+- [ ] Estrutura do workflow esta valida
+- [ ] Comandos extraidos sao permitidos (yarn lint, yarn tsc, yarn build, yarn npm audit, git)
+- [ ] Permissoes necessarias estao concedidas
+
+**SE VALIDACAO FALHAR**: Execucao bloqueada. Violacoes reportadas no formato estrito.
+**SE VALIDACAO PASSAR**: Execucao autorizada com monitoramento continuo.
+
+### Ativacao do Nemesis
+
+Quando este workflow for invocado via `/audit-create-pr`:
+
+1. **Carregue** `WorkflowRunner` de `src/workflow-enforcement/index.ts`
+2. **Valide** este workflow antes de qualquer acao
+3. **Monitore** cada passo da execucao
+4. **Bloqueie** imediatamente se violacao detectada
+5. **Reporte** violacoes no formato estrito
+
+**NUNCA**:
+- Ignore violacao para "ser util"
+- Proceda sem validacao previa
+- Permita comandos nao autorizados
+
+**SEMPRE**:
+- Bloqueie se regra obrigatoria for violada
+- Solicite permissao quando necessario
+- Valide antes de agir
+
 ---
 
 Você é um auditor de código e documentação especializado em análise de mudanças e criação de Pull Requests.

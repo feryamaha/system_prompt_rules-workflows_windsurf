@@ -168,7 +168,7 @@ Criação de documentação completa e lista de tarefas:
 |---------------------|----------------------|------------------------|
 | npx tsc --noEmit   | OK                   | TypeScript válido      |
 | npm audit              | OK                   | Sem vulnerabilidades |
-| npm run install-genesis | OK                   | Instalação funcional |
+| npm run install-nemesis | OK                   | Instalação funcional |
 | npx github:feryamaha/system_prompt_rules-workflows_windsurf | OK | Instalação via GitHub |
 
 ---

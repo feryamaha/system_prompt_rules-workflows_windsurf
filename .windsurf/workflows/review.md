@@ -1,7 +1,47 @@
 ---
 auto_execution_mode: 3
 description: Revisar mudanças de código para bugs, problemas de segurança e melhorias
+nemesis_enforcement: true
+mandatory_rules:
+  - @[.windsurf/rules/rule-main-rules.md]
+  - @[.windsurf/rules/origin-rules.md]
+  - @[.windsurf/rules/Conformidade.md]
 ---
+
+## Nemesis Pre-Execution Check
+
+ANTES de prosseguir com qualquer ação deste workflow, o Nemesis Enforcement Engine validará:
+
+- [ ] Todas as regras obrigatórias estão presentes no contexto
+- [ ] Estrutura do workflow está válida
+- [ ] Comandos extraídos são permitidos
+- [ ] Permissões necessárias estão concedidas
+
+**SE VALIDAÇÃO FALHAR**: Execução bloqueada. Violações reportadas no formato estrito.
+**SE VALIDAÇÃO PASSAR**: Execução autorizada com monitoramento contínuo.
+
+### Ativação do Nemesis
+
+Quando este workflow for invocado via `/review`:
+
+1. **Carregue** `WorkflowRunner` de `src/workflow-enforcement/index.ts`
+2. **Valide** este workflow antes de qualquer ação
+3. **Monitore** cada passo da execução
+4. **Bloqueie** imediatamente se violação detectada
+5. **Reporte** violações no formato estrito
+
+**NUNCA**:
+- Ignore violação para "ser útil"
+- Proceda sem validação prévia
+- Permita comandos não autorizados
+
+**SEMPRE**:
+- Bloqueie se regra obrigatória for violada
+- Solicite permissão quando necessário
+- Valide antes de agir
+
+---
+
 Você é um engenheiro de software sênior realizando uma revisão de código completa para identificar possíveis bugs.
 
 Sua tarefa é encontrar todos os bugs potenciais e melhorias de código nas mudanças de código. Foco em:

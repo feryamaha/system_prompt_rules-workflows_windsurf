@@ -1,4 +1,4 @@
-# Lista de Tarefas - Correção do Instalador GenesisIA Missing Config
+# Lista de Tarefas - Correção do Instalador NemesisIA Missing Config
 
 ## Resumo
 - **Total:** 4 tarefas
@@ -8,17 +8,17 @@
 ## Análise de Causa Raiz
 
 ### Problema Identificado
-Erro ENOENT ao executar instalação GenesisIA - arquivo .genesis/config.toml não encontrado no pacote NPM. O instalador tenta copiar arquivo que não existe na linha 183 do index.js, e não há proteção contra sobrescrita de instalações existentes.
+Erro ENOENT ao executar instalação NemesisIA - arquivo .nemesis/config.toml não encontrado no pacote NPM. O instalador tenta copiar arquivo que não existe na linha 183 do index.js, e não há proteção contra sobrescrita de instalações existentes.
 
 ### Código Problemático
 ```javascript
 // LINHA 183 - ERRADO: Tenta copiar arquivo inexistente
-fs.copySync(path.join(PACKAGE_ROOT, ".genesis", "config.toml"), CONFIG_FILE)
+fs.copySync(path.join(PACKAGE_ROOT, ".nemesis", "config.toml"), CONFIG_FILE)
 ```
 
 ## IMPLEMENTAÇÕES REALIZADAS
 
-### 1. [CONCLUÍDO] Verificar existência de .genesis/config.toml
+### 1. [CONCLUÍDO] Verificar existência de .nemesis/config.toml
 - **Arquivo:** `index.js`
 - **Solução:** Implementada função `createDefaultConfig()` que cria o arquivo com conteúdo padrão
 - **Status:** Concluído
@@ -41,7 +41,7 @@ fs.copySync(path.join(PACKAGE_ROOT, ".genesis", "config.toml"), CONFIG_FILE)
 ## ALTERAÇÕES NO ARQUIVO index.js
 
 ### Novas funções adicionadas:
-1. `checkExistingInstallation()` - Detecta se Genesis já está instalado
+1. `checkExistingInstallation()` - Detecta se Nemesis já está instalado
 2. `askUserConfirmation()` - Pergunta ao usuário antes de sobrescrever
 3. `createDefaultConfig()` - Cria config.toml com conteúdo padrão
 

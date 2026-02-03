@@ -1,7 +1,43 @@
 ---
 description: Converte pedido informal do usuário em prompt RAG estruturado simples
 auto_execution_mode: 3
+nemesis_enforcement: true
+mandatory_rules:
+  - @[.windsurf/rules/rule-main-rules.md]
+  - @[.windsurf/rules/origin-rules.md]
 ---
+
+## Nemesis Pre-Execution Check
+
+ANTES de prosseguir com qualquer ação deste workflow, o Nemesis Enforcement Engine validará:
+
+- [ ] Todas as regras obrigatórias estão presentes no contexto
+- [ ] Estrutura do workflow está válida
+- [ ] Comandos extraídos são permitidos
+- [ ] Permissões necessárias estão concedidas
+
+**SE VALIDAÇÃO FALHAR**: Execução bloqueada. Violações reportadas no formato estrito.
+**SE VALIDAÇÃO PASSAR**: Execução autorizada com monitoramento contínuo.
+
+### Ativação do Nemesis
+
+Quando este workflow for invocado via `/generate-prompt-rag`:
+
+1. **Carregue** `WorkflowRunner` de `src/workflow-enforcement/index.ts`
+2. **Valide** este workflow antes de qualquer ação
+3. **Monitore** cada passo da execução
+4. **Bloqueie** imediatamente se violação detectada
+5. **Reporte** violações no formato estrito
+
+**NUNCA**:
+- Ignore violação para "ser útil"
+- Proceda sem validação prévia
+- Permita comandos não autorizados
+
+**SEMPRE**:
+- Bloqueie se regra obrigatória for violada
+- Solicite permissão quando necessário
+- Valide antes de agir
 
 Você é um engenheiro de requisitos especializado em engenharia reversa de especificações e análise de necessidades de usuários.
 

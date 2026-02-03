@@ -6,7 +6,7 @@ const readline = require("readline");
 
 const ROOT_DIR = process.cwd();
 const PACKAGE_ROOT = path.resolve(__dirname);
-const CONFIG_FILE = path.join(ROOT_DIR, ".genesis", "config.toml");
+const CONFIG_FILE = path.join(ROOT_DIR, ".nemesis", "config.toml");
 const SOURCE_DIRS = [
   ".windsurf",
   "Feature-Documentation"
@@ -22,7 +22,7 @@ function logError(message) {
 
 function loadConfig() {
   const defaultConfig = {
-    genesis: {
+    nemesis: {
       auto_gitignore: true,
       backup_existing: true,
       verbose_output: false,
@@ -226,14 +226,14 @@ function copyDirectorySelective(sourceDir, targetDir, isCoreDirectory) {
 }
 
 function checkExistingInstallation() {
-  const genesisPaths = [
+  const nemesisPaths = [
     path.join(ROOT_DIR, '.windsurf'),
     path.join(ROOT_DIR, 'Feature-Documentation'),
-    path.join(ROOT_DIR, '.genesis', 'workflow-enforcement'),
-    path.join(ROOT_DIR, '.genesis')
+    path.join(ROOT_DIR, '.nemesis', 'workflow-enforcement'),
+    path.join(ROOT_DIR, '.nemesis')
   ];
   
-  const existingPaths = genesisPaths.filter(p => fs.existsSync(p));
+  const existingPaths = nemesisPaths.filter(p => fs.existsSync(p));
   return existingPaths.length > 0 ? existingPaths : null;
 }
 
@@ -255,7 +255,7 @@ function createDefaultConfig(configPath) {
   const configDir = path.dirname(configPath);
   fs.ensureDirSync(configDir);
   
-  const defaultConfigContent = `[genesis]
+  const defaultConfigContent = `[nemesis]
 auto_gitignore = true
 backup_existing = true
 verbose_output = false
@@ -306,7 +306,7 @@ async function runInstallation() {
   const config = loadConfig();
 
   // Atualizar .gitignore se configurado
-  if (config.genesis.auto_gitignore) {
+  if (config.nemesis.auto_gitignore) {
     updateGitignore();
   }
 
@@ -338,11 +338,11 @@ async function runInstallation() {
     logInfo(`  ℹ ${featureResult.skipped} arquivos ignorados (ja existem ou nao sao templates)`);
   }
   
-  // Copiar .genesis/workflow-enforcement/ (core - sempre sobrescreve)
+  // Copiar .nemesis/workflow-enforcement/ (core - sempre sobrescreve)
   logInfo("\nInstalando workflow enforcement...");
   const workflowResult = copyDirectorySelective(
     path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), 
-    path.join(ROOT_DIR, '.genesis', 'workflow-enforcement'),
+    path.join(ROOT_DIR, '.nemesis', 'workflow-enforcement'),
     true // isCoreDirectory = true
   );
   logInfo(`  ✓ ${workflowResult.copied} arquivos de workflow instalados`);
@@ -350,11 +350,11 @@ async function runInstallation() {
   // Criar arquivo de configuracao se nao existir
   if (!fs.existsSync(CONFIG_FILE)) {
     createDefaultConfig(CONFIG_FILE);
-    logInfo("✓ Arquivo de configuracao criado: .genesis/config.toml");
+    logInfo("✓ Arquivo de configuracao criado: .nemesis/config.toml");
   }
 
   logInfo("\nInstalacao concluida com sucesso.");
-  logInfo("\nPara personalizar: edite .genesis/config.toml");
+  logInfo("\nPara personalizar: edite .nemesis/config.toml");
 }
 
 try {

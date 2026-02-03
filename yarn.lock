@@ -471,20 +471,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"genesisia-skills-sprw@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "genesisia-skills-sprw@workspace:."
-  dependencies:
-    "@types/node": "npm:^25.2.0"
-    bash-tool: "npm:^1.3.9"
-    fs-extra: "npm:^11.2.0"
-    just-bash: "npm:^2.7.0"
-    typescript: "npm:^5.9.3"
-  bin:
-    install-genesis: index.js
-  languageName: unknown
-  linkType: soft
-
 "github-from-package@npm:0.0.0":
   version: 0.0.0
   resolution: "github-from-package@npm:0.0.0"
@@ -891,6 +877,20 @@ __metadata:
   checksum: 10c0/4c559dd52669ea48e1914f9d634227c561221dd54734070791f999c52ed0ff36e437b2e07d5c1f6e32909fc625fe46491c16e4a8f0572567d4dd15c3a4fda04b
   languageName: node
   linkType: hard
+
+"nemesis-framework@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "nemesis-framework@workspace:."
+  dependencies:
+    "@types/node": "npm:^25.2.0"
+    bash-tool: "npm:^1.3.9"
+    fs-extra: "npm:^11.2.0"
+    just-bash: "npm:^2.7.0"
+    typescript: "npm:^5.9.3"
+  bin:
+    install-nemesis: index.js
+  languageName: unknown
+  linkType: soft
 
 "node-abi@npm:^3.3.0":
   version: 3.87.0

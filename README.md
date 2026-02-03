@@ -91,7 +91,7 @@ O instalador Nemesis diferencia entre arquivos elementares e templates para evit
 **Arquivos Core (sempre sobrescrevem):**
 - `.windsurf/rules/` - Regras de governança (atualizáveis)
 - `.windsurf/workflows/` - Workflows automatizados (atualizáveis)
-- `.genesis/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
+- `.nemesis/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
 
 **Arquivos Templates (instalados apenas se não existirem):**
 - `Feature-Documentation/` - Apenas arquivos com "template" ou "exemplo-template" no nome

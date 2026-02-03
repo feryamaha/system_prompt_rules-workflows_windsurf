@@ -1,4 +1,4 @@
-# Framework GenesisIA_Skills_SPRW - Guia de Instalação
+# Framework NemesisIA_Skills_SPRW - Guia de Instalação
 
 ## Comandos de Instalação
 
@@ -99,6 +99,6 @@ seu-projeto/
 - Contribua com issues e sugestões no repositório oficial
 
 ## Versão
-- Framework: GenesisIA_Skills_SPRW v0.1.0
+- Framework: NemesisIA_Skills_SPRW v0.1.0
 - Data: 31 de janeiro de 2026
 - Status: Em validação de produção

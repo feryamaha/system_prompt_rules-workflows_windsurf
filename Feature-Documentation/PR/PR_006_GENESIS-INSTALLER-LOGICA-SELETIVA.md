@@ -1,7 +1,7 @@
-# Implementação de Lógica Seletiva no Instalador GenesisIA
+# Implementação de Lógica Seletiva no Instalador NemesisIA
 
 ## Objetivo
-Implementar lógica de instalação diferenciada no GenesisIA Installer para diferenciar entre arquivos core (sempre sobrescrevem) e templates (copiados seletivamente), além de adicionar fluxo de confirmação do usuário para reinstalações existentes.
+Implementar lógica de instalação diferenciada no NemesisIA Installer para diferenciar entre arquivos core (sempre sobrescrevem) e templates (copiados seletivamente), além de adicionar fluxo de confirmação do usuário para reinstalações existentes.
 
 ## Arquivos Afetados
 - `index.js` [modificado]
@@ -19,7 +19,7 @@ Adicionadas novas funções para implementar cópia seletiva:
 - **copyDirectorySelective()**: Itera recursivamente aplicando regras de cópia seletiva com contadores de arquivos copiados/ignorados
 
 #### Fluxo de Confirmação (linhas 228-277)
-- **checkExistingInstallation()**: Verifica se Genesis já está instalado checando .windsurf/, Feature-Documentation/, src/workflow-enforcement/, .genesis/
+- **checkExistingInstallation()**: Verifica se Nemesis já está instalado checando .windsurf/, Feature-Documentation/, src/workflow-enforcement/, .nemesis/
 - **askUserConfirmation()**: Interface readline para perguntar ao usuário se deseja sobrescrever instalação existente
 
 #### Atualização de runInstallation() (linhas 320-348)

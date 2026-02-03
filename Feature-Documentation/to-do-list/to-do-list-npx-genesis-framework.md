@@ -1,4 +1,4 @@
-# Lista de Tarefas - Pacote NPM Genesis Framework
+# Lista de Tarefas - Pacote NPM Nemesis Framework
 
 ## Resumo
 - **Total:** 6 tarefas

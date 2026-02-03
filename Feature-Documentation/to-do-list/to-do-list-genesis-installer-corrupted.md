@@ -1,4 +1,4 @@
-﻿# Lista de Tarefas - Correção do Instalador GenesisIA Skills SPRW
+﻿# Lista de Tarefas - Correção do Instalador NemesisIA Skills SPRW
 
 ## Resumo
 - **Total:** 4 tarefas
@@ -8,7 +8,7 @@
 ## Análise de Causa Raiz
 
 ### Problema Identificado
-A função `copyDirectory()` em `@index.js` recebe caminhos relativos (ex: `'.windsurf'`) que são resolvidos a partir do diretório de execução (`process.cwd()` = projeto alvo) em vez do diretório do pacote Genesis (`PACKAGE_ROOT`).
+A função `copyDirectory()` em `@index.js` recebe caminhos relativos (ex: `'.windsurf'`) que são resolvidos a partir do diretório de execução (`process.cwd()` = projeto alvo) em vez do diretório do pacote Nemesis (`PACKAGE_ROOT`).
 
 ### Código Problemático
 ```javascript
@@ -23,9 +23,9 @@ copyDirectory('src/workflow-enforcement', path.join(ROOT_DIR, 'src/workflow-enfo
 ```
 
 ### Solução Aplicada
-Usar `path.join(PACKAGE_ROOT, ...)` para garantir que os arquivos sejam copiados do pacote Genesis:
+Usar `path.join(PACKAGE_ROOT, ...)` para garantir que os arquivos sejam copiados do pacote Nemesis:
 ```javascript
-// CORRETO: Busca no diretório do pacote Genesis
+// CORRETO: Busca no diretório do pacote Nemesis
 copyDirectory(path.join(PACKAGE_ROOT, '.windsurf'), path.join(ROOT_DIR, '.windsurf'))
 ```
 
