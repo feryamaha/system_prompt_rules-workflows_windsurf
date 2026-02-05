@@ -9,6 +9,7 @@
   },
   "files": [
     ".windsurf",
+    ".nemesis",
     "Feature-Documentation",
     "README.md",
     "index.js",
