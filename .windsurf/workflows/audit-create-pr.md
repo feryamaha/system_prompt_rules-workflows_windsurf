@@ -2,78 +2,12 @@
 name: create-pr
 description: Analisa branch e cria arquivo de PR seguindo convenção existente
 auto_execution_mode: 3
-nemesis_enforcement: true
-mandatory_rules:
-  - .windsurf/rules/rule-main-rules.md
-  - .windsurf/rules/origin-rules.md
-  - .windsurf/rules/rules-pr.md
----
-
-## Nemesis Pre-Execution Check
-
-ANTES de prosseguir com qualquer acao deste workflow, o Nemesis Enforcement Engine validara:
-
-- [ ] Todas as regras obrigatorias estao presentes no contexto
-- [ ] Estrutura do workflow esta valida
-- [ ] Comandos extraidos sao permitidos (yarn lint, yarn tsc, yarn build, yarn npm audit, git)
-- [ ] Permissoes necessarias estao concedidas
-
-**SE VALIDACAO FALHAR**: Execucao bloqueada. Violacoes reportadas no formato estrito.
-**SE VALIDACAO PASSAR**: Execucao autorizada com monitoramento continuo.
-
-### Ativacao do Nemesis
-
-Quando este workflow for invocado via `/audit-create-pr`:
-
-1. **Carregue** `WorkflowRunner` de `src/workflow-enforcement/index.ts`
-2. **Valide** este workflow antes de qualquer acao
-3. **Monitore** cada passo da execucao
-4. **Bloqueie** imediatamente se violacao detectada
-5. **Reporte** violacoes no formato estrito
-
-**NUNCA**:
-- Ignore violacao para "ser util"
-- Proceda sem validacao previa
-- Permita comandos nao autorizados
-
-**SEMPRE**:
-- Bloqueie se regra obrigatoria for violada
-- Solicite permissao quando necessario
-- Valide antes de agir
-
-## ETAPA 0: VALIDACAO NEMESIS OBRIGATORIA
-
-Antes de executar qualquer acao, o Nemesis Enforcement Engine deve validar este workflow:
-
-### Comando de Validacao
-Execute obrigatoriamente:
-```bash
-yarn nemesis:enforce "$(pwd)/.windsurf/workflows/audit-create-pr.md"
-```
-
-### Criterios de Bloqueio/Prosseguimento
-- **Exit code 0**: Validacao passou. Prosseguir com execucao normal do workflow.
-- **Exit code 1**: Validacao falhou. Executar protocolo de bloqueio:
-  1. **BLOQUEAR** execucao imediatamente
-  2. **EXIBIR** violacoes detectadas no formato estrito
-  3. **CITAR** regras especificas infringidas
-  4. **SUGERIR** ajuste no planejamento para adequacao as regras
-  5. **AGUARDAR** nova tentativa apos correcoes
-
-### Formato de Reporte de Violacoes
-```
-🛑 VIOLAÇÕES DETECTADAS:
-
-1. [Tipo]: {tipo_da_violacao}
-   [Regra]: {regra_infringida}
-   [Mensagem]: {descricao_da_violacao}
-   [Sugestao]: {ajuste_sugerido}
-
-CORREÇÃO OBRIGATÓRIA:
-- Corrija as violações antes de reexecutar
-- Consulte as regras obrigatórias do workflow
-```
-
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write|Bash"
+      hooks:
+        - type: command
+          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
 1. Execute o comando yarn lint para verificar se o lint está funcionando corretamente, se nao encontrar erros execute a proxima etapa, se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn lint novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
@@ -167,5 +101,12 @@ GitHub/Vercel (Recebem código production-ready)
 **Resultado final:** GitHub e Vercel funcionam como clientes internos que recebem apenas código que passou por todas as camadas de validação e governança.
 
 ---
+
+## REGRAS A SEREM SEGUIDAS
+Regras obrigatórias: .windsurf/rules/rule-main-rules.md, .windsurf/rules/origin-rules.md e .windsurf/rules/rules-pr.md
+
+@[.windsurf/rules/rule-main-rules.md]
+@[.windsurf/rules/origin-rules.md]
+@[.windsurf/rules/rules-pr.md]
 
 Você é um auditor de código e documentação especializado em análise de mudanças e criação de Pull Requests.

@@ -19,9 +19,11 @@
     "node": ">=18"
   },
   "scripts": {
-    "nemesis:validate": "yarn tsx src/workflow-enforcement/cli/validate.ts",
-    "nemesis:enforce": "yarn tsx src/workflow-enforcement/cli/enforce.ts",
-    "nemesis:test": "yarn tsx src/workflow-enforcement/cli/test-all-workflows.ts"
+    "nemesis:validate": "npx ts-node src/workflow-enforcement/cli/validate.ts",
+    "nemesis:enforce": "npx ts-node src/workflow-enforcement/cli/enforce.ts",
+    "nemesis:test": "npx ts-node src/workflow-enforcement/cli/test-all-workflows.ts",
+    "nemesis:pretool": "npx ts-node src/workflow-enforcement/cli/pretool-hook.ts",
+    "nemesis:install-hooks": "node src/workflow-enforcement/cli/install-hooks.js"
   },
   "dependencies": {
     "fs-extra": "^11.2.0"

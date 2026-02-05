@@ -6,7 +6,9 @@ export class WorkflowCatalog {
   private static readonly WORKFLOWS_DIR = '.windsurf/workflows';
 
   static async listWorkflows(basePath: string = process.cwd()): Promise<string[]> {
-    const workflowsDir = join(basePath, this.WORKFLOWS_DIR);
+    // Evitar duplicação de path se basePath já termina com WORKFLOWS_DIR
+    const normalizedBasePath = basePath.replace(/[\\/]\.windsurf[\\/]workflows[\\/]?$/, '');
+    const workflowsDir = join(normalizedBasePath, this.WORKFLOWS_DIR);
     
     try {
       const entries = await readdir(workflowsDir);
@@ -64,7 +66,9 @@ export class WorkflowCatalog {
   }
 
   static async validateWorkflowsDirectory(basePath: string = process.cwd()): Promise<boolean> {
-    const workflowsDir = join(basePath, this.WORKFLOWS_DIR);
+    // Evitar duplicação de path se basePath já termina com WORKFLOWS_DIR
+    const normalizedBasePath = basePath.replace(/[\\/]\.windsurf[\\/]workflows[\\/]?$/, '');
+    const workflowsDir = join(normalizedBasePath, this.WORKFLOWS_DIR);
     
     try {
       const dirStat = await stat(workflowsDir);

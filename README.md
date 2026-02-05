@@ -1,247 +1,171 @@
-# System Prompt Rules - Workflows
+# Nemesis Framework – Workflow Orchestration com Enforcement Deterministico
 
-> **Framework de Governança com Engine de Enforcement para desenvolvimento assistido por IA**
+> **Workflow Orchestration Framework com PreToolUse Hooks para Governança de IA-Assisted Development**
 
 ## Visão Geral
 
-Bem-vindo ao **System Prompt Rules - Workflows**, um framework completo que estabelece governança explícita e enforcement programático para integração de IA no ciclo de desenvolvimento.
+O **Nemesis Framework** é um sistema de governança ativa que estabelece regras inegociáveis e enforcement deterministico para integração de IA no ciclo de desenvolvimento.
 
-Este projeto vai além de simples regras documentais - é um **sistema de governança ativo** que inclui:
-- **Regras operacionais** (documentação de governança)
-- **Workflows estruturados** (fluxos automatizados)
-- **Engine de Enforcement** (código TypeScript executável que valida e bloqueia)
+**Diferencial:** Enforcement via **PreToolUse Hooks** que bloqueiam tecnicamente ações não autorizadas antes da execução, eliminando a possibilidade de modelos LLM ignorarem validações.
 
-Transforma caos em previsibilidade através de regras não negociáveis, validação automática e prompts estruturados que garantem consistência, qualidade e eficiência na interação humano-IA.
+## Arquitetura
 
-## O Framework em Ação
+### Sistema de 4 Camadas
 
-### Trilogia Fundamental
-1. **ORIGEM** (`origin-rules.md`) - Por que existimos: Extração de dor real em produção
-2. **VISÃO** (`README.md`) - O que construímos: Sistema de governança completo com enforcement
-3. **OPERAÇÃO** (`rule-main-rules.md`) - Como executamos: Fluxos padronizados com validação automática
+| Camada | Componente | Função |
+|--------|-----------|--------|
+| 1 | `.windsurf/rules/` | Contratos de governança (Markdown) |
+| 2 | `.windsurf/workflows/` | Workflows estruturados com hooks |
+| 3 | `src/workflow-enforcement/` | Enforcement Engine TypeScript |
+| 4 | `Feature-Documentation/` | Memória organizacional |
 
-### Como Funciona
+### Enforcement Deterministico (PreToolUse Hooks)
+
+Ao contrário de enforcement textual que a IA pode ignorar, os **PreToolUse Hooks** executam no nível do sistema:
+
 ```
-Pedido informal 
-      ↓
-generate-prompt-rag
-      ↓
-Prompt técnico congelado
-      ↓
-Leitura obrigatória de regras
-      ↓
-Planejamento
-      ↓
-Aprovação humana
-      ↓
-Execução
-      ↓
-Auditoria humana
+IA solicita ferramenta (Edit/Write/Bash)
+           ↓
+Hook nemesis-pretool-check.sh intercepta
+           ↓
+Validação headless (sem interação com IA)
+           ↓
+Exit code 2 = Bloqueio técnico | 0 = Permissão
 ```
 
-## Mapa do Projeto
+**Resultado:** Impossível pular etapas de validação.
 
-### O que é este Framework?
+## Estrutura
 
-**NÃO é apenas um agente de IA** - É um **framework de governança multi-camada** com engine de enforcement:
-
-| Camada | Componente | Tipo | Função |
-|--------|-----------|------|--------|
-| 1 | `.windsurf/rules/` | Regras Documentais | Contratos de governança em Markdown |
-| 2 | `.windsurf/workflows/` | Workflows Estruturados | Fluxos automatizados com frontmatter |
-| 3 | `src/workflow-enforcement/` | Engine de Enforcement | Código TypeScript que valida e bloqueia |
-| 4 | `Feature-Documentation/` | Documentação Viva | Histórico, PRs e prompts estruturados |
-
-### Estrutura de Diretórios
 ```
 system_prompt_rules-workflows/
-├── README.md                          # Este arquivo - Mapa geral do projeto
-├── .windsurf/                         # Configurações principais
-├   └── rules/                         # Regras operacionais
-├       ├── rule-main-rules.md         # Regra mestre obrigatória
-├       ├── README.md                  # Documentação técnica das regras
-├       ├── origin-rules.md            # Filosofia e propósito das regras
-├       ├── API-convention.md          # Padrões de API (BFF)
-├       ├── Arquitetura-pastas-arquivos.md # Estrutura de arquivos
-├       ├── Conformidade.md            # Auditoria e segurança
-├       ├── design-system-convention.md # Tokens e padrões visuais
-├       ├── markdown-standards.md      # Padrões de linguagem Markdown
-├       ├── react-hooks-patterns-rules.md # Padrões de React Hooks
-├       ├── rules-pr.md                # Padrões de Pull Requests
-├       ├── typescript-typing-convention.md # Convenções TypeScript
-├       └── ui-separation-convention.md # Separação UI vs Lógica
-├   └── workflows/                     # Fluxos automatizados
-├       ├── audit-create-pr.md         # Auditoria e criação de PR
-├       ├── auditoria-de-conformidade.md # Auditoria completa de conformidade
-├       └── generate-prompt-rag.md     # Geração de prompts RAG
-├── src/workflow-enforcement/          # Engine de Enforcement (TypeScript)
-├   ├── workflow-enforcer.ts           # Validador de workflows
-├   ├── workflow-runner.ts             # Executor de workflows
-├   ├── workflow-validators.ts         # Regras de validação
-├   ├── bash-tool-adapter.ts           # Adaptador de comandos
-├   ├── violation-logger.ts            # Registro de violações
-├   └── cli/                           # Interface de linha de comando
-└── Feature-Documentation/             # Documentação de features
-    ├── issues/                        # Registro de problemas
-    ├── PR/                           # Pull Requests documentados
-    └── prompts/                      # Prompts estruturados
+├── .windsurf/
+│   ├── rules/              # 11 regras operacionais
+│   │   ├── rule-main-rules.md      # Regra mestre
+│   │   ├── origin-rules.md         # Filosofia do projeto
+│   │   ├── API-convention.md       # Padrões BFF
+│   │   ├── typescript-typing-convention.md
+│   │   ├── react-hooks-patterns-rules.md
+│   │   └── ui-separation-convention.md
+│   └── workflows/          # Workflows com PreToolUse hooks
+│       ├── workflow-main.md
+│       ├── audit-create-pr.md
+│       ├── generate-prompt-rag.md
+│       └── auditoria-de-conformidade.md
+├── src/workflow-enforcement/
+│   ├── cli/
+│   │   ├── pretool-hook.ts      # Entry point hooks
+│   │   ├── install-hooks.js     # Instalador
+│   │   └── test-all-workflows.ts
+│   ├── workflow-enforcer.ts     # Validador headless
+│   └── workflow-validators.ts
+└── Feature-Documentation/
+    ├── PR/                 # Pull Requests documentados
+    ├── issues/             # Registro de problemas
+    └── prompts/            # Prompts estruturados
 ```
 
-## Para Começar Rápido
+## Instalação
 
-### Instalação Imediata
-1. **Copie a pasta `.windsurf`** para seu projeto
-2. **Instale Agent Skills:**
+### Via NPM (Recomendado)
+
+```bash
+npx install-nemesis
+```
+
+O instalador configura automaticamente:
+- Estrutura `.windsurf/` com regras e workflows
+- Hooks PreToolUse em `.nemesis/hooks/`
+- Vercel Agent Skills (pré-requisito)
+
+### Manual
+
+1. Copie `.windsurf/` para seu projeto
+2. Instale Agent Skills:
    ```bash
    npx add-skill vercel-labs/agent-skills
    ```
-
-### Instalação via NPM (Nemesis)
-1. Execute o instalador via npx:
+3. Verifique instalação:
    ```bash
-   npx install-nemesis
-   ```
-2. O instalador copia `.windsurf/` e `Feature-Documentation/` para o projeto atual.
-3. Se o Vercel Agent Skills não estiver instalado, o instalador executa automaticamente:
-   ```bash
-   npx add-skill vercel-labs/agent-skills
+   yarn nemesis:install-hooks
    ```
 
-### Fluxo de Instalação Seletiva
+## Comandos
 
-O instalador Nemesis diferencia entre arquivos elementares e templates para evitar sobrescrita acidental de documentação do usuário:
+```bash
+# Testar workflows
+yarn nemesis:test
 
-**Arquivos Core (sempre sobrescrevem):**
-- `.windsurf/rules/` - Regras de governança (atualizáveis)
-- `.windsurf/workflows/` - Workflows automatizados (atualizáveis)
-- `.nemesis/workflow-enforcement/` - Scripts de enforcement (atualizáveis)
+# Validar workflow específico
+yarn nemesis:validate <caminho>
 
-**Arquivos Templates (instalados apenas se não existirem):**
-- `Feature-Documentation/` - Apenas arquivos com "template" ou "exemplo-template" no nome
-- `Feature-Documentation/issues/` - Apenas templates
-- `Feature-Documentation/PR/` - Apenas templates
-- `Feature-Documentation/prompts/` - Apenas templates
-- `Feature-Documentation/to-do-list/` - Apenas templates
+# Verificar hooks
+yarn nemesis:install-hooks
 
-**Arquivos ignorados (nunca copiados):**
-- Qualquer arquivo em `Feature-Documentation/` que não contenha "template" no nome
-
-**Fluxo de Decisão:**
-```
-Início da Instalação
-       ↓
-Projeto tem Nemesis instalado?
-       ↓
-NÃO → Instala tudo (core sobrescreve, templates copiam, ignora não-templates)
-       ↓
-SIM → Lista o que existe → Pergunta "Deseja sobrescrever? (s/N)"
-       ↓
-Usuário confirma?
-       ↓
-SIM → Core sobrescreve, templates copiam, não-templates ignorados
-       ↓
-NÃO → Cancela instalação
+# Executar com enforcement
+yarn nemesis:enforce <workflow>
 ```
 
-### Seu Primeiro Workflow
+## Fluxo de Trabalho
 
-1. Descreva sua necessidade informalmente para a IA
-2. Execute: `/generate-prompt-rag`
-3. Submeta o RAG gerado com: `@[.windsurf/rule-main-rules.md]`
-4. Aprovação humana → Execução → Validação humana
+```
+Pedido informal
+      ↓
+/generate-prompt-rag  →  Prompt técnico congelado
+      ↓
+Leitura obrigatória de @.windsurf/rules/rule-main-rules.md
+      ↓
+Planejamento → Aprovação humana → Execução
+      ↓
+/audit-create-pr  →  Validação + PR
+```
 
-## Casos de Uso Principais
+## Workflows Principais
 
-### Desenvolvimento de Software
-- **Bugfix:** Correções mínimas e precisas
-- **Refatoração:** Melhorias estruturais seguras
-- **Features:** Criação nova com governança
-- **Documentação:** Padrões consistentes
+| Workflow | Propósito |
+|----------|-----------|
+| `workflow-main` | Protocolo principal de execução |
+| `generate-prompt-rag` | Converter informal → técnico |
+| `audit-create-pr` | Validação completa + criação de PR |
+| `auditoria-de-conformidade` | Análise arquitetural |
 
-### Governança de Qualidade
-- **Zero surpresas:** Tudo validado localmente
-- **Previsibilidade:** Comportamento IA consistente
-- **Escalabilidade:** Framework cresce com projeto
-- **Accountability:** Desenvolvedor 100% responsável
+## Regras Operacionais
 
-## Componentes Chave
+- **rule-main-rules.md**: Tabela de decisão (Bugfix/Refactor/Feature/Docs)
+- **origin-rules.md**: Filosofia da governança explícita
+- **API-convention.md**: Padrão Backend-for-Frontend
+- **typescript-typing-convention.md**: Centralização de tipos
+- **react-hooks-patterns-rules.md**: Anti-patterns proibidos
 
-### Regras Operacionais
-Conjunto completo de regras extraídas de erros reais em produção:
-- **React Hooks:** Padrões rígidos anti-bugs
-- **TypeScript:** Tipagem centralizada e segura
-- **UI Separação:** Frontend limpo e manutenível
-- **API Convention:** Backend-for-Frontend estruturado
-- **Design System:** Tokens e componentes consistentes
+## Filosofia
 
-### Workflows Automatizados
-- **generate-prompt-rag:** Converte informal → técnico
-- **audit-create-pr:** Validação completa antes de PR
+> **"Qualidade é inegociável. Regras rígidas são mecanismos que tornam velocidade sustentável."**
 
-### Documentação Viva
-- **Prompts RAG:** Histórico estruturado de solicitações
-- **Issues:** Aprendizado iterativo de problemas
-- **PRs:** Documentação padronizada de entregas
+As regras existem porque a alternativa (regras fracas, dependência de bom senso) gera entropia e dívida técnica.
 
-## Benefícios Comprovados
+## Benefícios
 
-### Para Desenvolvedores
-- **70% redução** em tempo de debug
-- **Zero discussões** subjetivas sobre "como fazer"
-- **Onboarding acelerado** com regras explícitas
-- **Qualidade garantida** sem depender de "bom senso"
+- **80% acerto** (meta 90%) - excepcional para IA
+- **Zero alucinações** em produção
+- **Previsibilidade total** - mesmo comportamento sempre
+- **Governança shift-left** - problemas bloqueados antes
 
-### Para Projetos
-- **Dívida técnica zero** por enforcement
-- **Evolução previsível** com contratos claros
-- **Escalabilidade sustentável** com governança
-- **Consistência** independente de equipe
+## Paradigma
 
-## Filosofia Central
+**Constraint-Based Orchestration:** Engenharia de prompt defensiva com:
+- Negative Prompting: "NUNCA faça X"
+- Constraint-Based Generation: Restrições rígidas
+- Template Enforcement: Estrutura fixa
+- Validation Layers: Verificação múltipla
 
-**"Qualidade é inegociável e precede qualquer outra métrica de produtividade."**
+## Primeiros Passos
 
-As regras não são barreiras - são mecanismos que tornam a velocidade sustentável. Elas existem porque a alternativa (regras fracas, concessões, dependência de bom senso) já foi testada e provou gerar entropia, retrabalho e dívida técnica.
-
-## Próximos Passos
-
-1. **Explore as regras:** Comece por `@[.windsurf/rules/origin-rules.md]`
-2. **Teste um workflow:** Execute `/generate-prompt-rag`
-3. **Estude a documentação:** `@[.windsurf/rules/README.md]`
-4. **Integre seu projeto:** Copie `.windsurf` e comece a usar
+1. Explore `@.windsurf/rules/origin-rules.md`
+2. Execute `/generate-prompt-rag`
+3. Submeta com `@.windsurf/rules/rule-main-rules.md`
+4. Valide com `/audit-create-pr`
 
 ---
 
-**System Prompt Rules - Workflows** - Governança de IA para desenvolvimento de software moderno
+*Workflow Orchestration Framework para governança determinística de IA em desenvolvimento de software*
 
-*Desenvolvido para a comunidade de desenvolvimento usando Cascade da Windsurf*
-
-## Nota Importante
-
-**Estas regras são documentos vivos** que podem e devem ser ajustados conforme demanda dos projetos. Podem ser customizados para necessidades específicas, mas já possuem um padrão default considerando:
-
-- **Boas práticas de desenvolvimento** em projetos Next.js, React, TypeScript, Tailwind
-- **Segurança shift-left** com foco em conformidade OWASP
-- **Padrões de mercado** e documentação oficial das tecnologias
-- **Regras adicionais** conforme necessidade específica de cada projeto
-
-O framework é flexível para adaptações, mas mantém governança e qualidade como pilares fundamentais.
-
-____
-
-## Para atualizar o repositório original com o repositório de backup, siga os passos abaixo:
-
-git remote set-url origin https://github.com/feryamaha/system_prompt_rules-workflows_windsurf.git
-git remote add backup https://github.com/mayconmartins01/readme-ias.git
-
-# 1. Adicionar arquivos
-git add .
-
-# 2. Commit (ajuste a mensagem conforme necessário)
-git commit -m "sua mensagem de commit"
-
-# 3. Push para o repositório original (origin)
-git push origin master   # ou main, conforme o nome da sua branch
-
-# 4. Push para o repositório secundário (backup)
-git push backup master   # ou main, igual ao passo anterior

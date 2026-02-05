@@ -45,7 +45,7 @@ async function main(): Promise<number> {
   
   const workflowsPath = path.join(process.cwd(), '.windsurf', 'workflows');
   
-  console.log(`\n🧪 Nemesis Test All Workflows`);
+  console.log(`\n𓍝 Nemesis Test All Workflows`);
   console.log(`   Diretorio: ${workflowsPath}\n`);
   
   const runner = new WorkflowRunner({});
@@ -71,7 +71,7 @@ async function main(): Promise<number> {
     let hasErrors = false;
     
     for (const result of validationResult.results) {
-      const icon = result.isValid ? '✅' : '❌';
+      const icon = result.isValid ? '🟢' : '🔴';
       const workflowName = path.basename(result.workflow);
       
       console.log(`${icon} ${workflowName}`);
@@ -104,22 +104,22 @@ async function main(): Promise<number> {
     console.log('='.repeat(60));
     
     // Resumo
-    console.log('\n📊 RESUMO:\n');
+    console.log('\n RESUMO:\n');
     console.log(`   Total:    ${validationResult.total}`);
-    console.log(`   ✅ Validos:   ${validationResult.valid}`);
-    console.log(`   ❌ Invalidos: ${validationResult.invalid}`);
-    console.log(`   📈 Taxa:      ${((validationResult.valid / validationResult.total) * 100).toFixed(1)}%`);
+    console.log(`   🟢 CONF:   ${validationResult.valid}`);
+    console.log(`   🔴 NCONF: ${validationResult.invalid}`);
+    console.log(`   ‰ Conformidade:      ${((validationResult.valid / validationResult.total) * 100).toFixed(1)}%`);
     
     if (hasErrors) {
-      console.log('\n🛑 FALHA: Um ou mais workflows possuem erros\n');
+      console.log('\n🔴 FALHA: Um ou mais workflows possuem erros\n');
       return 1;
     } else {
-      console.log('\n✅ SUCESSO: Todos os workflows estao validos\n');
+      console.log('\n🟢 SUCESSO: Todos os workflows estao Conformes\n');
       return 0;
     }
     
   } catch (error) {
-    console.error('\n❌ ERRO FATAL:\n');
+    console.error('\n🔴 ERRO FATAL:\n');
     console.error(`   ${error instanceof Error ? error.message : 'Erro desconhecido'}\n`);
     return 1;
   }

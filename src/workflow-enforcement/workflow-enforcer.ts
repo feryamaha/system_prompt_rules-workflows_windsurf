@@ -1,7 +1,9 @@
-import { WorkflowDefinition, ValidationResult, Violation, EnforcementConfig } from './types';
+import { WorkflowDefinition, ValidationResult, Violation, EnforcementConfig, PreToolValidationResult, PreToolValidationInput } from './types';
 import { WorkflowValidators } from './workflow-validators';
 import { PermissionGate } from './permission-gate';
 import { ViolationLogger } from './violation-logger';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class WorkflowEnforcer {
   private config: EnforcementConfig;
@@ -235,5 +237,201 @@ export class WorkflowEnforcer {
   reset(): void {
     PermissionGate.reset();
     ViolationLogger.clearViolations();
+  }
+
+  // =========================================================================
+  // PreToolUse Hooks Support (Modo Headless)
+  // =========================================================================
+
+  /**
+   * Validar acao PreToolUse (modo headless - sem interacao com IA)
+   * Chamado pelo pretool-hook.ts antes de executar qualquer ferramenta
+   */
+  async validatePreToolUse(input: PreToolValidationInput): Promise<PreToolValidationResult> {
+    const { toolName, toolInput } = input;
+
+    // Validar baseado no tipo de ferramenta
+    switch (toolName) {
+      case 'Edit':
+      case 'Write':
+        return this.validateFileOperationHeadless(toolInput.file_path, toolName);
+
+      case 'Bash':
+        return this.validateCommandHeadless(toolInput.command);
+
+      case 'Read':
+      case 'Grep':
+        // Operacoes de leitura sao geralmente seguras
+        return { valid: true };
+
+      default:
+        // Ferramentas desconhecidas - permite com warning
+        if (this.config.mode !== 'headless' && this.config.logViolations) {
+          console.warn(`[NEMESIS WARNING] Ferramenta nao reconhecida: ${toolName}`);
+        }
+        return { valid: true };
+    }
+  }
+
+  /**
+   * Validar operacao de arquivo (modo headless)
+   */
+  private validateFileOperationHeadless(
+    filePath: string | undefined,
+    operation: string
+  ): PreToolValidationResult {
+    if (!filePath) {
+      return {
+        valid: false,
+        reason: 'Caminho do arquivo nao fornecido',
+        rule: '.windsurf/rules/rule-main-rules.md',
+        suggestion: 'Especifique o arquivo a ser modificado'
+      };
+    }
+
+    // Verificar se arquivo existe (para Edits)
+    if (operation === 'Edit') {
+      try {
+        if (!fs.existsSync(filePath)) {
+          return {
+            valid: false,
+            reason: `Arquivo nao existe: ${filePath}`,
+            rule: '.windsurf/rules/rule-main-rules.md',
+            suggestion: 'Verifique o caminho do arquivo'
+          };
+        }
+      } catch (error) {
+        // Erro ao verificar existencia, permite continuar
+      }
+    }
+
+    // Verificar escopo permitido (arquivos dentro do projeto)
+    const absolutePath = path.resolve(filePath);
+    const cwd = process.cwd();
+
+    // Bloquear arquivos fora do diretorio do projeto
+    const allowedExternalPaths = [
+      '/tmp/',
+      '/var/tmp/',
+      process.env.TEMP,
+      process.env.TMP
+    ].filter(Boolean);
+
+    const isInProject = absolutePath.startsWith(cwd);
+    const isAllowedExternal = allowedExternalPaths.some(p =>
+      p && absolutePath.startsWith(p)
+    );
+
+    if (!isInProject && !isAllowedExternal) {
+      return {
+        valid: false,
+        reason: `Arquivo fora do escopo do projeto: ${filePath}`,
+        rule: '.windsurf/rules/rule-main-rules.md - Secao 5 (Proibicoes)',
+        suggestion: 'NUNCA editar arquivos fora do escopo do projeto sem permissao explicita'
+      };
+    }
+
+    // Verificar se arquivo e critico (git, config, etc)
+    const criticalPatterns: RegExp[] = [
+      /\.git\//,
+      /\.gitignore$/,
+      /package\.json$/,
+      /yarn\.lock$/,
+      /\.env$/,
+      /\.env\.local$/,
+      /\.env\..*$/,
+      /tsconfig\.json$/,
+      /tailwind\.config/,
+      /next\.config/
+    ];
+
+    const isCriticalFile = criticalPatterns.some(pattern =>
+      pattern.test(absolutePath)
+    );
+
+    if (isCriticalFile && this.config.mode !== 'headless') {
+      console.warn(`[NEMESIS WARNING] Modificacao de arquivo critico detectada: ${filePath}`);
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Validar comando Bash (modo headless)
+   */
+  private validateCommandHeadless(command: string | undefined): PreToolValidationResult {
+    if (!command) {
+      return {
+        valid: false,
+        reason: 'Comando nao fornecido',
+        rule: '.windsurf/rules/rule-main-rules.md',
+        suggestion: 'Especifique o comando a ser executado'
+      };
+    }
+
+    // Verificar seguranca do comando via PermissionGate
+    const safetyCheck = PermissionGate.checkCommandSafety(command);
+
+    if (safetyCheck.riskLevel === 'high') {
+      return {
+        valid: false,
+        reason: `Comando de alto risco detectado: ${safetyCheck.reasons.join(', ')}`,
+        rule: '.windsurf/rules/Conformidade.md - Secao 3 (Seguranca OWASP)',
+        suggestion: 'Comandos de sistema precisam de permissao explicita do usuario'
+      };
+    }
+
+    // Verificar comandos permitidos para bugfix (tsc --noEmit)
+    const allowedBugfixCommands = [
+      /^yarn\s+tsc\s+--noEmit$/,
+      /^npx\s+tsc\s+--noEmit$/,
+      /^tsc\s+--noEmit$/
+    ];
+
+    const isBugfixCommand = allowedBugfixCommands.some(pattern =>
+      pattern.test(command.trim())
+    );
+
+    if (isBugfixCommand) {
+      return { valid: true }; // Sempre permitir validacao TypeScript
+    }
+
+    // Verificar comandos proibidos absolutos
+    const forbiddenPatterns = [
+      /rm\s+-rf\s+\//,           // rm -rf /
+      /sudo\s+rm/,               // sudo rm
+      /format\s+c:/,             // format c:
+      /dd\s+if=/,                // dd if=
+      />\s*\/dev\/null.*important/, // Redirecting important data
+      /shutdown/,                // shutdown
+      /reboot/,                 // reboot
+      /passwd/,                 // password changes
+      /chmod\s+777/              // dangerous permissions
+    ];
+
+    for (const pattern of forbiddenPatterns) {
+      if (pattern.test(command)) {
+        return {
+          valid: false,
+          reason: `Comando proibido detectado: ${command}`,
+          rule: '.windsurf/rules/rule-main-rules.md - Secao 5 (Proibicoes Absolutas)',
+          suggestion: 'Este comando e proibido por questoes de seguranca'
+        };
+      }
+    }
+
+    // Para comandos de medio risco, loga warning mas permite
+    if (safetyCheck.riskLevel === 'medium' && this.config.mode !== 'headless') {
+      console.warn(`[NEMESIS WARNING] Comando de medio risco: ${command}`);
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Verificar se esta em modo headless
+   */
+  isHeadlessMode(): boolean {
+    return this.config.mode === 'headless';
   }
 }

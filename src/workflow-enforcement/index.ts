@@ -10,7 +10,9 @@ export type {
   WorkflowRunnerResult,
   Violation,
   PermissionRequest,
-  EnforcementConfig
+  EnforcementConfig,
+  PreToolValidationResult,
+  PreToolValidationInput
 } from './types';
 
 // Main classes and functions
