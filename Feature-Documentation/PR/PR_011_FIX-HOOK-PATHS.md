@@ -59,6 +59,22 @@ A ordem de verificacao preserva compatibilidade com projetos existentes:
 2. `dist/workflow-enforcement/cli/pretool-hook.js` (producao compilada)
 3. `.nemesis/workflow-enforcement/cli/pretool-hook.ts` (instalacao via npx)
 
+### 3. Correcao de Runner (tsx vs ts-node)
+
+Alterado runner de `npx ts-node` para `npx tsx` no caminho `.nemesis/` para manter consistencia com o instalador:
+
+**Script Bash:**
+```bash
+RUNNER="npx tsx"  # Anterior: npx ts-node
+```
+
+**Script PowerShell:**
+```powershell
+$Runner = "npx tsx"  # Anterior: npx ts-node
+```
+
+**Motivo:** O instalador (`index.js`) instala `tsx` como dependencia, mas os hooks usavam `ts-node`, causando falha quando o executavel nao estava disponivel no projeto alvo.
+
 ## Beneficios arquiteturais e prontidao para escala
 
 - **Correcao de falha critica**: Sistema de enforcement agora funciona em projetos instalados via `npx install-genesis`

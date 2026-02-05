@@ -43,7 +43,7 @@ if (Test-Path $HookScriptTs) {
 } elseif (Test-Path $HookScriptNemesis) {
     # Versao instalada via npx install-genesis
     $HookScript = $HookScriptNemesis
-    $Runner = "npx ts-node"
+    $Runner = "npx tsx"
 } else {
     Write-Error "NEMESIS ERROR: Hook script nao encontrado"
     Write-Error "Procurado em:"
