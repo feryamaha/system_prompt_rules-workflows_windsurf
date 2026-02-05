@@ -31,6 +31,7 @@ $ProjectDir = Split-Path -Parent (Split-Path -Parent $ScriptDir)
 # Verificar se estamos em ambiente de desenvolvimento
 $HookScriptTs = Join-Path $ProjectDir "src/workflow-enforcement/cli/pretool-hook.ts"
 $HookScriptJs = Join-Path $ProjectDir "dist/workflow-enforcement/cli/pretool-hook.js"
+$HookScriptNemesis = Join-Path $ProjectDir ".nemesis/workflow-enforcement/cli/pretool-hook.ts"
 
 if (Test-Path $HookScriptTs) {
     $HookScript = $HookScriptTs
@@ -39,11 +40,16 @@ if (Test-Path $HookScriptTs) {
     # Versao compilada (producao)
     $HookScript = $HookScriptJs
     $Runner = "node"
+} elseif (Test-Path $HookScriptNemesis) {
+    # Versao instalada via npx install-genesis
+    $HookScript = $HookScriptNemesis
+    $Runner = "npx ts-node"
 } else {
     Write-Error "NEMESIS ERROR: Hook script nao encontrado"
     Write-Error "Procurado em:"
     Write-Error "  - $HookScriptTs"
     Write-Error "  - $HookScriptJs"
+    Write-Error "  - $HookScriptNemesis"
     exit 1
 }
 

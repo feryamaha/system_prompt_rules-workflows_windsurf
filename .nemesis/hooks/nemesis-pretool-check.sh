@@ -35,11 +35,16 @@ elif [ -f "${PROJECT_DIR}/dist/workflow-enforcement/cli/pretool-hook.js" ]; then
     # Versao compilada (producao)
     HOOK_SCRIPT="${PROJECT_DIR}/dist/workflow-enforcement/cli/pretool-hook.js"
     RUNNER="node"
+elif [ -f "${PROJECT_DIR}/.nemesis/workflow-enforcement/cli/pretool-hook.ts" ]; then
+    # Versao instalada via npx install-genesis
+    HOOK_SCRIPT="${PROJECT_DIR}/.nemesis/workflow-enforcement/cli/pretool-hook.ts"
+    RUNNER="npx ts-node"
 else
     echo "NEMESIS ERROR: Hook script nao encontrado" >&2
     echo "Procurado em:" >&2
     echo "  - ${PROJECT_DIR}/src/workflow-enforcement/cli/pretool-hook.ts" >&2
     echo "  - ${PROJECT_DIR}/dist/workflow-enforcement/cli/pretool-hook.js" >&2
+    echo "  - ${PROJECT_DIR}/.nemesis/workflow-enforcement/cli/pretool-hook.ts" >&2
     exit 1
 fi
 
