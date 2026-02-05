@@ -85,6 +85,14 @@ Juntas, elas criam um framework onde IA e humanos operam com os mesmos princípi
 - **Inferência = Processamento Neural**: Geração probabilística, não determinística
 - **Conflito interno**: "Regra diz X" vs "Padrão neural sugere Y"
 
+### Classificação Técnica: Workflow Orchestration Framework
+
+O Nemesis **NÃO é um Agente**. É um **Workflow Orchestration Framework** com **Enforcement Engine** embutido.
+
+**Paradigma Único:** Constraint-Based Orchestration - usa técnicas de prompt engineering para controle em vez de expansão.
+
+**Categoria Própria:** Governance-First Workflow Framework - usa conceitos de agentes (CoT, chaining) para construir o oposto (controle rígido).
+
 ### Padrões de Comportamento Observados
 
 #### Conflito Cérebro Neural vs Sistema de Regras
@@ -138,6 +146,12 @@ Sistema: "Verificando regras..."
 **Método**: IA + validação programática + auditoria humana refinada
 
 **Princípio final**: "Zero erros é mito, mas 90% de acerto consistente é engenharia possível."
+
+### Conclusão: Framework de Controle, Não Expansão
+
+O Nemesis representa uma inversão proposital da engenharia de prompt tradicional: enquanto outros frameworks buscam expandir capacidades da IA, o Nemesis busca **restringir e controlar** para garantir conformidade enterprise.
+
+**Resultado:** Um sistema onde previsibilidade, qualidade e governança são mais importantes que autonomia e criatividade da IA.
 
 ## 8. Filosofia do RAG e Equilíbrio de Comunicação
 

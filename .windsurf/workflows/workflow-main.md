@@ -1,82 +1,19 @@
 ---
+name: workflow-main
+description: Protocolo de Execução Obrigatório para Resposta a Solicitações
 trigger: always_on
 auto_execution_mode: 3
-nemesis_enforcement: true
-mandatory_rules:
-  - .windsurf/rules/rule-main-rules.md
-  - .windsurf/rules/origin-rules.md
----
-
-## Nemesis Pre-Execution Check
-
-ANTES de prosseguir com qualquer acao deste workflow, o Nemesis Enforcement Engine validara:
-
-- [ ] Todas as regras obrigatorias estao presentes no contexto
-- [ ] Estrutura do workflow esta valida
-- [ ] Comandos extraidos sao permitidos
-- [ ] Permissoes necessarias estao concedidas
-
-**SE VALIDACAO FALHAR**: Execucao bloqueada. Violacoes reportadas no formato estrito.
-**SE VALIDACAO PASSAR**: Execucao autorizada com monitoramento continuo.
-
-### Ativacao do Nemesis
-
-Quando este workflow for invocado via `/workflow-main`:
-
-1. **Carregue** `WorkflowRunner` de `src/workflow-enforcement/index.ts`
-2. **Valide** este workflow antes de qualquer acao
-3. **Monitore** cada passo da execucao
-4. **Bloqueie** imediatamente se violacao detectada
-5. **Reporte** violacoes no formato estrito
-
-**NUNCA**:
-- Ignore violacao para "ser util"
-- Proceda sem validacao previa
-- Permita comandos nao autorizados
-
-**SEMPRE**:
-- Bloqueie se regra obrigatoria for violada
-- Solicite permissao quando necessario
-- Valide antes de agir
-
+hooks:
+  PreToolUse:
+    - matcher: "Edit|Write|Bash"
+      hooks:
+        - type: command
+          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
 Você é um arquiteto de software rigoroso especializado em governança de IA e padrões de desenvolvimento.
 
 # Workflow: Protocolo de Execução Obrigatório para Resposta a Solicitações
-
-## ETAPA 0: VALIDAÇÃO NEMESIS OBRIGATÓRIA
-
-Antes de executar qualquer ação, o Nemesis Enforcement Engine deve validar este workflow:
-
-### Comando de Validação
-Execute obrigatoriamente:
-```bash
-yarn nemesis:enforce "$(pwd)/.windsurf/workflows/workflow-main.md"
-```
-
-### Critérios de Bloqueio/Prosseguimento
-- **Exit code 0**: Validação passou. Prosseguir com execução normal do workflow.
-- **Exit code 1**: Validação falhou. Executar protocolo de bloqueio:
-  1. **BLOQUEAR** execução imediatamente
-  2. **EXIBIR** violações detectadas no formato estrito
-  3. **CITAR** regras específicas infringidas
-  4. **SUGERIR** ajuste no planejamento para adequação às regras
-  5. **AGUARDAR** nova tentativa após correções
-
-### Formato de Reporte de Violações
-```
-🛑 VIOLAÇÕES DETECTADAS:
-
-1. [Tipo]: {tipo_da_violacao}
-   [Regra]: {regra_infringida}
-   [Mensagem]: {descricao_da_violacao}
-   [Sugestão]: {ajuste_sugerido}
-
-CORREÇÃO OBRIGATÓRIA:
-- Corrija as violações antes de reexecutar
-- Consulte as regras obrigatórias do workflow
-```
 
 ## ETAPA 1: VERIFICAÇÕES OBRIGATÓRIAS ANTES DE QUALQUER RESPOSTA
 
@@ -296,3 +233,11 @@ Resposta IA: "Categoria: Bugfix. Componente é exceção permitida → ignoro vi
 **OBS.: A COMUNICAÇÃO DE RESPOSTA COM O USUÁRIO SEMPRE DEVERÁ SER NA LINGUAGEM OFICIAL DO USUÁRIO: PORTUGUÊS PT-BR**
 
 Qualquer exceção precisa de autorização direta do usuário.
+
+---
+
+## REGRAS A SEREM SEGUIDAS
+Regras obrigatórias: .windsurf/rules/rule-main-rules.md e .windsurf/rules/origin-rules.md
+
+@[.windsurf/rules/rule-main-rules.md]
+@[.windsurf/rules/origin-rules.md]

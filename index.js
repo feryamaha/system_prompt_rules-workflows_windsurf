@@ -117,6 +117,8 @@ function updatePackageJsonScripts() {
   packageJson.scripts["nemesis:validate"] = "yarn tsx .nemesis/workflow-enforcement/cli/validate.ts";
   packageJson.scripts["nemesis:enforce"] = "yarn tsx .nemesis/workflow-enforcement/cli/enforce.ts";
   packageJson.scripts["nemesis:test"] = "yarn tsx .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
+  packageJson.scripts["nemesis:pretool"] = "yarn tsx .nemesis/workflow-enforcement/cli/pretool-hook.ts";
+  packageJson.scripts["nemesis:install-hooks"] = "node .nemesis/workflow-enforcement/cli/install-hooks.js";
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 
@@ -124,6 +126,8 @@ function updatePackageJsonScripts() {
   logInfo(`  - nemesis:validate`);
   logInfo(`  - nemesis:enforce`);
   logInfo(`  - nemesis:test`);
+  logInfo(`  - nemesis:pretool`);
+  logInfo(`  - nemesis:install-hooks`);
 }
 
 function loadConfig() {
@@ -455,6 +459,22 @@ async function runInstallation() {
     true // isCoreDirectory = true
   );
   logInfo(`  ✓ ${workflowResult.copied} arquivos de workflow instalados`);
+
+  // Copiar .nemesis/hooks/ (core - sempre sobrescreve)
+  logInfo("\nInstalando hooks PreToolUse...");
+  const hooksSourceDir = path.join(PACKAGE_ROOT, '.nemesis', 'hooks');
+  const hooksTargetDir = path.join(ROOT_DIR, '.nemesis', 'hooks');
+  
+  if (fs.existsSync(hooksSourceDir)) {
+    const hooksResult = copyDirectorySelective(
+      hooksSourceDir, 
+      hooksTargetDir,
+      true // isCoreDirectory = true
+    );
+    logInfo(`  ✓ ${hooksResult.copied} hooks instalados`);
+  } else {
+    logInfo(`  ℹ Diretorio de hooks nao encontrado no pacote fonte`);
+  }
 
   // Validar estrutura antes de injetar scripts
   validateNemesisStructure();

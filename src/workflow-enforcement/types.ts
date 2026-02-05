@@ -80,4 +80,29 @@ export interface EnforcementConfig {
   requirePermissionForFileEdits: boolean;
   allowedLanguages: string[];
   mandatoryRules: string[];
+  mode?: 'interactive' | 'headless';  // Modo de operacao
+}
+
+/**
+ * Resultado da validacao PreToolUse (modo headless)
+ */
+export interface PreToolValidationResult {
+  valid: boolean;
+  reason?: string;
+  rule?: string;
+  suggestion?: string;
+}
+
+/**
+ * Input para validacao PreToolUse
+ */
+export interface PreToolValidationInput {
+  toolName: 'Edit' | 'Write' | 'Bash' | 'Read' | 'Grep' | string;
+  toolInput: {
+    file_path?: string;
+    command?: string;
+    old_string?: string;
+    new_string?: string;
+    [key: string]: any;
+  };
 }
