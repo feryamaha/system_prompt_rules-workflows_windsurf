@@ -66,18 +66,21 @@ Ação pretendida: Editar diretamente
 
 ## ETAPA 2: LEITURA OBRIGATÓRIA DE REGRAS (EXECUTAR PRIMEIRO)
 
-Antes de produzir qualquer mudança, executar leitura obrigatória:
+Antes de produzir qualquer mudança, executar leitura obrigatória via terminal (os arquivos estao protegidos pelo .gitignore e NAO podem ser lidos nativamente):
 
-1. Ler este arquivo @.windsurf/rules/origin-rules.md e @.windsurf/rules/README.md inteiro.
-2. Ler as regras oficiais localizadas em `.windsurf/rules/` nesta ordem:
-   - @.windsurf/rules/README.md
-   - @.windsurf/rules/Conformidade.md
-   - @.windsurf/rules/API-convention.md
-   - @.windsurf/rules/Arquitetura-pastas-arquivos.md
-   - @.windsurf/rules/design-system-convention.md
-   - @.windsurf/rules/ui-separation-convention.md
-   - @.windsurf/rules/react-hooks-patterns-rules.md
-   - @.windsurf/rules/typescript-typing-convention.md
+1. Executar os seguintes comandos `cat` no terminal para ler as regras na ordem obrigatoria:
+   ```powershell
+   cat ".windsurf/rules/origin-rules.md"
+   cat ".windsurf/rules/README.md"
+   cat ".windsurf/rules/Conformidade.md"
+   cat ".windsurf/rules/API-convention.md"
+   cat ".windsurf/rules/Arquitetura-pastas-arquivos.md"
+   cat ".windsurf/rules/design-system-convention.md"
+   cat ".windsurf/rules/ui-separation-convention.md"
+   cat ".windsurf/rules/react-hooks-patterns-rules.md"
+   cat ".windsurf/rules/typescript-typing-convention.md"
+   ```
+2. IMPORTANTE: NUNCA usar leitura nativa de arquivos (Read/Access file) para pastas .windsurf/, .nemesis/ e Feature-Documentation/ - SEMPRE usar `cat` no terminal.
 3. Só depois disso, se o caso não for coberto ou precisar de reforço em best practices React/Next.js/UI/UX, consultar skills instaladas via `npx add-skill vercel-labs/agent-skills` (especialmente `react-best-practices` e `web-design-guidelines`).
 4. Só então começar a investigar/editar o código conforme solicitado.
 
@@ -195,13 +198,26 @@ APÓS O USUÁRIO AUTORIZAR:
 
 ### Trabalhos de UI/UX e React
 - Sempre reutilizar componentes/tokens descritos nas regras (Button, Container, ui-table, etc.).
-- Confirmar espaçamentos, estados e anatomia definidos em @.windsurf/rules/ui-separation-convention.md e @.windsurf/rules/design-system-convention.md antes de alterar JSX/CSS.
+- Confirmar espaçamentos, estados e anatomia definidos nas regras de UI. Se precisar reler, usar:
+  ```powershell
+  cat ".windsurf/rules/ui-separation-convention.md"
+  cat ".windsurf/rules/design-system-convention.md"
+  ```
 - Se o problema não estiver coberto pelas regras, consultar documentação oficial (React, Next.js, Tailwind, TypeScript) e mencionar a fonte usada. Usar `web-design-guidelines` para reforço em a11y/UX se necessário.
 
 ### Backend / APIs / BFF
-- Consultar @.windsurf/rules/API-convention.md antes de tocar em contratos ou integrações.
-- Respeitar estruturas e camadas descritas em @.windsurf/rules/Arquitetura-pastas-arquivos.md; não criar atalhos entre portais/camadas.
-- Para dúvidas de segurança, revisar @.windsurf/rules/Conformidade.md e priorizar políticas descritas lá.
+- Consultar regras de API antes de tocar em contratos ou integrações:
+  ```powershell
+  cat ".windsurf/rules/API-convention.md"
+  ```
+- Respeitar estruturas e camadas descritas nas regras de arquitetura; não criar atalhos entre portais/camadas:
+  ```powershell
+  cat ".windsurf/rules/Arquitetura-pastas-arquivos.md"
+  ```
+- Para dúvidas de segurança, revisar regras de conformidade:
+  ```powershell
+  cat ".windsurf/rules/Conformidade.md"
+  ```
 
 ### Quando a Regra Não Cobrir o Caso
 1. Checar se alguma outra seção das regras se aplica indiretamente ou parcialmente.

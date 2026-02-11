@@ -152,3 +152,8 @@ Regras obrigatórias: .windsurf/rules/rule-main-rules.md e .windsurf/rules/origi
 - **USAR COMANDOS POWERSHELL** para manipular arquivos em Feature-Documentation
 - **SERIALIZAR** com números sequenciais (001, 002, 003...)
 - **COMUNICAR** sempre em português PT-BR
+- **LEITURA DE ARQUIVOS**: NUNCA usar leitura nativa (Read/Access file) para pastas .windsurf/, .nemesis/ e Feature-Documentation/ - SEMPRE usar `cat` no terminal. Exemplo:
+  ```powershell
+  cat "Feature-Documentation/prompts/001_exemplo.md"
+  cat ".windsurf/rules/rule-main-rules.md"
+  ```

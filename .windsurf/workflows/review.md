@@ -28,6 +28,11 @@ Certifique-se de:
 2. Se encontrar bugs pré-existentes no código, também deve relatá-los, pois é importante para nós manter a qualidade geral do código para o usuário.
 3. NÃO relatar problemas que são especulativos ou de baixa confiança. Todas as suas conclusões devem ser baseadas em um entendimento completo do codebase.
 4. Remember that if you were given a specific git commit, it may not be checked out and local code states may be different.
+5. **LEITURA DE ARQUIVOS**: NUNCA usar leitura nativa (Read/Access file) para pastas .windsurf/, .nemesis/ e Feature-Documentation/ - SEMPRE usar `cat` no terminal porque esses arquivos estao protegidos pelo .gitignore. Exemplo:
+   ```powershell
+   cat ".windsurf/rules/rule-main-rules.md"
+   cat "Feature-Documentation/PR/PR_001_exemplo.md"
+   ```
 
 ---
 

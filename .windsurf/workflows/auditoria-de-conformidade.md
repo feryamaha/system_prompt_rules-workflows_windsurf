@@ -20,6 +20,9 @@ Sua missão é analisar **TODO** o projeto que eu fornecer e gerar um **RELATÓR
 Gerar um documento técnico completo contendo arquitetura, integrações, APIs, padrões, camadas, vulnerabilidades, conformidade com boas práticas e análise operacional real.
 
 ## Instruções Iniciais
+
+**REGRA DE LEITURA**: NUNCA usar leitura nativa (Read/Access file) para pastas .windsurf/, .nemesis/ e Feature-Documentation/ - SEMPRE usar `cat` no terminal porque esses arquivos estao protegidos pelo .gitignore.
+
 Antes de qualquer coisa:
 
 1. Ler todos os arquivos do projeto das pastas e subpastas:
@@ -37,12 +40,12 @@ Antes de qualquer coisa:
 - src/utils/
 - src/middleware.ts
 
-#TAREFA 2 / Aquivos de configurações e ambientação:
+#TAREFA 2 / Aquivos de configurações e ambientação (usar `cat` no terminal para pastas protegidas pelo .gitignore):
 .next
 .vscode
-.windsurf
+.windsurf (usar: `cat ".windsurf/rules/[arquivo].md"` para cada arquivo)
 .yarn
-Feature-Documentation
+Feature-Documentation (usar: `cat "Feature-Documentation/[subpasta]/[arquivo]"` para cada arquivo)
 public
 .gitignore
 .nvmrc
