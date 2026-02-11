@@ -7,7 +7,7 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
+          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 Você é um engenheiro de requisitos especializado em engenharia reversa de especificações e análise de necessidades de usuários.

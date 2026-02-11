@@ -26,6 +26,10 @@ export { PermissionGate } from './permission-gate';
 export { ViolationLogger } from './violation-logger';
 export { WorkflowRunner } from './workflow-runner';
 
+// Nemesis v2 - Hook modules (automatic enforcement)
+export { validateCodeContent } from './hook/code-validator';
+export { validateFileScope, hasScopeActive, readScope } from './hook/scope-validator';
+
 // Convenience exports for common usage patterns
 import { WorkflowRunner } from './workflow-runner';
 import type { ExecutionOptions, EnforcementConfig } from './types';

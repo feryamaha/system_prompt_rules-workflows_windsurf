@@ -24,6 +24,7 @@
     "nemesis:enforce": "npx ts-node src/workflow-enforcement/cli/enforce.ts",
     "nemesis:test": "npx ts-node src/workflow-enforcement/cli/test-all-workflows.ts",
     "nemesis:pretool": "npx ts-node src/workflow-enforcement/cli/pretool-hook.ts",
+    "nemesis:scope": "npx tsx src/workflow-enforcement/cli/scope.ts",
     "nemesis:install-hooks": "node src/workflow-enforcement/cli/install-hooks.js"
   },
   "dependencies": {

@@ -7,7 +7,7 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
+          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 1. Execute o comando yarn lint para verificar se o lint está funcionando corretamente, se nao encontrar erros execute a proxima etapa, se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn lint novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
@@ -41,9 +41,9 @@ hooks:
 7. Execute o comando git status para verificar os arquivos modificados/criados
 8. Execute o comando git diff main...[branch] para analisar as mudanças
 9. Execute o comando git diff em cada arquivo para analisar as mudanças e localize os arquivos que foram modificados/criados
-10. Leia `.windsurf/rules/operational-policies/rules-pr.md` (regras de criação) e demais arquivos da pasta `Feature-Documentation/PR/` para analisar a convenção existente, usando os comandos:
+10. Leia `.windsurf/rules/rules-pr.md` (regras de criação) e demais arquivos da pasta `Feature-Documentation/PR/` para analisar a convenção existente, usando os comandos:
 (esses comandos são necessarios porque as pastas .windsurf e Feature-Documentation não estão no git porque estão protegidas pelo .gitignore)
-- cat ".windsurf/rules/operational-policies/rules-pr.md" para visualizar as regras de criação de PR;
+- cat ".windsurf/rules/rules-pr.md" para visualizar as regras de criação de PR;
 - cat "Feature-Documentation/PR/" para visualizar exemplo de PR e entender o padrão de conteúdo;
 - Get-ChildItem "Feature-Documentation/PR/" -Filter "PR_*.md" | Sort-Object Name para encontrar último PR;
 - New-Item -Path "Feature-Documentation/PR/PR_XXX_NOME.md" -ItemType File -Force para criar um novo arquivo de PR;

@@ -8,7 +8,7 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
+          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 Você é um arquiteto de software rigoroso especializado em governança de IA e padrões de desenvolvimento.

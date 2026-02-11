@@ -7,7 +7,7 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
+          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 # Prompt de Auditoria de Arquitetura (Atualizado - Novembro 2025)

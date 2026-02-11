@@ -81,6 +81,7 @@ dist
 # Gatsby files
 .cache/
 public
+docs/
 
 # Storybook build outputs
 .out
@@ -109,12 +110,6 @@ temp/
 ehthumbs.db
 Thumbs.db
 
-
-
-
-
-
-
 # START Nemesis Generated Files
 # Arquivos gerados pela instalação do Nemesis (bloquear para não versionar)
 .windsurf/mcp_config.json
@@ -140,4 +135,8 @@ CLAUDE.md
 .opencode.json
 .gemini/settings.json
 .qwen/settings.json
+# Nemesis runtime files
+.nemesis/scope.json
+violations.log
+violation-report.md
 # END Nemesis Generated Files

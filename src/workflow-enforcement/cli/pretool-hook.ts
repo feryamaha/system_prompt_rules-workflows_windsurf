@@ -10,9 +10,10 @@
  * Output: Exit code 0 (permitir) ou 2 (bloquear) + mensagens no stderr
  */
 
-import { WorkflowEnforcer } from '../workflow-enforcer';
 import { PermissionGate } from '../permission-gate';
 import { ViolationLogger } from '../violation-logger';
+import { validateCodeContent } from '../hook/code-validator';
+import { validateFileScope, hasScopeActive } from '../hook/scope-validator';
 
 /**
  * Formato de entrada oficial Windsurf PreToolUse
@@ -27,7 +28,7 @@ interface PreToolInput {
     search_path?: string;
     query?: string;
     includes?: string[];
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -150,9 +151,26 @@ async function validateFileOperation(
   );
   
   if (isCriticalFile) {
-    // Log como warning mas permite - o PermissionGate ja trata isso
-    console.warn(`[NEMESIS WARNING] Modificacao de arquivo critico detectada: ${filePath}`);
+    // FASE 6: Bloquear arquivos criticos (exceto se autorizado via scope.json)
+    if (hasScopeActive()) {
+      const scopeResult = validateFileScope(filePath);
+      if (scopeResult.valid) {
+        // Arquivo critico autorizado explicitamente via scope.json
+        console.warn(`[NEMESIS] Arquivo critico autorizado via scope.json: ${filePath}`);
+        return { valid: true };
+      }
+    }
+    return {
+      valid: false,
+      reason: `Arquivo critico protegido: ${path.basename(filePath)}`,
+      rule: '.windsurf/rules/Conformidade.md - Secao 3 (Protecao de Dados)',
+      suggestion: 'Arquivos de configuracao requerem autorizacao explicita. Use: yarn nemesis:scope add "' + filePath + '"'
+    };
   }
+
+  // Validar escopo RAG (se scope.json existir)
+  const scopeResult = validateFileScope(filePath);
+  if (!scopeResult.valid) return scopeResult;
 
   return { valid: true };
 }
@@ -274,6 +292,14 @@ async function main(): Promise<number> {
           data.tool_input.file_path,
           data.tool_name
         );
+        // Se passou na validacao de arquivo, validar conteudo do codigo
+        if (result.valid && (data.tool_input.new_string || data.tool_input.CodeContent)) {
+          const codeContent = (data.tool_input.new_string || data.tool_input.CodeContent) as string;
+          result = validateCodeContent(
+            data.tool_input.file_path || '',
+            codeContent
+          );
+        }
         break;
         
       case 'Bash':
