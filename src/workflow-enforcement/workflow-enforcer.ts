@@ -353,6 +353,242 @@ export class WorkflowEnforcer {
       console.warn(`[NEMESIS WARNING] Modificacao de arquivo critico detectada: ${filePath}`);
     }
 
+    // NOVA VALIDAÇÃO: Verificar conteúdo do arquivo para padrões problemáticos
+    if (operation === 'Edit' && this.isReactComponent(filePath)) {
+      const contentValidation = this.validateReactComponentContent(filePath);
+      if (!contentValidation.valid) {
+        return contentValidation;
+      }
+    }
+
+    // NOVA VALIDAÇÃO: Verificar componentes UI para acessibilidade
+    if (operation === 'Edit' && this.isUIComponent(filePath)) {
+      // VERIFICAR SE É COMPONENTE SMART ANTES DE VALIDAR
+      if (this.isSmartComponent(filePath)) {
+        // Componentes smart são isentos de validações de separação UI/lógica
+        if (this.config.mode !== 'headless') {
+          console.log(`[NEMESIS INFO] Componente smart detectado: ${filePath} - validações de UI/lógica isentas`);
+        }
+        return { valid: true };
+      }
+      
+      const uiValidation = this.validateUIComponentContent(filePath);
+      if (!uiValidation.valid) {
+        return uiValidation;
+      }
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Verificar se arquivo é um componente React
+   */
+  private isReactComponent(filePath: string): boolean {
+    return /\.(tsx|jsx)$/.test(filePath) && 
+           (filePath.includes('/components/') || filePath.includes('/src/'));
+  }
+
+  /**
+   * Verificar se arquivo é um componente UI
+   */
+  private isUIComponent(filePath: string): boolean {
+    return /\.(tsx|jsx)$/.test(filePath) && 
+           filePath.includes('/components/ui/');
+  }
+
+  /**
+   * Verificar se é um componente smart (isento de validações de UI/lógica)
+   */
+  private isSmartComponent(filePath: string): boolean {
+    try {
+      // 1. VERIFICAR COMENTÁRIO SMART COMPONENT (MÉTODO PRINCIPAL)
+      const content = fs.readFileSync(filePath, 'utf8');
+      if (content.includes('// SMART COMPONENT') || content.includes('/* SMART COMPONENT */')) {
+        return true;
+      }
+
+      // 2. Verificar nomenclatura no nome do arquivo (apenas legibilidade)
+      const fileName = path.basename(filePath, '.tsx');
+      if (fileName.includes('Smart') || fileName.includes('Control') || fileName.includes('Manager') || fileName.includes('Handler')) {
+        return true;
+      }
+
+      // 3. Verificar lista manual de componentes smart
+      const smartComponentsPath = path.join(process.cwd(), '.nemesis/smart-components.json');
+      if (fs.existsSync(smartComponentsPath)) {
+        const smartComponents = JSON.parse(fs.readFileSync(smartComponentsPath, 'utf8'));
+        const relativePath = path.relative(process.cwd(), filePath);
+        return smartComponents.smartComponents?.includes(relativePath) || false;
+      }
+
+      // 4. Verificar componentes conhecidos com concessão
+      const knownSmartComponents = [
+        'Button.tsx',
+        'Container.tsx',
+        'InputPesquisaAjuda.tsx'
+      ];
+      
+      return knownSmartComponents.includes(fileName);
+
+    } catch (error) {
+      // Erro ao ler arquivo, considera não smart
+      return false;
+    }
+  }
+
+  /**
+   * Validar conteúdo de componente UI para acessibilidade e padrões
+   */
+  private validateUIComponentContent(filePath: string): PreToolValidationResult {
+    try {
+      const content = fs.readFileSync(filePath, 'utf8');
+      
+      // Detectar violações de acessibilidade (Issue #10)
+      const accessibilityViolations = [
+        {
+          pattern: /<button[^>]*>(?![^<]*aria-label)/g,
+          reason: 'Button sem aria-label detectado',
+          suggestion: 'Adicione aria-label ou aria-describedby para acessibilidade'
+        },
+        {
+          pattern: /<input[^>]*>(?![^<]*placeholder)/g,
+          reason: 'Input sem placeholder detectado',
+          suggestion: 'Adicione placeholder ou aria-label para melhor UX'
+        },
+        {
+          pattern: /<img[^>]*>(?![^<]*alt)/g,
+          reason: 'Imagem sem alt text detectado',
+          suggestion: 'Adicione alt="" ou alt descritivo'
+        },
+        {
+          pattern: /onClick[^>]*>(?![^<]*onKeyDown|onKeyPress)/g,
+          reason: 'Evento onClick sem suporte de teclado detectado',
+          suggestion: 'Adicione onKeyDown ou onKeyPress para acessibilidade'
+        }
+      ];
+
+      for (const violation of accessibilityViolations) {
+        if (violation.pattern.test(content)) {
+          return {
+            valid: false,
+            reason: violation.reason,
+            rule: '.windsurf/rules/design-system-convention.md - Acessibilidade',
+            suggestion: violation.suggestion
+          };
+        }
+      }
+
+      // Detectar violações de padrões UI (Issues #14-15)
+      const uiPatternViolations = [
+        {
+          pattern: /style\s*=\s*{[^}]*}/g,
+          reason: 'CSS inline detectado',
+          rule: '.windsurf/rules/design-system-convention.md - Tokens',
+          suggestion: 'Use classes Tailwind em vez de CSS inline'
+        },
+        {
+          pattern: /:\s*any\b/g,
+          reason: 'Uso de "any" detectado',
+          rule: '.windsurf/rules/typescript-typing-convention.md',
+          suggestion: 'Use tipagem específica em vez de any'
+        },
+        {
+          pattern: /useState|useEffect/g,
+          reason: 'Lógica de negócio em componente UI detectado',
+          rule: '.windsurf/rules/ui-separation-convention.md',
+          suggestion: 'Mova lógica para hooks customizados'
+        }
+      ];
+
+      for (const violation of uiPatternViolations) {
+        if (violation.pattern.test(content)) {
+          return {
+            valid: false,
+            reason: violation.reason,
+            rule: violation.rule,
+            suggestion: violation.suggestion
+          };
+        }
+      }
+
+      // Detectar componentes complexos (possível dívida técnica)
+      const complexityIndicators = [
+        content.length > 500, // Arquivo muito grande
+        (content.match(/className/g) || []).length > 20, // Muitas classes
+        (content.match(/<div/g) || []).length > 10 // Muitos divs aninhados
+      ];
+
+      const complexityScore = complexityIndicators.filter(Boolean).length;
+      if (complexityScore >= 2) {
+        return {
+          valid: false,
+          reason: 'Componente UI muito complexo detectado',
+          rule: '.windsurf/rules/design-system-convention.md - Composição',
+          suggestion: 'Considere quebrar em componentes menores ou usar composição'
+        };
+      }
+
+    } catch (error) {
+      // Erro ao ler arquivo, permite continuar
+    }
+
+    return { valid: true };
+  }
+
+  /**
+   * Validar conteúdo de componente React para violações de hooks
+   */
+  private validateReactComponentContent(filePath: string): PreToolValidationResult {
+    try {
+      const content = fs.readFileSync(filePath, 'utf8');
+      
+      // Detectar hooks condicionais (Issues #01-02)
+      const conditionalHookPatterns = [
+        /if\s*\([^)]*\)\s*{\s*(useEffect|useState|useWatch|useDropInput|useFloatingLabel)/g,
+        /if\s*\([^)]*\)\s*(useEffect|useState|useWatch|useDropInput|useFloatingLabel)/g,
+        /\?\s*{\s*(useEffect|useState|useWatch|useDropInput|useFloatingLabel)/g
+      ];
+
+      for (const pattern of conditionalHookPatterns) {
+        if (pattern.test(content)) {
+          return {
+            valid: false,
+            reason: 'React Hook chamado condicionalmente detectado',
+            rule: '.windsurf/rules/react-hooks-patterns-rules.md - Secao 3.1 (Hooks Condicionais)',
+            suggestion: 'Mova todos os hooks para o topo do componente, fora de condicionais'
+          };
+        }
+      }
+
+      // Detectar setState síncrono em useEffect (Issues #03-04)
+      const setStateInEffectPattern = /useEffect\s*\([^)]*\)\s*{\s*(setActiveArrow|setIsPlaying|setCurrentSlide|useState)\(/g;
+      if (setStateInEffectPattern.test(content)) {
+        return {
+          valid: false,
+          reason: 'setState chamado diretamente no corpo do useEffect',
+          rule: '.windsurf/rules/react-hooks-patterns-rules.md - Secao 3.2 (setState em useEffect)',
+          suggestion: 'Use verificação condicional ou callback para evitar setState síncrono'
+        };
+      }
+
+      // Detectar múltiplos hooks do mesmo tipo
+      const useStateCount = (content.match(/useState\s*\(/g) || []).length;
+      const useEffectCount = (content.match(/useEffect\s*\(/g) || []).length;
+      
+      if (useStateCount > 5 || useEffectCount > 3) {
+        return {
+          valid: false,
+          reason: 'Muitos hooks detectados - possível violação de padrões',
+          rule: '.windsurf/rules/react-hooks-patterns-rules.md',
+          suggestion: 'Considere refatorar para usar custom hooks ou reduzir complexidade'
+        };
+      }
+
+    } catch (error) {
+      // Erro ao ler arquivo, permite continuar
+    }
+
     return { valid: true };
   }
 
@@ -367,6 +603,45 @@ export class WorkflowEnforcer {
         rule: '.windsurf/rules/rule-main-rules.md',
         suggestion: 'Especifique o comando a ser executado'
       };
+    }
+
+    // NOVA VALIDAÇÃO: Detectar comandos de configuração problemáticos (Issues #11-13)
+    const configViolations = [
+      {
+        pattern: /eslint.*--config.*eslintrc/,
+        reason: 'Configuração ESLint custom detectada',
+        rule: '.windsurf/rules/Conformidade.md - Configuração',
+        suggestion: 'Use configuração centralizada em package.json'
+      },
+      {
+        pattern: /eslint.*--ignore/,
+        reason: 'ESLint bypass detectado',
+        rule: '.windsurf/rules/Conformidade.md - Governança',
+        suggestion: 'Não ignore regras centralizadas'
+      },
+      {
+        pattern: /npm.*install.*--force/,
+        reason: 'Instalação forçada detectada',
+        rule: '.windsurf/rules/Conformidade.md - Segurança',
+        suggestion: 'Use instalação padrão para evitar vulnerabilidades'
+      },
+      {
+        pattern: /yarn.*add.*--ignore-scripts/,
+        reason: 'Scripts ignorados detectado',
+        rule: '.windsurf/rules/Conformidade.md - Processo',
+        suggestion: 'Execute scripts para validação completa'
+      }
+    ];
+
+    for (const violation of configViolations) {
+      if (violation.pattern.test(command)) {
+        return {
+          valid: false,
+          reason: violation.reason,
+          rule: violation.rule,
+          suggestion: violation.suggestion
+        };
+      }
     }
 
     // Verificar seguranca do comando via PermissionGate
@@ -394,6 +669,24 @@ export class WorkflowEnforcer {
 
     if (isBugfixCommand) {
       return { valid: true }; // Sempre permitir validacao TypeScript
+    }
+
+    // NOVA VALIDAÇÃO: Verificar comandos de desenvolvimento
+    const devCommands = [
+      /^yarn\s+lint$/,
+      /^yarn\s+build$/,
+      /^yarn\s+test$/,
+      /^npm\s+run\s+lint$/,
+      /^npm\s+run\s+build$/,
+      /^npm\s+run\s+test$/
+    ];
+
+    const isDevCommand = devCommands.some(pattern =>
+      pattern.test(command.trim())
+    );
+
+    if (isDevCommand) {
+      return { valid: true }; // Permitir comandos de desenvolvimento
     }
 
     // Verificar comandos proibidos absolutos

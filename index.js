@@ -11,7 +11,13 @@ const SOURCE_DIRS = [
   ".windsurf",
   "Feature-Documentation",
   "src/workflow-enforcement/services",
-  "tests/workflow-enforcement"
+  "src/workflow-enforcement",
+  "tests/workflow-enforcement",
+  ".nemesis"
+];
+
+const SPECIFIC_FILES = [
+  ".nemesis/smart-components.json"
 ];
 
 function logInfo(message) {
@@ -80,26 +86,27 @@ function updateGitignore() {
     '.windsurf/',
     'Feature-Documentation/',
     '.nemesis/',
+    'src/workflow-enforcement/',
     'src/workflow-enforcement/services/',
     'tests/workflow-enforcement/',
     ''
   ];
-  
+
   try {
     let gitignoreContent = '';
-    
+
     // Ler .gitignore existente
     if (fs.existsSync(gitignorePath)) {
       gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
     }
-    
+
     // Verificar se já tem as entradas do Nemesis
     const hasNemesisSection = gitignoreContent.includes('# Nemesis Framework');
-    
+
     if (!hasNemesisSection) {
       // Adicionar entradas do Nemesis
       gitignoreContent += nemesisEntries.join('\n');
-      
+
       fs.writeFileSync(gitignorePath, gitignoreContent, 'utf8');
       logInfo('  ✓ Entradas do Nemesis adicionadas ao .gitignore');
     } else {
@@ -207,7 +214,7 @@ function loadConfig() {
 
 function updateGitignore() {
   const gitignorePath = path.join(ROOT_DIR, ".gitignore");
-  
+
   const nemesisSection = `
 # START Nemesis Generated Files
 # Arquivos gerados pela instalação do Nemesis (bloquear para nao versionar)
@@ -246,10 +253,10 @@ CLAUDE.md
   const endMarker = '# END Nemesis Generated Files';
   const startIndex = gitignoreContent.indexOf(startMarker);
   const endIndex = gitignoreContent.indexOf(endMarker);
-  
+
   if (startIndex !== -1 && endIndex !== -1) {
-    gitignoreContent = 
-      gitignoreContent.substring(0, startIndex) + 
+    gitignoreContent =
+      gitignoreContent.substring(0, startIndex) +
       gitignoreContent.substring(endIndex + endMarker.length);
   }
 
@@ -263,7 +270,7 @@ CLAUDE.md
 
 function checkEnvironment() {
   logInfo("\nVerificando ambiente de instalacao...");
-  
+
   try {
     const nodeVersion = execSync("node --version", { stdio: "pipe" }).toString().trim();
     logInfo(`  ✓ Node.js: ${nodeVersion}`);
@@ -271,7 +278,7 @@ function checkEnvironment() {
     logError(`  ❌ Node.js nao encontrado ou nao esta no PATH`);
     return false;
   }
-  
+
   try {
     const npmVersion = execSync("npm --version", { stdio: "pipe" }).toString().trim();
     logInfo(`  ✓ npm: ${npmVersion}`);
@@ -279,7 +286,7 @@ function checkEnvironment() {
     logError(`  ❌ npm nao encontrado ou nao esta no PATH`);
     return false;
   }
-  
+
   try {
     const npxVersion = execSync("npx --version", { stdio: "pipe" }).toString().trim();
     logInfo(`  ✓ npx: ${npxVersion}`);
@@ -287,13 +294,13 @@ function checkEnvironment() {
     logError(`  ❌ npx nao encontrado ou nao esta no PATH`);
     return false;
   }
-  
+
   return true;
 }
 
 function ensureAgentSkillsInstalled() {
   logInfo("\nVerificando Vercel Agent Skills...");
-  
+
   // Testar se npx skills esta disponivel
   try {
     execSync("npx skills --version", { stdio: "pipe" });
@@ -305,7 +312,7 @@ function ensureAgentSkillsInstalled() {
     logInfo(`     npx skills add vercel-labs/agent-skills`);
     return false;
   }
-  
+
   // Verificar se skills ja estao instaladas
   try {
     const skillsOutput = execSync("npx skills list", { stdio: "pipe" }).toString();
@@ -325,13 +332,13 @@ function ensureAgentSkillsInstalled() {
 function installAgentSkills() {
   logInfo("\nInstalando Vercel Agent Skills...");
   logInfo("  Comando: npx skills add vercel-labs/agent-skills");
-  
+
   try {
     execSync("npx skills add vercel-labs/agent-skills", {
       stdio: "inherit"
     });
     logInfo("  ✓ Vercel Agent Skills instalado com sucesso");
-    
+
     // Verificar instalação
     try {
       const skillsOutput = execSync("npx skills list", { stdio: "pipe" }).toString();
@@ -363,7 +370,7 @@ function copyDirectory(sourceDir, targetDir) {
   // Verificar se source e target sao o mesmo
   const sourcePath = path.resolve(sourceDir);
   const targetPath = path.resolve(targetDir);
-  
+
   if (sourcePath === targetPath) {
     logError(`Source e destination nao podem ser o mesmo: ${sourceDir}`);
     return;
@@ -380,7 +387,7 @@ function isTemplateFile(relativePath) {
   if (!relativePath.startsWith('Feature-Documentation')) {
     return false;
   }
-  
+
   // Arquivos com "template" ou "exemplo-template" no nome sao templates
   const fileName = path.basename(relativePath).toLowerCase();
   return fileName.includes('template') || fileName.includes('exemplo-template');
@@ -391,13 +398,13 @@ function shouldCopyFile(sourcePath, targetPath, relativePath, isCoreDirectory) {
   if (isCoreDirectory) {
     return true;
   }
-  
+
   // Em Feature-Documentation, verificar se eh template
   if (isTemplateFile(relativePath)) {
     // Template so copia se nao existir
     return !fs.existsSync(targetPath);
   }
-  
+
   // Arquivos nao-template em Feature-Documentation sao ignorados
   return false;
 }
@@ -406,7 +413,7 @@ function copyFileSelective(sourceFile, targetFile, relativePath, isCoreDirectory
   if (!shouldCopyFile(sourceFile, targetFile, relativePath, isCoreDirectory)) {
     return false; // Arquivo ignorado ou ja existe (template)
   }
-  
+
   fs.ensureDirSync(path.dirname(targetFile));
   fs.copySync(sourceFile, targetFile, { overwrite: true });
   return true;
@@ -420,7 +427,7 @@ function copyDirectorySelective(sourceDir, targetDir, isCoreDirectory) {
 
   const sourcePath = path.resolve(sourceDir);
   const targetPath = path.resolve(targetDir);
-  
+
   if (sourcePath === targetPath) {
     logError(`Source e destination nao podem ser o mesmo: ${sourceDir}`);
     return;
@@ -429,16 +436,16 @@ function copyDirectorySelective(sourceDir, targetDir, isCoreDirectory) {
   const files = fs.readdirSync(sourceDir, { recursive: true });
   let copiedCount = 0;
   let skippedCount = 0;
-  
+
   for (const file of files) {
     const fullSourcePath = path.join(sourceDir, file);
     const fullTargetPath = path.join(targetDir, file);
     const relativePath = path.join(path.basename(sourceDir), file);
-    
+
     if (fs.statSync(fullSourcePath).isDirectory()) {
       continue; // Diretorios sao criados sob demanda
     }
-    
+
     const copied = copyFileSelective(fullSourcePath, fullTargetPath, relativePath, isCoreDirectory);
     if (copied) {
       copiedCount++;
@@ -446,7 +453,7 @@ function copyDirectorySelective(sourceDir, targetDir, isCoreDirectory) {
       skippedCount++;
     }
   }
-  
+
   return { copied: copiedCount, skipped: skippedCount };
 }
 
@@ -457,7 +464,7 @@ function checkExistingInstallation() {
     path.join(ROOT_DIR, '.nemesis', 'workflow-enforcement'),
     path.join(ROOT_DIR, '.nemesis')
   ];
-  
+
   const existingPaths = nemesisPaths.filter(p => fs.existsSync(p));
   return existingPaths.length > 0 ? existingPaths : null;
 }
@@ -467,7 +474,7 @@ function askUserConfirmation(question) {
     input: process.stdin,
     output: process.stdout
   });
-  
+
   return new Promise((resolve) => {
     rl.question(question, (answer) => {
       rl.close();
@@ -479,7 +486,7 @@ function askUserConfirmation(question) {
 function createDefaultConfig(configPath) {
   const configDir = path.dirname(configPath);
   fs.ensureDirSync(configDir);
-  
+
   const defaultConfigContent = `[nemesis]
 auto_gitignore = true
 backup_existing = true
@@ -506,7 +513,7 @@ create_issues_folder = true
 create_pr_folder = true
 create_prompts_folder = true
 `;
-  
+
   fs.writeFileSync(configPath, defaultConfigContent, 'utf8');
 }
 
@@ -525,7 +532,7 @@ async function runInstallation() {
   if (existingPaths) {
     logInfo("Nemesis ja instalado. Caminhos encontrados:");
     existingPaths.forEach(p => logInfo(`  - ${p}`));
-    
+
     const shouldOverwrite = await askUserConfirmation("\nDeseja sobrescrever? (s/N): ");
     if (!shouldOverwrite) {
       logInfo("\nInstalacao cancelada pelo usuario.");
@@ -551,16 +558,16 @@ async function runInstallation() {
   // Copiar estrutura .windsurf/ (core - sempre sobrescreve)
   logInfo("\nInstalando arquivos core (.windsurf/rules, .windsurf/workflows)...");
   const windsurfResult = copyDirectorySelective(
-    path.join(PACKAGE_ROOT, '.windsurf'), 
+    path.join(PACKAGE_ROOT, '.windsurf'),
     path.join(ROOT_DIR, '.windsurf'),
     true // isCoreDirectory = true
   );
   logInfo(`  ✓ ${windsurfResult.copied} arquivos core instalados`);
-  
+
   // Copiar Feature-Documentation/ (templates - seletivo)
   logInfo("\nInstalando templates (Feature-Documentation)...");
   const featureResult = copyDirectorySelective(
-    path.join(PACKAGE_ROOT, 'Feature-Documentation'), 
+    path.join(PACKAGE_ROOT, 'Feature-Documentation'),
     path.join(ROOT_DIR, 'Feature-Documentation'),
     false // isCoreDirectory = false (templates)
   );
@@ -568,11 +575,11 @@ async function runInstallation() {
   if (featureResult.skipped > 0) {
     logInfo(`  ℹ ${featureResult.skipped} arquivos ignorados (ja existem ou nao sao templates)`);
   }
-  
+
   // Copiar .nemesis/workflow-enforcement/ (core - sempre sobrescreve)
   logInfo("\nInstalando workflow enforcement...");
   const workflowResult = copyDirectorySelective(
-    path.join(PACKAGE_ROOT, 'src/workflow-enforcement'), 
+    path.join(PACKAGE_ROOT, 'src/workflow-enforcement'),
     path.join(ROOT_DIR, '.nemesis', 'workflow-enforcement'),
     true // isCoreDirectory = true
   );
@@ -582,17 +589,34 @@ async function runInstallation() {
   logInfo("\nInstalando hooks PreToolUse...");
   const hooksSourceDir = path.join(PACKAGE_ROOT, '.nemesis', 'hooks');
   const hooksTargetDir = path.join(ROOT_DIR, '.nemesis', 'hooks');
-  
+
   if (fs.existsSync(hooksSourceDir)) {
     const hooksResult = copyDirectorySelective(
-      hooksSourceDir, 
+      hooksSourceDir,
       hooksTargetDir,
       true // isCoreDirectory = true
     );
     logInfo(`  ✓ ${hooksResult.copied} hooks instalados`);
   } else {
-    logInfo(`  ℹ Diretorio de hooks nao encontrado no pacote fonte`);
+    logInfo(`  ℹ Diretório de hooks não encontrado no pacote fonte`);
   }
+
+  // Copiar arquivos específicos (smart-components.json)
+  logInfo("\nInstalando arquivos de configuração...");
+  let specificFilesCopied = 0;
+  SPECIFIC_FILES.forEach(file => {
+    const sourceFile = path.join(PACKAGE_ROOT, file);
+    const targetFile = path.join(ROOT_DIR, file);
+
+    if (fs.existsSync(sourceFile)) {
+      fs.ensureDirSync(path.dirname(targetFile));
+      fs.copyFileSync(sourceFile, targetFile, { overwrite: true });
+      logInfo(`  ✓ ${file} instalado`);
+      specificFilesCopied++;
+    } else {
+      logInfo(`  ⚠️ Arquivo não encontrado no pacote: ${file}`);
+    }
+  });
 
   // Validar estrutura antes de injetar scripts
   validateNemesisStructure();
@@ -606,28 +630,28 @@ async function runInstallation() {
     logInfo("✓ Arquivo de configuracao criado: .nemesis/config.toml");
   }
 
-  logInfo("\nInstalacao concluida com sucesso.");
-  logInfo("\nPara personalizar: edite .nemesis/config.toml");
-  
-  // Resumo final do ambiente
-  logInfo("\n=== Resumo da Instalacao ===");
-  logInfo("  ✓ Ambiente verificado e compativel");
-  logInfo("  ✓ Dependencias de runtime instaladas");
-  logInfo("  ✓ Vercel Agent Skills configuradas");
-  logInfo("  ✓ Arquivos core do Nemesis instalados");
-  logInfo("  ✓ Workflow Enforcement v2.0 ativo");
-  logInfo("  ✓ Hooks PreToolUse configurados");
-  logInfo("\n🚀 Nemesis pronto para uso!");
-}
+  logInfo("\nInstalacao concluída com sucesso.");
+  logInfo("\n🚀 Nemesis v2.0 - NOVOS RECURSOS:");
+  logInfo("  ✓ Detecção avançada de violações (React Hooks, UI/UX, Configuração)");
+  logInfo("  ✓ Workflow de correção automática (auto-fix-violations)");
+  logInfo("  ✓ Workflow de detecção de componentes smart (detect-smart-components)");
+  logInfo("  ✓ Validação de componentes UI com acessibilidade");
 
-try {
-  runInstallation().catch(error => {
-    logError("Falha durante a instalacao.");
+  // Criar arquivo de configuracao se nao existir
+  if (!fs.existsSync(CONFIG_FILE)) {
+    createDefaultConfig(CONFIG_FILE);
+    logInfo("✓ Arquivo de configuracao criado: .nemesis/config.toml");
+  }
+
+  try {
+    runInstallation().catch(error => {
+      logError("Falha durante a instalacao.");
+      logError(error instanceof Error ? error.message : "Erro desconhecido.");
+      process.exit(1);
+    });
+  } catch (error) {
+    logError("Falha durante a inicializacao.");
     logError(error instanceof Error ? error.message : "Erro desconhecido.");
     process.exit(1);
-  });
-} catch (error) {
-  logError("Falha durante a inicializacao.");
-  logError(error instanceof Error ? error.message : "Erro desconhecido.");
-  process.exit(1);
+  }
 }

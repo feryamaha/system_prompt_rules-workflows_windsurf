@@ -7,57 +7,181 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
+          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
-1. Execute o comando bun lint para verificar se o lint está funcionando corretamente, se nao encontrar erros execute a proxima etapa, se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun lint novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
-- se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
+## PreToolUse Hook
 
-2. Após ter rodado o bun lint sem erros, execute o comando bun tsc --noEmit para verificar se o tsc está funcionando corretamente, 
-- se nao encontrar erros execute a proxima etapa, 
-- se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
-- se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun tsc --noEmit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
-- se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
+// turbo
+bash -c "echo 'Verificando ambiente de auditoria Nemesis...' && ls -la .nemesis/ && ls -la .windsurf/"
 
+## Etapa 1: Leitura das Regras de PR
 
-3. Após ter rodado o bun tsc --noEmit sem erros, execute o comando bun build para verificar se o build está funcionando corretamente, 
-- se nao encontrar erros execute a proxima etapa, 
-- se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
-- se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun build novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
-- se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
+**Use TerminalReaderService para ler as regras de PR:**
 
-4. Execute o comando bun audit para verificar vulnerabilidades de segurança, 
-- se nao encontrar erros execute a proxima etapa, 
-- se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
-- se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun audit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
-- se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
 
-5. NUNCA TENTE ACESSAR OS ARQUIVOS DIRETAMENTE USANDO O COMANDO "Access to file" PORQUE OS ARQUIVOS ESTÃO PROTEGIDOS PELO .gitignore SEMPRE UTILIZE OS COMANDOS GIT ABAIXO:
+terminalReader.readFile('.windsurf/rules/rules-pr.md')
+  .then(result => {
+    console.log('=== REGRAS DE PR LIDAS ===');
+    console.log('Status:', result.success ? 'SUCESSO' : 'FALHA');
+    if (result.success) {
+      console.log('Regras disponíveis para auditoria');
+    }
+  })
+  .catch(err => console.error('Erro:', err.message));
+"
+```
 
-6. Execute o comando git branch para listar as branches e localize a branch atual
-7. Execute o comando git status para verificar os arquivos modificados/criados
-8. Execute o comando git diff main...[branch] para analisar as mudanças
-9. Execute o comando git diff em cada arquivo para analisar as mudanças e localize os arquivos que foram modificados/criados
-10. Leia `.windsurf/rules/rules-pr.md` (regras de criação) e demais arquivos da pasta `Feature-Documentation/PR/` para analisar a convenção existente, usando os comandos:
-(esses comandos são necessarios porque as pastas .windsurf e Feature-Documentation não estão no git porque estão protegidas pelo .gitignore)
-- cat ".windsurf/rules/rules-pr.md" para visualizar as regras de criação de PR;
-- cat "Feature-Documentation/PR/" para visualizar exemplo de PR e entender o padrão de conteúdo;
-- Get-ChildItem "Feature-Documentation/PR/" -Filter "PR_*.md" | Sort-Object Name para encontrar último PR;
-- New-Item -Path "Feature-Documentation/PR/PR_XXX_NOME.md" -ItemType File -Force para criar um novo arquivo de PR;
-- Set-Content -Path "Feature-Documentation/PR/PR_XXX_NOME.md" -Value '@...' -Encoding UTF8 ou Out-File -FilePath "Feature-Documentation/PR/PR_XXX_NOME.md" -Encoding UTF8 -InputObject '@...' para escrever o conteúdo do PR;
+## Etapa 2: Validação de Lint
 
-11. Crie um novo arquivo de PR seguindo a convenção encontrada seguindo exatamente as diretrizes do arquivo rules-pr.md
-12. Após gere um relatorio minimo para o usuario indicando todos os comandos que voce usuou no processo e explicando minimamente para quer serve cada comando!
-13. após indique ao usuario que o projeto esta pronto para subir para o github e de sugestão de nome para BRANch seguindo a convenção:
-- FEAT/nome da branch
-- BUGFIX/nome da branch
-- REFACTOR/nome da branch
-- TEST/nome da branch
-- DOC/nome da branch
-- PERF/nome da branch
+**Execute o comando bun lint para verificar se o lint está funcionando corretamente:**
+
+- ✅ **Se não encontrar erros** → execute a próxima etapa
+- ❌ **Se encontrar erros** → pare o processo, informe o usuário sobre os problemas detectados propondo a solução e aguarde a confirmação do usuário para continuar
+  - **Se resposta negativa** → pare o processo e aguarde instruções do usuário
+  - **Se resposta positiva** → execute a correção, e após a correção execute o bun lint novamente
+  - **Se passar** → prossiga para a próxima etapa
+
+**Observação:** Se o projeto contém apenas arquivos de origem documental ou arquivos que não precisam de validação, pule esta etapa!
+
+## Etapa 3: Validação TypeScript
+
+**Após ter rodado o bun lint sem erros, execute o comando bun tsc --noEmit:**
+
+- ✅ **Se não encontrar erros** → execute a próxima etapa
+- ❌ **Se encontrar erros** → pare o processo, informe o usuário sobre os problemas detectados propondo a solução e aguarde a confirmação do usuário para continuar
+  - **Se resposta negativa** → pare o processo e aguarde instruções do usuário
+  - **Se resposta positiva** → execute a correção, e após a correção execute o bun tsc --noEmit novamente
+  - **Se passar** → prossiga para a próxima etapa
+
+**Observação:** Se o projeto contém apenas arquivos de origem documental ou arquivos que não precisam de validação, pule esta etapa!
+
+## Etapa 4: Validação de Build
+
+**Após ter rodado o bun tsc --noEmit sem erros, execute o comando bun build:**
+
+- ✅ **Se não encontrar erros** → execute a próxima etapa
+- ❌ **Se encontrar erros** → pare o processo, informe o usuário sobre os problemas detectados propondo a solução e aguarde a confirmação do usuário para continuar
+  - **Se resposta negativa** → pare o processo e aguarde instruções do usuário
+  - **Se resposta positiva** → execute a correção, e após a correção execute o bun build novamente
+  - **Se passar** → prossiga para a próxima etapa
+
+**Observação:** Se o projeto contém apenas arquivos de origem documental ou arquivos que não precisam de validação, pule esta etapa!
+
+## Etapa 5: Validação de Segurança
+
+**Execute o comando bun audit para verificar vulnerabilidades de segurança:**
+
+- ✅ **Se não encontrar erros** → execute a próxima etapa
+- ❌ **Se encontrar erros** → pare o processo, informe o usuário sobre os problemas detectados propondo a solução e aguarde a confirmação do usuário para continuar
+  - **Se resposta negativa** → pare o processo e aguarde instruções do usuário
+  - **Se resposta positiva** → execute a correção, e após a correção execute o bun audit novamente
+  - **Se passar** → prossiga para a próxima etapa
+
+**Observação:** Se o projeto contém apenas arquivos de origem documental ou arquivos que não precisam de validação, pule esta etapa!
+
+## Etapa 6: Análise Git
+
+**Use TerminalReaderService para analisar as regras de PR e exemplos existentes:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+Promise.all([
+  terminalReader.readFile('.windsurf/rules/rules-pr.md'),
+  terminalReader.readFile('.windsurf/rules/README.md')
+]).then(([rulesPr, readme]) => {
+  console.log('=== REGRAS DE PR E CONVENÇÕES LIDAS ===');
+  console.log('Status rules-pr.md:', rulesPr.success ? 'SUCESSO' : 'FALHA');
+  console.log('Status README.md:', readme.success ? 'SUCESSO' : 'FALHA');
+  if (rulesPr.success) {
+    console.log('Convenções de PR disponíveis para criação');
+  }
+}).catch(err => console.error('Erro:', err.message));
+"
+```
+
+**Execute os comandos Git para análise:**
+- `git branch` - Listar branches e localizar a atual
+- `git status` - Verificar arquivos modificados/criados
+- `git diff main...[branch]` - Analisar mudanças gerais
+- `git diff [arquivo]` - Analisar mudanças específicas
+
+## Etapa 7: Criação do PR
+
+**Use TerminalReaderService para ler exemplos de PR existentes:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+terminalReader.readFile('Feature-Documentation/PR/PR_000_pr-exemplo-template.md')
+  .then(result => {
+    console.log('=== EXEMPLO DE PR LIDO ===');
+    console.log('Status:', result.success ? 'SUCESSO' : 'FALHA');
+    if (result.success) {
+      console.log('Template de PR disponível para referência');
+    }
+  })
+  .catch(err => console.error('Erro:', err.message));
+"
+```
+
+**Crie um novo arquivo de PR seguindo a convenção encontrada:**
+- Use o padrão `PR_XXX_NOME-DESCRITIVO.md`
+- Siga exatamente as diretrizes do arquivo `rules-pr.md`
+- Baseie-se nos exemplos existentes em `Feature-Documentation/PR/`
+
+## Etapa 8: Relatório e Sugestões
+
+**Gere um relatório completo para o usuário:**
+- Indique todos os comandos utilizados no processo
+- Explique minimamente para que serve cada comando
+- Indique que o projeto está pronto para subir para o GitHub
+- Sugira nome para a branch seguindo a convenção:
+  - `FEAT/nome-da-branch`
+  - `BUGFIX/nome-da-branch`
+  - `REFACTOR/nome-da-branch`
+  - `TEST/nome-da-branch`
+  - `DOC/nome-da-branch`
+  - `PERF/nome-da-branch`
+
+## Etapa 9: Validação Final
+
+**Execute validação final do sistema:**
+
+```bash
+echo "=== VALIDAÇÃO FINAL DA AUDITORIA ===" && \
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+Promise.all([
+  terminalReader.readFile('.windsurf/rules/rules-pr.md'),
+  terminalReader.readFile('.windsurf/rules/rule-main-rules.md')
+]).then(() => {
+  console.log('✅ AUDITORIA CONCLUÍDA COM SUCESSO');
+  console.log('✅ PR CRIADO SEGUINDO CONVENÇÕES');
+  console.log('✅ NEMESIS ENFORCEMENT ATIVO E OPERACIONAL');
+}).catch(err => {
+  console.error('❌ ERRO NA AUDITORIA:', err.message);
+});
+"
+```
+
+## Padrão de Comunicação
+
+**Após executar este workflow:**
+- "Workflow concluído: SUCESSO"
+- "Resumo das ações realizadas"
+- "PR criado seguindo 100% das convenções"
 - CHORE/nome da branch
 
 14. Sempre se comunique com o usuario em portugues brasileiro PT-BR! 

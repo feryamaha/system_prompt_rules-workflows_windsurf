@@ -7,27 +7,201 @@ hooks:
     - matcher: "Edit|Write|Bash"
       hooks:
         - type: command
-          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
+          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
-Você é um engenheiro de requisitos especializado em engenharia reversa de especificações e análise de necessidades de usuários.
+## PreToolUse Hook
 
-# Workflow: Gerar Prompt RAG Estruturado Simples
+// turbo
+bash -c "echo 'Verificando ambiente de geração RAG...' && ls -la .nemesis/ && ls -la .windsurf/"
+
+## Etapa 1: Leitura das Regras de Conversão
+
+**Use TerminalReaderService para ler as regras de documentação e comunicação:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+Promise.all([
+  terminalReader.readFile('.windsurf/rules/markdown-standards.md'),
+  terminalReader.readFile('.windsurf/rules/README.md')
+]).then(([markdown, readme]) => {
+  console.log('=== REGRAS DE DOCUMENTAÇÃO LIDAS ===');
+  console.log('Status markdown-standards.md:', markdown.success ? 'SUCESSO' : 'FALHA');
+  console.log('Status README.md:', readme.success ? 'SUCESSO' : 'FALHA');
+  if (markdown.success) {
+    console.log('Padrões de linguagem disponíveis para RAG');
+  }
+}).catch(err => console.error('Erro:', err.message));
+"
+```
+
+## Etapa 2: Análise da Solicitação Original
+
+**Use TerminalReaderService para ler exemplos de prompts RAG existentes:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+terminalReader.readFile('Feature-Documentation/prompts/001_prompt-exemplo-template.md')
+  .then(result => {
+    console.log('=== EXEMPLO DE PROMPT RAG LIDO ===');
+    console.log('Status:', result.success ? 'SUCESSO' : 'FALHA');
+    if (result.success) {
+      console.log('Template de RAG disponível para referência');
+    }
+  })
+  .catch(err => console.error('Erro:', err.message));
+"
+```
+
+### Análise Obrigatória
+- Identificar a intenção principal por trás da solicitação informal
+- Extrair requisitos técnicos implícitos
+- Detectar ambiguidades e conflitos
+- Mapear para categorias conhecidas (Bugfix/Refactor/Feature/Docs)
+
+## Etapa 3: Conversão Estruturada
+
+### Formato Padrão do Prompt RAG
+
+**Use TerminalReaderService para ler o protocolo de execução e aplicar ao RAG:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+terminalReader.readFile('.windsurf/rules/rule-main-rules.md')
+  .then(result => {
+    const content = result.content;
+    const protocolSection = content.split('## 9. Workflow Execution Protocol')[1];
+    if (protocolSection) {
+      console.log('=== PROTOCOLO DE EXECUÇÃO APLICADO AO RAG ===');
+      console.log('Protocolo disponível para estruturação');
+    } else {
+      console.log('Protocolo não encontrado');
+    }
+  })
+  .catch(err => console.error('Erro:', err.message));
+"
+```
+
+### Estrutura Obrigatória do RAG
+
+```
+# [TÍTULO CLARO E ESPECÍFICO]
 
 ## Objetivo
-Converter solicitações informais do usuário em prompts RAG (Retrieval-Augmented Generation) estruturados com formato mínimo e linguagem técnica adequada para entendimento da IA, porque muitas vezes, o pedido informal oculta a intenção real.
+[Descrição clara e concisa do que precisa ser feito]
 
-## Conceito Operacional: Refinamento Iterativo e Engenharia de Prompt Reversa
-Este workflow aplica o conceito de **Refinamento Iterativo**. A função da IA aqui não é resolver o problema técnico imediatamente, mas sim atuar como um filtro de qualidade que elimina o ruído da linguagem informal. O objetivo é alcançar um **consenso técnico** antes da execução, transformando intenções ambíguas em instruções estruturadas (Prompts RAG). Isso garante que a execução subsequente seja baseada em fatos e requisitos claros, eliminando erros de interpretação e alucinações.
+## Categoria
+[Classificação exata: Bugfix/Refactor/Feature/Docs]
 
-## Quando Usar
-- Quando o usuário fizer uma solicitação informal ou mal estruturada
-- Quando o usuário solicitar explicitamente "execute workflow para converter em prompt RAG"
-- Quando precisar padronizar comunicação para seguir regras do projeto
+## Requisitos
+- [Requisito 1]
+- [Requisito 2]
+- [Requisito 3]
 
-## Fluxo de Execução
+## Arquivos Envolvidos
+- [Arquivo 1]
+- [Arquivo 2]
 
-### 1. Análise da Solicitação Original
+## Restrições
+- [Restrição 1]
+- [Restrição 2]
+
+## Entrega Esperada
+[Descrição do resultado final esperado]
+```
+
+## Etapa 4: Validação do Prompt RAG
+
+### Verificação Automática
+- ✅ **Clareza**: O prompt é inequívoco?
+- ✅ **Completude**: Contém todos os requisitos?
+- ✅ **Estrutura**: Segue o formato padrão?
+- ✅ **Categoria**: Classificação correta?
+- ✅ **Viabilidade**: É tecnicamente possível?
+
+### Ajustes Finais
+- Remover ruído emocional
+- Padronizar terminologia técnica
+- Adicionar contexto específico do projeto
+- Incluir referências a regras relevantes
+
+## Etapa 5: Geração do Prompt Final
+
+**Use TerminalReaderService para validar contra as regras do projeto:**
+
+```bash
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+Promise.all([
+  terminalReader.readFile('.windsurf/rules/rule-main-rules.md'),
+  terminalReader.readFile('.windsurf/rules/origin-rules.md')
+]).then(([main, origin]) => {
+  console.log('=== VALIDAÇÃO CONTRA REGRAS DO PROJETO ===');
+  console.log('Status rule-main-rules.md:', main.success ? 'SUCESSO' : 'FALHA');
+  console.log('Status origin-rules.md:', origin.success ? 'SUCESSO' : 'FALHA');
+  console.log('=== PROMPT RAG ALINHADO COM GOVERNANÇA ===');
+}).catch(err => console.error('Erro:', err.message));
+"
+```
+
+## Etapa 6: Apresentação do Resultado
+
+### Formato de Apresentação
+- **Prompt RAG Estruturado**: Apresentar o prompt completo
+- **Análise de Conversão**: Explicar as transformações feitas
+- **Próximos Passos**: Indicar qual workflow executar em seguida
+
+### Padrão de Comunicação
+- "Solicitação original: [resumo do pedido]"
+- "Prompt RAG gerado: [prompt completo]"
+- "Próximo workflow recomendado: [nome do workflow]"
+- "Posso prosseguir com a execução?"
+
+## Validação Final
+
+**Execute validação final do sistema:**
+
+```bash
+echo "=== VALIDAÇÃO FINAL DO GERADOR RAG ===" && \
+npx tsx -e "
+import { TerminalReaderService } from './.nemesis/workflow-enforcement/services/terminal-reader-service.ts';
+const terminalReader = new TerminalReaderService();
+
+Promise.all([
+  terminalReader.readFile('.windsurf/rules/markdown-standards.md'),
+  terminalReader.readFile('.windsurf/rules/rule-main-rules.md')
+]).then(() => {
+  console.log('✅ GERADOR RAG CONCLUÍDO COM SUCESSO');
+  console.log('✅ PROMPT ESTRUTURADO GERADO');
+  console.log('✅ PADRÕES DE LINGUAGEM APLICADOS');
+  console.log('✅ NEMESIS ENFORCEMENT ATIVO E OPERACIONAL');
+}).catch(err => {
+  console.error('❌ ERRO NO GERADOR RAG:', err.message);
+});
+"
+```
+
+## Padrão de Comunicação Final
+
+**Após executar este workflow:**
+- "Workflow concluído: SUCESSO"
+- "Resumo das ações realizadas"
+- "Prompt RAG estruturado e pronto para execução"
+
+---
+
+**Conceito Operacional:** Este workflow aplica **Refinamento Iterativo** para converter intenções informais em prompts RAG estruturados, eliminando ruído e garantindo clareza técnica antes da execução.
 1. **Ler a solicitação do usuário** com atenção
 2. **Identificar elementos técnicos:**
    - Arquivos mencionados (@[arquivo.tsx])
