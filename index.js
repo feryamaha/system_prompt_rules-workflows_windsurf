@@ -7,14 +7,6 @@ const readline = require("readline");
 const ROOT_DIR = process.cwd();
 const PACKAGE_ROOT = path.resolve(__dirname);
 const CONFIG_FILE = path.join(ROOT_DIR, ".nemesis", "config.toml");
-const SOURCE_DIRS = [
-  ".windsurf",
-  "Feature-Documentation",
-  "src/workflow-enforcement/services",
-  "src/workflow-enforcement",
-  "tests/workflow-enforcement",
-  ".nemesis"
-];
 
 const SPECIFIC_FILES = [
   ".nemesis/smart-components.json"
@@ -86,9 +78,6 @@ function updateGitignore() {
     '.windsurf/',
     'Feature-Documentation/',
     '.nemesis/',
-    'src/workflow-enforcement/',
-    'src/workflow-enforcement/services/',
-    'tests/workflow-enforcement/',
     ''
   ];
 
@@ -212,61 +201,6 @@ function loadConfig() {
   return defaultConfig;
 }
 
-function updateGitignore() {
-  const gitignorePath = path.join(ROOT_DIR, ".gitignore");
-
-  const nemesisSection = `
-# START Nemesis Generated Files
-# Arquivos gerados pela instalação do Nemesis (bloquear para nao versionar)
-.windsurf/mcp_config.json
-.vscode/mcp.json
-CLAUDE.md
-.cursor/mcp.json
-.clinerules
-.aider.conf.yml
-.amazonq/mcp.json
-.amazonq/rules/
-.augment/rules/
-.codex/config.toml
-.crush.json
-.goosehints
-.idx/airules.md
-.junie/guidelines.md
-.kiro/steering/
-.openhands/microagents/
-.roo/mcp.json
-.trae/rules/
-.vibe/config.toml
-.firebender.json
-.opencode.json
-.gemini/settings.json
-.qwen/settings.json
-# END Nemesis Generated Files`;
-
-  let gitignoreContent = '';
-  if (fs.existsSync(gitignorePath)) {
-    gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
-  }
-
-  // Remover seção antiga do Nemesis (se existir)
-  const startMarker = '# START Nemesis Generated Files';
-  const endMarker = '# END Nemesis Generated Files';
-  const startIndex = gitignoreContent.indexOf(startMarker);
-  const endIndex = gitignoreContent.indexOf(endMarker);
-
-  if (startIndex !== -1 && endIndex !== -1) {
-    gitignoreContent =
-      gitignoreContent.substring(0, startIndex) +
-      gitignoreContent.substring(endIndex + endMarker.length);
-  }
-
-  // Adicionar nova seção
-  gitignoreContent += nemesisSection;
-
-  // Escrever .gitignore atualizado
-  fs.writeFileSync(gitignorePath, gitignoreContent.trim() + '\n');
-  logInfo("✓ .gitignore atualizado com regras do Nemesis");
-}
 
 function checkEnvironment() {
   logInfo("\nVerificando ambiente de instalacao...");
@@ -636,22 +570,11 @@ async function runInstallation() {
   logInfo("  ✓ Workflow de correção automática (auto-fix-violations)");
   logInfo("  ✓ Workflow de detecção de componentes smart (detect-smart-components)");
   logInfo("  ✓ Validação de componentes UI com acessibilidade");
-
-  // Criar arquivo de configuracao se nao existir
-  if (!fs.existsSync(CONFIG_FILE)) {
-    createDefaultConfig(CONFIG_FILE);
-    logInfo("✓ Arquivo de configuracao criado: .nemesis/config.toml");
-  }
-
-  try {
-    runInstallation().catch(error => {
-      logError("Falha durante a instalacao.");
-      logError(error instanceof Error ? error.message : "Erro desconhecido.");
-      process.exit(1);
-    });
-  } catch (error) {
-    logError("Falha durante a inicializacao.");
-    logError(error instanceof Error ? error.message : "Erro desconhecido.");
-    process.exit(1);
-  }
 }
+
+// === EXECUÇÃO PRINCIPAL (fora da função) ===
+runInstallation().catch(error => {
+  logError("Falha durante a instalacao.");
+  logError(error instanceof Error ? error.message : "Erro desconhecido.");
+  process.exit(1);
+});

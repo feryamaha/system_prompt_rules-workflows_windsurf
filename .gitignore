@@ -138,3 +138,8 @@ CLAUDE.md
 .gemini/settings.json
 .qwen/settings.json
 # END Nemesis Generated Files
+
+# Nemesis Framework
+.windsurf/
+Feature-Documentation/
+.nemesis/
