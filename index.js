@@ -9,7 +9,9 @@ const PACKAGE_ROOT = path.resolve(__dirname);
 const CONFIG_FILE = path.join(ROOT_DIR, ".nemesis", "config.toml");
 const SOURCE_DIRS = [
   ".windsurf",
-  "Feature-Documentation"
+  "Feature-Documentation",
+  "src/workflow-enforcement/services",
+  "tests/workflow-enforcement"
 ];
 
 function logInfo(message) {
@@ -67,6 +69,44 @@ function ensureDependencies() {
         }
       }
     }
+  }
+}
+
+function updateGitignore() {
+  const gitignorePath = path.join(ROOT_DIR, '.gitignore');
+  const nemesisEntries = [
+    '',
+    '# Nemesis Framework',
+    '.windsurf/',
+    'Feature-Documentation/',
+    '.nemesis/',
+    'src/workflow-enforcement/services/',
+    'tests/workflow-enforcement/',
+    ''
+  ];
+  
+  try {
+    let gitignoreContent = '';
+    
+    // Ler .gitignore existente
+    if (fs.existsSync(gitignorePath)) {
+      gitignoreContent = fs.readFileSync(gitignorePath, 'utf8');
+    }
+    
+    // Verificar se já tem as entradas do Nemesis
+    const hasNemesisSection = gitignoreContent.includes('# Nemesis Framework');
+    
+    if (!hasNemesisSection) {
+      // Adicionar entradas do Nemesis
+      gitignoreContent += nemesisEntries.join('\n');
+      
+      fs.writeFileSync(gitignorePath, gitignoreContent, 'utf8');
+      logInfo('  ✓ Entradas do Nemesis adicionadas ao .gitignore');
+    } else {
+      logInfo('  ✓ Entradas do Nemesis já existem no .gitignore');
+    }
+  } catch (error) {
+    logError('  ✗ Erro ao atualizar .gitignore: ' + error.message);
   }
 }
 
@@ -497,10 +537,8 @@ async function runInstallation() {
   // Carregar configuracao
   const config = loadConfig();
 
-  // Atualizar .gitignore se configurado
-  if (config.nemesis.auto_gitignore) {
-    updateGitignore();
-  }
+  // Atualizar .gitignore automaticamente
+  updateGitignore();
 
   // Garantir dependencias de runtime
   ensureDependencies();

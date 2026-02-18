@@ -15,7 +15,7 @@ O projeto é uma aplicação web moderna desenvolvida com **Next.js (App Router)
 - ✅ **Arquitetura de Microfrontends** (múltiplos domínios, reutilização de componentes)
 - ✅ **Modularidade e Escalabilidade** (separação clara de camadas: UI → shared → main-content → rotas)
 - ✅ **Clean Architecture** (tipagens centralizadas, UI pura, lógica isolada em hooks/utils)
-- ✅ **Conformidade com padrões oficiais** (Next.js, React, TypeScript, Tailwind CSS, Yarn Berry)
+- ✅ **Conformidade com padrões oficiais** (Next.js, React, TypeScript, Tailwind CSS, Bun)
 - ✅ **Segurança OWASP** (middleware com nonce, CSP Level 3, headers de segurança)
 
 ---
@@ -103,21 +103,19 @@ src/types/
 - Fonte padrão definida no layout global.
 - Acessibilidade com `:focus-visible` configurado.
 
-### 2.5 Yarn (Berry + PnP)
+### 2.5 Bun
 **Status:** ✅ **CONFORME**
 
 | Aspecto | Implementação | Conformidade |
 |---------|---------------|--------------|
-| **Plug'n'Play** | `.pnp.cjs` e `.pnp.loader.mjs` | ✅ Ativado |
-| **Zero-Install** | Cache versionado em `.yarn/cache/` | ✅ Implementado |
-| **Package Manager** | Yarn pinado em `package.json` | ✅ Pinado |
-| **Immutable Lock** | `yarn.lock` versionado | ✅ Presente |
-| **Peer Dependencies** | `.yarnrc.yml` com `packageExtensions` | ✅ Resolvido |
+| **Package Manager** | Bun pinado em `package.json` | ✅ Pinado |
+| **Lockfile** | `bun.lockb` gerado | ✅ Presente |
 | **Node.js** | Versão definida em `.nvmrc` | ✅ Definido |
-| **Corepack** | Habilita Yarn via `corepack enable` | ✅ Documentado |
+| **Corepack** | Habilita Bun via `corepack enable` | ✅ Documentado |
 
 **Detalhes:**
 - Scripts padrão de desenvolvimento e build.
+- Performance superior de instalação e execução.
 - Dependências principais: framework, UI, tipagem e validação.
 - DevDependencies: PostCSS e tipos de Node/React.
 
@@ -359,7 +357,7 @@ src/types/
 
 ### 6.2 Validação de Dependências
 
-**Comando:** `yarn install --check-cache`
+**Comando:** `bun install --check-cache`
 
 - ✅ Valida checksums de todas as dependências.
 - ✅ Detecta pacotes comprometidos ou alterados.
@@ -451,10 +449,10 @@ src/types/
 - [x] Breakpoints customizados
 - [x] Utilities (scrollbar, focus-visible)
 
-#### Yarn Berry
-- [x] Plug'n'Play ativado
-- [x] Zero-Install (cache versionado)
-- [x] Peer dependencies resolvidas
+#### Bun
+- [x] Package Manager pinado
+- [x] Lockfile gerado
+- [x] Node.js definido
 - [x] Node.js 22.16.0 definido
 - [x] Corepack habilitado
 
@@ -499,7 +497,7 @@ src/types/
 O projeto está **100% CONFORME** com:
 
 ✅ **Padrões de arquitetura** (microfrontends, modularidade, clean architecture)
-✅ **Stack tecnológico** (Next.js, React, TypeScript, Tailwind CSS, Yarn)
+✅ **Stack tecnológico** (Next.js, React, TypeScript, Tailwind CSS, Bun)
 ✅ **Segurança OWASP** (middleware, nonce, CSP Level 3, headers)
 ✅ **Convenções do projeto** (tipagem, UI separation, arquitetura de pastas)
 ✅ **Boas práticas** (documentação, reutilização, escalabilidade)

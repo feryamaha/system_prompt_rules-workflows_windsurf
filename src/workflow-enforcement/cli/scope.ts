@@ -6,12 +6,12 @@
  * O escopo e definido pelo HUMANO e validado pelo PreToolUse hook automaticamente.
  * 
  * Comandos:
- *   yarn nemesis:scope set <file1> [file2] ...   Define escopo com arquivos especificos
- *   yarn nemesis:scope add <file>                 Adiciona arquivo ao escopo existente
- *   yarn nemesis:scope add-pattern <glob>         Adiciona pattern glob ao escopo
- *   yarn nemesis:scope from-rag <rag-file>        Extrai arquivos do prompt RAG
- *   yarn nemesis:scope show                       Mostra escopo atual
- *   yarn nemesis:scope clear                      Remove escopo (modo aberto)
+ *   bun run nemesis:scope set <file1> [file2] ...   Define escopo com arquivos especificos
+ *   bun run nemesis:scope add <file>                 Adiciona arquivo ao escopo existente
+ *   bun run nemesis:scope add-pattern <glob>         Adiciona pattern glob ao escopo
+ *   bun run nemesis:scope from-rag <rag-file>        Extrai arquivos do prompt RAG
+ *   bun run nemesis:scope show                       Mostra escopo atual
+ *   bun run nemesis:scope clear                      Remove escopo (modo aberto)
  */
 
 import fs from 'fs';
@@ -102,7 +102,7 @@ function extractFilesFromRAG(ragContent: string): string[] {
 function cmdSet(files: string[]): void {
   if (files.length === 0) {
     console.error('Erro: Forneca pelo menos um arquivo.');
-    console.error('Uso: yarn nemesis:scope set <file1> [file2] ...');
+    console.error('Uso: bun run nemesis:scope set <file1> [file2] ...');
     process.exit(1);
   }
 
@@ -225,20 +225,20 @@ function showHelp(): void {
 Nemesis Scope Manager - Controle de escopo de edicao
 
 Comandos:
-  yarn nemesis:scope set <file1> [file2] ...   Define escopo com arquivos especificos
-  yarn nemesis:scope add <file>                 Adiciona arquivo ao escopo existente
-  yarn nemesis:scope add-pattern <glob>         Adiciona pattern glob ao escopo
-  yarn nemesis:scope from-rag <rag-file>        Extrai arquivos do prompt RAG automaticamente
-  yarn nemesis:scope show                       Mostra escopo atual
-  yarn nemesis:scope clear                      Remove escopo (modo aberto)
+  bun run nemesis:scope set <file1> [file2] ...   Define escopo com arquivos especificos
+  bun run nemesis:scope add <file>                 Adiciona arquivo ao escopo existente
+  bun run nemesis:scope add-pattern <glob>         Adiciona pattern glob ao escopo
+  bun run nemesis:scope from-rag <rag-file>        Extrai arquivos do prompt RAG automaticamente
+  bun run nemesis:scope show                       Mostra escopo atual
+  bun run nemesis:scope clear                      Remove escopo (modo aberto)
 
 Exemplos:
-  yarn nemesis:scope set "src/components/ui/Button.tsx"
-  yarn nemesis:scope add "src/types/ui/button.types.ts"
-  yarn nemesis:scope add-pattern "src/hooks/**/*.hook.ts"
-  yarn nemesis:scope from-rag "Feature-Documentation/prompts/032_descricao.md"
-  yarn nemesis:scope show
-  yarn nemesis:scope clear
+  bun run nemesis:scope set "src/components/ui/Button.tsx"
+  bun run nemesis:scope add "src/types/ui/button.types.ts"
+  bun run nemesis:scope add-pattern "src/hooks/**/*.hook.ts"
+  bun run nemesis:scope from-rag "Feature-Documentation/prompts/032_descricao.md"
+  bun run nemesis:scope show
+  bun run nemesis:scope clear
 
 Funcionamento:
   - O escopo define quais arquivos a IA pode editar

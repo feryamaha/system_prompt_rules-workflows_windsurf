@@ -63,9 +63,9 @@ SIGA EXATAMENTE A MESMA CONVENÇÃO DO TEMPLATE EXEMPLO @Feature-Documentation/P
 
 | Comando             | Resultado (OK/FALHA) | Observações            |
 |---------------------|----------------------|------------------------|
-| yarn lint           | OK                   | ESLint CLI funcionando |
-| yarn tsc --noEmit   | OK                   | TypeScript valido      |
-| yarn build          | OK                   | Build sucesso          |
+| bun lint            | OK                   | ESLint CLI funcionando |
+| bun tsc --noEmit    | OK                   | TypeScript valido      |
+| bun build           | OK                   | Build sucesso          |
 
 - **A tabela de validação CLI NUNCA deverá estar no início do arquivo**  
 - A inclusão da tabela do resultados dos comandos (lint, tsc, build) deve ficar **somente na seção Validações**, no final do documento  
@@ -73,7 +73,7 @@ SIGA EXATAMENTE A MESMA CONVENÇÃO DO TEMPLATE EXEMPLO @Feature-Documentation/P
 - Proibido emojis em qualquer parte do PR  
 - Proibido linguagem promocional ou excessivamente informal  
 - Manter acentuação correta (ç, ã, õ, á, é, í, ú) — usar editor que preserve UTF-8 se atentar com o comando set-Content do powershell para preservar acentuação para nao ocorrer esse tipo de erro de escrita: Implementa��o, pol�ticas, padroniza��o em palavras que possuem acentuação USE SEMPRE  UTF-8  NUNCA UTILIZE ASCII/ANSI.
-- Termos recorrentes esperados: microcomponentes atômicos, tokens do design system, pipeline modular, composição, governança, validação visual, conformidade, Yarn Berry + PnP
+- Termos recorrentes esperados: microcomponentes atômicos, tokens do design system, pipeline modular, composição, governança, validação visual, conformidade, Bun + PnP
 - NUNCA INDIQUE PROXIMOS PASSOS AO USUARIO
 - NUNCA INDIQUE VALIDAÇÕES AO USUARIO!
 - NUNCA INDIQUE DECISÕES TECNICAS AO USUARIO!
@@ -88,9 +88,9 @@ SIGA EXATAMENTE A MESMA CONVENÇÃO DO TEMPLATE EXEMPLO @Feature-Documentation/P
 Executar sempre, nesta ordem exata:
 
 ```bash
-yarn lint
-yarn tsc --noEmit
-yarn build
+bun lint
+bun tsc --noEmit
+bun build
 ```
 Seguir este guia e as regras no arquivo `create-pr` mantém os PRs consistentes e evita regressões de qualidade.
 

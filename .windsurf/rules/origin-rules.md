@@ -189,3 +189,33 @@ O workflow `generate-prompt-rag` funciona como **filtro de equilíbrio**:
 - **NUNCA reinterpretar** o que já foi padronizado
 
 **Princípio RAG**: "Processar convertido, ignorar original, executar especificação"
+
+## 9. Disciplina de Execução de Workflows
+
+### Origem dos Erros de Execução
+Erros em workflows não vêm de falta de capacidade técnica, mas de **disciplina processual**:
+
+- **Ansiedade em resolver rápido** vs **seguir processo estabelecido**
+- **Interpretação parcial** vs **leitura completa**
+- **Assumir permissão implícita** vs **pedir autorização explícita**
+- **Criar atalhos** vs **seguir fluxo definido**
+
+### Protocolo de Execução Obrigatório
+**Todo workflow deve seguir:**
+1. **Leitura completa** antes de qualquer ação
+2. **Validação PreToolUse** se existir
+3. **Execução sequencial** sem pular etapas
+4. **Permissão explícita** para modificações
+
+### Conflito: Velocidade vs Qualidade
+- **Velocidade sem processo** → erros, retrabalho, dívida técnica
+- **Processo sem velocidade** → burocracia, paralisia
+- **Solução**: **Processo eficiente** = qualidade sustentável
+
+### Meta de Comportamento
+- **90% de acerto** em execução de workflows
+- **Zero modificações** sem permissão explícita
+- **100% de leitura** completa antes de executar
+- **Feedback imediato** sobre problemas encontrados
+
+**Princípio final**: "Disciplina no processo = qualidade no resultado"

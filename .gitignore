@@ -110,8 +110,10 @@ temp/
 ehthumbs.db
 Thumbs.db
 
+
+
 # START Nemesis Generated Files
-# Arquivos gerados pela instalação do Nemesis (bloquear para não versionar)
+# Arquivos gerados pela instalação do Nemesis (bloquear para nao versionar)
 .windsurf/mcp_config.json
 .vscode/mcp.json
 CLAUDE.md
@@ -135,8 +137,4 @@ CLAUDE.md
 .opencode.json
 .gemini/settings.json
 .qwen/settings.json
-# Nemesis runtime files
-.nemesis/scope.json
-violations.log
-violation-report.md
 # END Nemesis Generated Files

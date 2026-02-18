@@ -23,24 +23,26 @@ const fs = require('fs');
 // ============================================================
 const projectRoot = path.join(__dirname, '..', '..');
 
-// Detectar ambiente antes de procurar o hook
-function detectEnvironment() {
+// Detectar ambiente do PROJETO HOSPEDEIRO antes de procurar o hook
+function detectHostEnvironment() {
   const os = process.platform;
   const hasYarnLock = fs.existsSync(path.join(projectRoot, 'yarn.lock'));
   const hasBunLock = fs.existsSync(path.join(projectRoot, 'bun.lockb'));
   const hasNpmLock = fs.existsSync(path.join(projectRoot, 'package-lock.json'));
+  const hasPnpmLock = fs.existsSync(path.join(projectRoot, 'pnpm-lock.yaml'));
   
-  let packageManager = 'unknown';
+  let packageManager = 'bun'; // Default do Nemesis
   if (hasYarnLock) packageManager = 'yarn';
   else if (hasBunLock) packageManager = 'bun';
   else if (hasNpmLock) packageManager = 'npm';
+  else if (hasPnpmLock) packageManager = 'pnpm';
   
   return { os, packageManager };
 }
 
-const { os, packageManager } = detectEnvironment();
+const { os, packageManager } = detectHostEnvironment();
 
-console.log(`🔍 Nemesis v2 - Ambiente detectado: ${os} / ${packageManager}`);
+console.log(`🔍 Nemesis v2 - Projeto hospedeiro detectado: ${os} / ${packageManager}`);
 
 const possiblePaths = [
   // Localizacao 1: Repo original (src/workflow-enforcement/)

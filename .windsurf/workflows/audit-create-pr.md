@@ -10,29 +10,29 @@ hooks:
           command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
-1. Execute o comando yarn lint para verificar se o lint está funcionando corretamente, se nao encontrar erros execute a proxima etapa, se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn lint novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
+1. Execute o comando bun lint para verificar se o lint está funcionando corretamente, se nao encontrar erros execute a proxima etapa, se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun lint novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
 - se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
 
-2. Após ter rodado o yarn lint sem erros, execute o comando yarn tsc --noEmit para verificar se o tsc está funcionando corretamente, 
+2. Após ter rodado o bun lint sem erros, execute o comando bun tsc --noEmit para verificar se o tsc está funcionando corretamente, 
 - se nao encontrar erros execute a proxima etapa, 
 - se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
 - se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn tsc --noEmit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
+- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun tsc --noEmit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
 - se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
 
 
-3. Após ter rodado o yarn tsc --noEmit sem erros, execute o comando yarn build para verificar se o build está funcionando corretamente, 
+3. Após ter rodado o bun tsc --noEmit sem erros, execute o comando bun build para verificar se o build está funcionando corretamente, 
 - se nao encontrar erros execute a proxima etapa, 
 - se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
 - se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn build novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
+- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun build novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
 - se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
 
-4. Execute o comando yarn npm audit para verificar vulnerabilidades de segurança, 
+4. Execute o comando bun audit para verificar vulnerabilidades de segurança, 
 - se nao encontrar erros execute a proxima etapa, 
 - se encontrar erros pare o processo informe o usuario sobre os problemas detectados propondo a solução e aguarde a confirmacao do usuario para continuar, 
 - se a resposta dele for negativa pare o processo e aguarde instruções do usuario para continuar, 
-- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o yarn npm audit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
+- se a resposta dele for positiva execute a proxima a correção, e após a correção execute o bun audit novamente, se passar prossiga para a proxima etapa ( NÃO PRECISA DE PERMISSÃO PARA RODAR ESSE COMANDO )
 - se o projeto é um que contem apenas arquivos de origiem documental ou arquivos que nao precisam de validacao, pule esta etapa!
 
 5. NUNCA TENTE ACESSAR OS ARQUIVOS DIRETAMENTE USANDO O COMANDO "Access to file" PORQUE OS ARQUIVOS ESTÃO PROTEGIDOS PELO .gitignore SEMPRE UTILIZE OS COMANDOS GIT ABAIXO:

@@ -19,21 +19,24 @@
   "engines": {
     "node": ">=18"
   },
+  "packageManager": "bun@1.1.0",
   "scripts": {
-    "nemesis:validate": "npx ts-node src/workflow-enforcement/cli/validate.ts",
-    "nemesis:enforce": "npx ts-node src/workflow-enforcement/cli/enforce.ts",
-    "nemesis:test": "npx ts-node src/workflow-enforcement/cli/test-all-workflows.ts",
-    "nemesis:pretool": "npx ts-node src/workflow-enforcement/cli/pretool-hook.ts",
-    "nemesis:scope": "npx tsx src/workflow-enforcement/cli/scope.ts",
-    "nemesis:install-hooks": "node src/workflow-enforcement/cli/install-hooks.js"
+    "nemesis:validate": "bun run src/workflow-enforcement/cli/validate.ts",
+    "nemesis:enforce": "bun run src/workflow-enforcement/cli/enforce.ts",
+    "nemesis:test": "bun test",
+    "nemesis:pretool": "bun run src/workflow-enforcement/cli/pretool-hook.ts",
+    "nemesis:scope": "bun run src/workflow-enforcement/cli/scope.ts",
+    "nemesis:install-hooks": "bun run src/workflow-enforcement/cli/install-hooks.js"
   },
   "dependencies": {
     "fs-extra": "^11.2.0"
   },
   "devDependencies": {
-    "@types/node": "^25.2.0",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.19.0",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^25.2.3",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

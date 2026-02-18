@@ -8,6 +8,57 @@ O **Nemesis Framework** é um sistema de governança ativa que estabelece regras
 
 **Diferencial:** Enforcement via **PreToolUse Hooks** que bloqueiam tecnicamente ações não autorizadas antes da execução, eliminando a possibilidade de modelos LLM ignorarem validações.
 
+## Workflow Execution Protocol
+
+### Fluxo Obrigatório de Execução
+
+Quando um workflow é solicitado, a seguinte sequência deve ser seguida:
+
+```
+Solicitação: "Execute o workflow @[/nome]"
+        ↓
+1. LEITURA COMPLETA OBRIGATÓRIA
+   - Ler workflow inteiro antes de qualquer ação
+   - Identificar PreToolUse hooks no topo
+   - Entender dependências e pré-requisitos
+        ↓
+2. EXECUÇÃO DO PRETOOLUSE (se existir)
+   - Rodar hooks de validação
+   - Respeitar resultado (bloquear se falhar)
+   - NUNCA pular validações
+        ↓
+3. EXECUÇÃO SEQUENCIAL DAS INSTRUÇÕES
+   - Seguir ordem exata das etapas
+   - Pedir permissão para modificações
+   - NUNCA criar atalhos ou pular etapas
+```
+
+### Proibições Absolutas
+
+- **NUNCA executar workflow sem ler completamente**
+- **NUNCA modificar arquivos sem permissão explícita**
+- **NUNCA pular etapas de validação**
+- **NUNCA assumir permissão implícita**
+- **NUNCA criar scripts/comandos não solicitados**
+
+### Padrão de Comunicação
+
+**Antes de executar:**
+- "Li o workflow @[/nome] completamente"
+- "Identifiquei X etapas e Y dependências"
+- "Posso prosseguir com a execução?"
+
+**Durante execução:**
+- "Etapa X: [resultado]"
+- "Encontrei problema: [descrição]"
+- "Preciso de permissão para: [ação]"
+
+**Após execução:**
+- "Workflow concluído: [status]"
+- "Resumo das ações realizadas"
+
+**Princípio final**: "Disciplina no processo = qualidade no resultado"
+
 ## Arquitetura
 
 ### Sistema de 4 Camadas
@@ -87,23 +138,23 @@ O instalador configura automaticamente:
    ```
 3. Verifique instalação:
    ```bash
-   yarn nemesis:install-hooks
+   bun run nemesis:install-hooks
    ```
 
 ## Comandos
 
 ```bash
 # Testar workflows
-yarn nemesis:test
+bun run nemesis:test
 
 # Validar workflow específico
-yarn nemesis:validate <caminho>
+bun run nemesis:validate <caminho>
 
 # Verificar hooks
-yarn nemesis:install-hooks
+bun run nemesis:install-hooks
 
 # Executar com enforcement
-yarn nemesis:enforce <workflow>
+bun run nemesis:enforce <workflow>
 ```
 
 ## Fluxo de Trabalho

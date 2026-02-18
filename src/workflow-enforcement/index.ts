@@ -32,13 +32,24 @@ export { validateFileScope, hasScopeActive, readScope } from './hook/scope-valid
 
 // Environment Detection and Package Manager Adaptation
 export { detectEnvironment, validateEnvironmentCompatibility, type EnvironmentInfo } from './detectors/environment-detector';
-export { PackageManagerAdapter, type AdaptedCommand, type CommandMapping } from './adapters/package-manager-adapter';
 
 // Re-exportar módulos que serão criados nas próximas fases
 export { IAActionValidator, type IAAction, type ValidationResult as IAValidationResult } from './validators/ia-action-validator';
 export { RuleEngine, type Rule, type ValidationContext, type RuleViolation, type ValidationResult as EngineValidationResult } from './engine/rule-engine';
 export { BehavioralOverride, type ComplianceResult, type BehavioralPattern } from './behavioral/override-system';
 export { GapDetector, type GapAnalysis, type RuleComprehension, type ActionPlan } from './analysis/gap-detector';
+
+// Terminal Reader Service - Leitura via terminal com fallbacks
+export { TerminalReaderService } from './services/terminal-reader-service';
+export { TerminalReaderLogger } from './services/terminal-reader-logger';
+export type {
+  ReadOptions,
+  ReadResult,
+  SearchResult,
+  PathValidation,
+  LogEntry,
+  TerminalCommand
+} from './services/terminal-reader-types';
 
 // Convenience exports for common usage patterns
 import { WorkflowRunner } from './workflow-runner';
@@ -84,13 +95,11 @@ export function createEnforcementConfig(overrides: Partial<EnforcementConfig> = 
  */
 export async function setupEnforcementEngine(): Promise<{
   environment: any // EnvironmentInfo
-  adapter: any // PackageManagerAdapter as value
   isCompatible: boolean
   issues: string[]
   recommendations: string[]
 }> {
   const { detectEnvironment, validateEnvironmentCompatibility } = await import('./detectors/environment-detector')
-  const { PackageManagerAdapter } = await import('./adapters/package-manager-adapter')
   
   // Detectar ambiente
   const environment = detectEnvironment();
@@ -98,12 +107,8 @@ export async function setupEnforcementEngine(): Promise<{
   // Validar compatibilidade
   const { compatible, issues, recommendations } = validateEnvironmentCompatibility(environment);
   
-  // Criar adaptador
-  const adapter = new PackageManagerAdapter(environment);
-  
   return {
     environment,
-    adapter,
     isCompatible: compatible,
     issues,
     recommendations

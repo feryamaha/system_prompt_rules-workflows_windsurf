@@ -1,0 +1,17 @@
+# Configuração do Bun para o Nemesis Framework
+[install]
+# Cache configuration
+cache = true
+
+# Lockfile configuration
+lockfile = true
+
+# Production dependencies only
+production = false
+
+[run]
+# Shell configuration
+shell = "system"
+
+# Environment variables
+env = "production"

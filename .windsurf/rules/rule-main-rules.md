@@ -21,7 +21,7 @@ As regras não foram criadas por idealismo ou teoria. Elas foram extraídas de f
 Regras rígidas não são barreira à velocidade — elas são o mecanismo que torna a velocidade sustentável a longo prazo.
 
 - Se um padrão foi documentado em fontes oficiais (React, Next.js, TypeScript) e ainda é violado, o problema não é falta de conhecimento, mas ausência de aplicação forçada.  
-- Regras explícitas + validações locais (yarn lint, tsc --noEmit, yarn build) eliminam subjetividade e "jeitinho".  
+- Regras explícitas + validações locais (bun lint, bun tsc --noEmit, bun build) eliminam subjetividade e "jeitinho".  
 - Sem concessões significa: o código segue as regras e passa nos gates, ou não entra no repositório. Isso previne dívida técnica acumulada e garante evolução previsível.
 
 ## 3. Análise Obrigatória de Dívida Técnica (ANTES do Planejamento)
@@ -80,7 +80,7 @@ Antes de apresentar qualquer planejamento, a IA deve responder:
 
 ### Validação TypeScript (único comando permitido em bugfix)
 ```bash
-yarn tsc --noEmit
+bun tsc --noEmit
 ```
 
 ### Investigação de mudanças (bugfix com arquivo mencionado)
@@ -90,10 +90,10 @@ git diff HEAD~1 -- nome-do-arquivo.tsx
 
 ### Validação completa (feature/refactor)
 ```bash
-yarn lint && yarn tsc --noEmit && yarn build
+bun lint && bun tsc --noEmit && bun build
 ```
 
-## 7. Regras de Comunicação
+## 8. Regras de Comunicação
 
 - SEMPRE em português PT-BR
 - Classificar categoria PRIMEIRO
@@ -103,7 +103,59 @@ yarn lint && yarn tsc --noEmit && yarn build
 - Pedir permissão ANTES de editar
 - Validar com `tsc --noEmit` DEPOIS
 
-## 8. Regras Específicas por Domínio
+## 9. Workflow Execution Protocol (OBRIGATÓRIO)
+
+### 9.1 Fluxo Padrão de Execução de Workflows
+
+**Quando solicitado "Execute o workflow @[/nome-do-workflow]":**
+
+1. **LEITURA COMPLETA OBRIGATÓRIA**
+   - Ler o workflow inteiro ANTES de qualquer execução
+   - Entender todas as instruções e dependências
+   - Identificar se há PreToolUse hooks no topo
+
+2. **EXECUÇÃO DO PRETOOLUSE (SE EXISTIR)**
+   - Executar hooks de validação no topo do workflow
+   - Respeitar o resultado dos hooks (bloquear se falhar)
+   - NUNCA pular validações do PreToolUse
+
+3. **EXECUÇÃO SEQUENCIAL DAS INSTRUÇÕES**
+   - Seguir ordem exata das etapas do workflow
+   - Pedir permissão ANTES de modificar qualquer arquivo
+   - NUNCA criar atalhos ou pular etapas
+
+### 9.2 Proibições Absolutas em Workflows
+
+- **NUNCA executar workflow sem ler completamente**
+- **NUNCA modificar arquivos sem permissão explícita**
+- **NUNCA pular etapas de validação**
+- **NUNCA criar scripts/comandos não solicitados**
+- **NUNCA assumir permissão implícita**
+
+### 9.3 Padrão de Comunicação em Workflows
+
+**Antes de executar:**
+- "Li o workflow @[/nome] completamente"
+- "Identifiquei X etapas e Y dependências"
+- "Posso prosseguir com a execução?"
+
+**Durante execução:**
+- "Etapa X: [resultado]"
+- "Encontrei problema: [descrição]"
+- "Preciso de permissão para: [ação]"
+
+**Após execução:**
+- "Workflow concluído: [status]"
+- "Resumo das ações realizadas"
+
+### 9.4 Tratamento de Erros em Workflows
+
+- **Parar imediatamente** se encontrar erro de validação
+- **Informar usuário** com detalhes do problema
+- **Propor solução** e aguardar confirmação
+- **NUNCA continuar** com erros não resolvidos
+
+## 10. Regras Específicas por Domínio
 
 ### Trabalhos de UI/UX e React
 - Sempre reutilizar componentes/tokens descritos nas regras (Button, Container, ui-table, etc.).

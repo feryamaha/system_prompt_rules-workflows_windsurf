@@ -122,10 +122,10 @@ Antes de produzir qualquer mudança, executar leitura obrigatória via terminal 
 git diff HEAD~1 -- nome-do-arquivo.tsx
 
 # Validação TypeScript (único comando permitido em bugfix)
-yarn tsc --noEmit
+bun tsc --noEmit
 
 # Validação completa (feature/refactor)
-yarn lint && yarn tsc --noEmit && yarn build
+bun lint && bun tsc --noEmit && bun build
 ```
 
 ## ETAPA 5: COMPREENSÃO E DIAGNÓSTICO (EXECUTAR QUARTO)
@@ -141,7 +141,7 @@ yarn lint && yarn tsc --noEmit && yarn build
 - Registrar explicitamente: "Componente é exceção permitida → ignoro violações pré-existentes (any[], hooks, etc.). Foco exclusivo na causa raiz do bugfix reportado."
 
 ### Confirmação com Ferramentas Oficiais (OBRIGATÓRIO)
-- Rodar **apenas** `yarn tsc --noEmit` (ou npx tsc --noEmit) uma vez.  
+- Rodar **apenas** `bun tsc --noEmit` (ou npx tsc --noEmit) uma vez.  
 - Proibições: sem lint, next lint, flags extras, instalações. Se pedir install → parar e deduzir validação por parser recuperado.
 
 ## ETAPA 6: PLANEJAMENTO (EXECUTAR QUINTO)
@@ -153,7 +153,7 @@ DEPOIS QUE LER TODAS AS REGRAS, DEPOIS QUE COMPREENDEU O PEDIDO DO USUÁRIO, FAZ
 - Explicar: "Nenhum passo de refatoração ou comando extra."
 - **Em bugfix de componente excepcional**: Plano deve ser ultra-mínimo:  
   1. Corrigir exatamente o que o diff mostra como quebrado (ex: restaurar identificador correto, fechar tag).  
-  2. Validar com `yarn tsc --noEmit`.  
+  2. Validar com `bun tsc --noEmit`.  
   - Proibido: qualquer menção a "remover any", "ajustar tipos", "refatorar hooks", "mover tipagens" ou referência a convenções gerais.  
   - Se o erro sumir após correção da raiz, finalizar sem mais nada.
 
@@ -172,7 +172,7 @@ APÓS O USUÁRIO AUTORIZAR:
   - Aplicar correções → rodar tsc --noEmit uma vez → finalizar relatório (É IMPERATIVO RODAR O TSC --NOEMIT APÓS APLICAÇÃO DAS CORREÇÕES), O RELATÓRIO SOMENTE SERÁ FINALIZADO APÓS A VALIDAÇÃO DO TSC --NOEMIT
 
 ### Validação Final Obrigatória (anti-autonomia)
-- Após correções, rodar `yarn tsc --noEmit` **uma única vez**.  
+- Após correções, rodar `bun tsc --noEmit` **uma única vez**.  
 - Se pedir install: registrar "Validação por dedução: raiz corrigida restaura parsing (TS JSX handbook). Sem instalações."  
 - Parar — sem mais comandos ou propostas.
 

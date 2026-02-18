@@ -1,12 +1,13 @@
 /**
  * Environment Detector for Nemesis Enforcement Engine
- * Detecta OS e gerenciador de pacotes para compatibilidade multi-ambiente
+ * Detecta OS e gerenciador de pacotes do PROJETO HOSPEDEIRO para adaptação
  */
 
 /// <reference path="../../../scripts/types/node-globals.d.ts" />
 
 import { existsSync, readFileSync } from 'fs'
 import { execSync } from 'child_process'
+import path from 'path'
 
 export interface EnvironmentInfo {
   os: 'mac' | 'windows' | 'linux'
@@ -28,27 +29,41 @@ export function detectOS(): 'mac' | 'windows' | 'linux' {
   throw new Error(`Unsupported OS: ${platform}`)
 }
 
-export function detectPackageManager(): 'yarn' | 'bun' | 'npm' | 'pnpm' | 'unknown' {
+/**
+ * Detecta o gerenciador de pacotes do PROJETO HOSPEDEIRO baseado no lockfile
+ * Esta é a detecção principal para o adapter do Nemesis
+ */
+export function detectHostPackageManager(): 'yarn' | 'bun' | 'npm' | 'pnpm' | 'unknown' {
+  // Prioridade 1: Lockfile do projeto hospedeiro
+  if (existsSync('yarn.lock')) return 'yarn'
+  if (existsSync('bun.lockb')) return 'bun'
+  if (existsSync('package-lock.json')) return 'npm'
+  if (existsSync('pnpm-lock.yaml')) return 'pnpm'
+  
+  // Prioridade 2: Se não tem lockfile, usa Bun (default do Nemesis)
+  return 'bun'
+}
+
+/**
+ * Detecta gerenciadores disponíveis globalmente (fallback)
+ */
+export function detectAvailablePackageManager(): 'yarn' | 'bun' | 'npm' | 'pnpm' | 'unknown' {
   try {
-    // Verificar se yarn está disponível globalmente
     execSync('yarn --version', { stdio: 'ignore' })
     return 'yarn'
   } catch {}
   
   try {
-    // Verificar se bun está disponível globalmente
     execSync('bun --version', { stdio: 'ignore' })
     return 'bun'
   } catch {}
   
   try {
-    // Verificar se npm está disponível (sempre vem com Node.js)
     execSync('npm --version', { stdio: 'ignore' })
     return 'npm'
   } catch {}
   
   try {
-    // Verificar se pnpm está disponível
     execSync('pnpm --version', { stdio: 'ignore' })
     return 'pnpm'
   } catch {}
@@ -66,7 +81,7 @@ export function detectLockFile(): EnvironmentInfo['lockFileType'] {
 
 export function getNodeVersion(): string {
   try {
-    return execSync('node --version', { encoding: 'utf8' }).trim()
+    return execSync('node --version', { encoding: 'utf8' }).toString().trim()
   } catch {
     return 'unknown'
   }
@@ -74,7 +89,7 @@ export function getNodeVersion(): string {
 
 export function getPackageManagerVersion(packageManager: string): string {
   try {
-    return execSync(`${packageManager} --version`, { encoding: 'utf8' }).trim()
+    return execSync(`${packageManager} --version`, { encoding: 'utf8' }).toString().trim()
   } catch {
     return 'unknown'
   }
@@ -82,7 +97,7 @@ export function getPackageManagerVersion(packageManager: string): string {
 
 export function detectEnvironment(): EnvironmentInfo {
   const os = detectOS()
-  const packageManager = detectPackageManager()
+  const packageManager = detectHostPackageManager() // Usa detecção do projeto hospedeiro
   const lockFileType = detectLockFile()
   const hasLockFile = lockFileType !== 'none'
   const nodeVersion = getNodeVersion()

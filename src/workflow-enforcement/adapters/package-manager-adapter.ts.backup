@@ -54,22 +54,23 @@ export class PackageManagerAdapter {
     }
   }
 
-  private adaptBunToYarn(bunCommand: string): AdaptedCommand {
-    const command = bunCommand.replace(/^bun\s*/, '')
+  private adaptToBun(yarnCommand: string): AdaptedCommand {
+    const command = yarnCommand.replace(/^yarn\s*/, '')
     
-    // Mapeamentos Bun → Yarn
+    // Mapeamentos comuns Yarn → Bun
     const mappings: Record<string, string> = {
-      'install': 'yarn install',
-      'add': 'yarn add',
-      'add -d': 'yarn add -D',
-      'run': 'yarn run',
-      'dev': 'yarn dev',
-      'build': 'yarn build',
-      'test': 'yarn test',
-      'lint': 'yarn lint',
-      'type-check': 'yarn type-check',
-      'tsc --noEmit': 'yarn tsc --noEmit',
-      'generate:component': 'yarn generate:component'
+      'install': 'install',
+      'add': 'add',
+      'remove': 'remove',
+      'run': 'run',
+      'dev': 'run dev',
+      'build': 'run build',
+      'start': 'start',
+      'test': 'test',
+      'lint': 'run lint',
+      'type-check': 'run type-check',
+      'tsc --noEmit': 'tsc --noEmit',
+      'generate:component': 'run generate:component'
     }
 
     // Verificar se é um comando direto ou script
@@ -78,21 +79,21 @@ export class PackageManagerAdapter {
       const [cmd, ...args] = adaptedCommand.split(' ')
       
       return {
-        command: cmd,
+        command: 'bun',
         args,
-        packageManager: 'yarn',
-        originalCommand: bunCommand
+        packageManager: 'bun',
+        originalCommand: yarnCommand
       }
     }
 
-    // Se é um script (bun run <script>)
+    // Se é um script (yarn run <script>)
     if (command.startsWith('run ')) {
       const scriptName = command.replace('run ', '')
       return {
-        command: 'yarn',
+        command: 'bun',
         args: ['run', scriptName],
-        packageManager: 'yarn',
-        originalCommand: bunCommand
+        packageManager: 'bun',
+        originalCommand: yarnCommand
       }
     }
 
@@ -100,49 +101,49 @@ export class PackageManagerAdapter {
     if (command.startsWith('add ')) {
       const packages = command.replace('add ', '').split(' ')
       return {
-        command: 'yarn',
+        command: 'bun',
         args: ['add', ...packages],
-        packageManager: 'yarn',
-        originalCommand: bunCommand
+        packageManager: 'bun',
+        originalCommand: yarnCommand
       }
     }
 
     // Comandos de dev dependencies
-    if (command.startsWith('add -d ')) {
-      const packages = command.replace('add -d ', '').split(' ')
+    if (command.startsWith('add -D ')) {
+      const packages = command.replace('add -D ', '').split(' ')
       return {
-        command: 'yarn',
-        args: ['add', '-D', ...packages],
-        packageManager: 'yarn',
-        originalCommand: bunCommand
+        command: 'bun',
+        args: ['add', '-d', ...packages],
+        packageManager: 'bun',
+        originalCommand: yarnCommand
       }
     }
 
     // Fallback - tenta executar diretamente
     return {
-      command: 'yarn',
+      command: 'bun',
       args: command.split(' ').filter(Boolean),
-      packageManager: 'yarn',
-      originalCommand: bunCommand
+      packageManager: 'bun',
+      originalCommand: yarnCommand
     }
   }
 
-  private adaptBunToNpm(bunCommand: string): AdaptedCommand {
-    const command = bunCommand.replace(/^bun\s*/, '')
+  private adaptToNpm(yarnCommand: string): AdaptedCommand {
+    const command = yarnCommand.replace(/^yarn\s*/, '')
     
-    // Mapeamentos Bun → npm
+    // Mapeamentos comuns Yarn → npm
     const mappings: Record<string, string> = {
-      'install': 'npm install',
-      'add': 'npm install',
-      'add -d': 'npm install --save-dev',
-      'run': 'npm run',
-      'dev': 'npm run dev',
-      'build': 'npm run build',
-      'test': 'npm test',
-      'lint': 'npm run lint',
-      'type-check': 'npm run type-check',
-      'tsc --noEmit': 'npm run tsc --noEmit',
-      'generate:component': 'npm run generate:component'
+      'install': 'install',
+      'add': 'install',
+      'remove': 'uninstall',
+      'dev': 'run dev',
+      'build': 'run build',
+      'start': 'start',
+      'test': 'test',
+      'lint': 'run lint',
+      'type-check': 'run type-check',
+      'tsc --noEmit': 'run tsc --noEmit',
+      'generate:component': 'run generate:component'
     }
 
     if (mappings[command]) {
@@ -150,21 +151,21 @@ export class PackageManagerAdapter {
       const [cmd, ...args] = adaptedCommand.split(' ')
       
       return {
-        command: cmd,
+        command: 'npm',
         args,
         packageManager: 'npm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
-    // Se é um script (bun run <script>)
+    // Se é um script (yarn run <script>)
     if (command.startsWith('run ')) {
       const scriptName = command.replace('run ', '')
       return {
         command: 'npm',
         args: ['run', scriptName],
         packageManager: 'npm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
@@ -175,18 +176,18 @@ export class PackageManagerAdapter {
         command: 'npm',
         args: ['install', ...packages],
         packageManager: 'npm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
     // Comandos de dev dependencies
-    if (command.startsWith('add -d ')) {
-      const packages = command.replace('add -d ', '').split(' ')
+    if (command.startsWith('add -D ')) {
+      const packages = command.replace('add -D ', '').split(' ')
       return {
         command: 'npm',
         args: ['install', '--save-dev', ...packages],
         packageManager: 'npm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
@@ -195,26 +196,26 @@ export class PackageManagerAdapter {
       command: 'npm',
       args: command.split(' ').filter(Boolean),
       packageManager: 'npm',
-      originalCommand: bunCommand
+      originalCommand: yarnCommand
     }
   }
 
-  private adaptBunToPnpm(bunCommand: string): AdaptedCommand {
-    const command = bunCommand.replace(/^bun\s*/, '')
+  private adaptToPnpm(yarnCommand: string): AdaptedCommand {
+    const command = yarnCommand.replace(/^yarn\s*/, '')
     
-    // Mapeamentos Bun → pnpm
+    // Mapeamentos comuns Yarn → pnpm
     const mappings: Record<string, string> = {
-      'install': 'pnpm install',
-      'add': 'pnpm add',
-      'add -d': 'pnpm add -D',
-      'run': 'pnpm run',
-      'dev': 'pnpm dev',
-      'build': 'pnpm build',
-      'test': 'pnpm test',
-      'lint': 'pnpm lint',
-      'type-check': 'pnpm type-check',
-      'tsc --noEmit': 'pnpm tsc --noEmit',
-      'generate:component': 'pnpm generate:component'
+      'install': 'install',
+      'add': 'add',
+      'remove': 'remove',
+      'dev': 'dev',
+      'build': 'build',
+      'start': 'start',
+      'test': 'test',
+      'lint': 'lint',
+      'type-check': 'type-check',
+      'tsc --noEmit': 'type-check',
+      'generate:component': 'generate:component'
     }
 
     if (mappings[command]) {
@@ -222,21 +223,21 @@ export class PackageManagerAdapter {
       const [cmd, ...args] = adaptedCommand.split(' ')
       
       return {
-        command: cmd,
+        command: 'pnpm',
         args,
         packageManager: 'pnpm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
-    // Se é um script (bun run <script>)
+    // Se é um script (yarn run <script>)
     if (command.startsWith('run ')) {
       const scriptName = command.replace('run ', '')
       return {
         command: 'pnpm',
         args: ['run', scriptName],
         packageManager: 'pnpm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
@@ -247,18 +248,18 @@ export class PackageManagerAdapter {
         command: 'pnpm',
         args: ['add', ...packages],
         packageManager: 'pnpm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
     // Comandos de dev dependencies
-    if (command.startsWith('add -d ')) {
-      const packages = command.replace('add -d ', '').split(' ')
+    if (command.startsWith('add -D ')) {
+      const packages = command.replace('add -D ', '').split(' ')
       return {
         command: 'pnpm',
         args: ['add', '-D', ...packages],
         packageManager: 'pnpm',
-        originalCommand: bunCommand
+        originalCommand: yarnCommand
       }
     }
 
@@ -267,22 +268,22 @@ export class PackageManagerAdapter {
       command: 'pnpm',
       args: command.split(' ').filter(Boolean),
       packageManager: 'pnpm',
-      originalCommand: bunCommand
+      originalCommand: yarnCommand
     }
   }
 
   /**
    * Adapta múltiplos comandos em lote
    */
-  adaptCommands(bunCommands: string[]): AdaptedCommand[] {
-    return bunCommands.map(cmd => this.adaptCommand(cmd))
+  adaptCommands(yarnCommands: string[]): AdaptedCommand[] {
+    return yarnCommands.map(cmd => this.adaptCommand(cmd))
   }
 
   /**
    * Verifica se um comando precisa de adaptação
    */
   needsAdaptation(command: string): boolean {
-    return command.startsWith('bun') && this.environment.packageManager !== 'bun'
+    return command.startsWith('yarn') && this.environment.packageManager !== 'yarn'
   }
 
   /**
