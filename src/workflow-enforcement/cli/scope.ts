@@ -14,7 +14,7 @@
  *   yarn nemesis:scope clear                      Remove escopo (modo aberto)
  */
 
-import * as fs from 'fs';
+import fs from 'fs';
 import * as path from 'path';
 
 interface ScopeConfig {

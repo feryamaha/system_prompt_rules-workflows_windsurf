@@ -15,12 +15,33 @@ const path = require('path');
 const fs = require('fs');
 
 // ============================================================
-// RESOLUCAO AUTOMATICA DE PATH
+// RESOLUCAO AUTOMATICA DE PATH - COM SUPORTE MULTI-AMBIENTE
 // Procura pretool-hook.ts em multiplas localizacoes possiveis
 // para funcionar tanto no repo original (src/) quanto em
 // projetos que instalam o Nemesis via pacote (.nemesis/)
+// AGORA COM DETECCAO DE AMBIENTE E ADAPTACAO DE GERENCIADOR
 // ============================================================
 const projectRoot = path.join(__dirname, '..', '..');
+
+// Detectar ambiente antes de procurar o hook
+function detectEnvironment() {
+  const os = process.platform;
+  const hasYarnLock = fs.existsSync(path.join(projectRoot, 'yarn.lock'));
+  const hasBunLock = fs.existsSync(path.join(projectRoot, 'bun.lockb'));
+  const hasNpmLock = fs.existsSync(path.join(projectRoot, 'package-lock.json'));
+  
+  let packageManager = 'unknown';
+  if (hasYarnLock) packageManager = 'yarn';
+  else if (hasBunLock) packageManager = 'bun';
+  else if (hasNpmLock) packageManager = 'npm';
+  
+  return { os, packageManager };
+}
+
+const { os, packageManager } = detectEnvironment();
+
+console.log(`🔍 Nemesis v2 - Ambiente detectado: ${os} / ${packageManager}`);
+
 const possiblePaths = [
   // Localizacao 1: Repo original (src/workflow-enforcement/)
   path.join(projectRoot, 'src', 'workflow-enforcement', 'cli', 'pretool-hook.ts'),
@@ -28,6 +49,8 @@ const possiblePaths = [
   path.join(projectRoot, '.nemesis', 'workflow-enforcement', 'cli', 'pretool-hook.ts'),
   // Localizacao 3: Relativo ao proprio .nemesis/hooks/
   path.join(__dirname, '..', 'workflow-enforcement', 'cli', 'pretool-hook.ts'),
+  // NOVO: Localizacao 4: Modulo compilado em dist/
+  path.join(projectRoot, 'dist', 'workflow-enforcement', 'cli', 'pretool-hook.js'),
 ];
 
 let hookPath = null;

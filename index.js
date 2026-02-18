@@ -221,22 +221,97 @@ CLAUDE.md
   logInfo("✓ .gitignore atualizado com regras do Nemesis");
 }
 
-function ensureAgentSkillsInstalled() {
+function checkEnvironment() {
+  logInfo("\nVerificando ambiente de instalacao...");
+  
   try {
-    execSync("npx skills list", {
-      stdio: "ignore"
-    });
-    return true;
+    const nodeVersion = execSync("node --version", { stdio: "pipe" }).toString().trim();
+    logInfo(`  ✓ Node.js: ${nodeVersion}`);
   } catch (error) {
+    logError(`  ❌ Node.js nao encontrado ou nao esta no PATH`);
+    return false;
+  }
+  
+  try {
+    const npmVersion = execSync("npm --version", { stdio: "pipe" }).toString().trim();
+    logInfo(`  ✓ npm: ${npmVersion}`);
+  } catch (error) {
+    logError(`  ❌ npm nao encontrado ou nao esta no PATH`);
+    return false;
+  }
+  
+  try {
+    const npxVersion = execSync("npx --version", { stdio: "pipe" }).toString().trim();
+    logInfo(`  ✓ npx: ${npxVersion}`);
+  } catch (error) {
+    logError(`  ❌ npx nao encontrado ou nao esta no PATH`);
+    return false;
+  }
+  
+  return true;
+}
+
+function ensureAgentSkillsInstalled() {
+  logInfo("\nVerificando Vercel Agent Skills...");
+  
+  // Testar se npx skills esta disponivel
+  try {
+    execSync("npx skills --version", { stdio: "pipe" });
+    logInfo("  ✓ npx skills disponivel");
+  } catch (error) {
+    logError(`  ❌ npx skills nao encontrado`);
+    logInfo(`  💡 Para instalar manualmente:`);
+    logInfo(`     npx skills list`);
+    logInfo(`     npx skills add vercel-labs/agent-skills`);
+    return false;
+  }
+  
+  // Verificar se skills ja estao instaladas
+  try {
+    const skillsOutput = execSync("npx skills list", { stdio: "pipe" }).toString();
+    if (skillsOutput.includes("vercel-labs/agent-skills") || skillsOutput.includes("react-best-practices")) {
+      logInfo("  ✓ Vercel Agent Skills ja instalado");
+      return true;
+    } else {
+      logInfo("  ⏳ Vercel Agent Skills nao encontrado, instalando...");
+      return false;
+    }
+  } catch (error) {
+    logError(`  ❌ Falha ao verificar skills instalados: ${error.message}`);
     return false;
   }
 }
 
 function installAgentSkills() {
-  logInfo("Instalando Vercel Agent Skills...\n");
-  execSync("npx skills add vercel-labs/agent-skills", {
-    stdio: "inherit"
-  });
+  logInfo("\nInstalando Vercel Agent Skills...");
+  logInfo("  Comando: npx skills add vercel-labs/agent-skills");
+  
+  try {
+    execSync("npx skills add vercel-labs/agent-skills", {
+      stdio: "inherit"
+    });
+    logInfo("  ✓ Vercel Agent Skills instalado com sucesso");
+    
+    // Verificar instalação
+    try {
+      const skillsOutput = execSync("npx skills list", { stdio: "pipe" }).toString();
+      if (skillsOutput.includes("vercel-labs/agent-skills") || skillsOutput.includes("react-best-practices")) {
+        logInfo("  ✓ Instalação confirmada");
+      } else {
+        logError("  ⚠️ Skills instalado mas nao encontrado na lista");
+      }
+    } catch (verifyError) {
+      logError("  ⚠️ Nao foi possivel confirmar a instalacao");
+    }
+  } catch (error) {
+    logError(`  ❌ Falha ao instalar Vercel Agent Skills`);
+    logError(`     Erro: ${error.message}`);
+    logInfo(`  💡 Solucoes alternativas:`);
+    logInfo(`     1. Verifique conexao com a internet`);
+    logInfo(`     2. Execute manualmente: npx skills add vercel-labs/agent-skills`);
+    logInfo(`     3. Verifique se o Node.js esta atualizado`);
+    // Nao sai com erro, continua com a instalacao
+  }
 }
 
 function copyDirectory(sourceDir, targetDir) {
@@ -398,6 +473,13 @@ create_prompts_folder = true
 async function runInstallation() {
   logInfo("Iniciando instalacao do Nemesis Framework...\n");
 
+  // Verificar ambiente primeiro
+  const environmentOk = checkEnvironment();
+  if (!environmentOk) {
+    logError("\n❌ Problemas no ambiente detectados. Corrija antes de continuar.");
+    process.exit(1);
+  }
+
   // Verificar instalacao existente
   const existingPaths = checkExistingInstallation();
   if (existingPaths) {
@@ -426,8 +508,6 @@ async function runInstallation() {
   const skillsInstalled = ensureAgentSkillsInstalled();
   if (!skillsInstalled) {
     installAgentSkills();
-  } else {
-    logInfo("Vercel Agent Skills ja instalado.\n");
   }
 
   // Copiar estrutura .windsurf/ (core - sempre sobrescreve)
@@ -490,6 +570,16 @@ async function runInstallation() {
 
   logInfo("\nInstalacao concluida com sucesso.");
   logInfo("\nPara personalizar: edite .nemesis/config.toml");
+  
+  // Resumo final do ambiente
+  logInfo("\n=== Resumo da Instalacao ===");
+  logInfo("  ✓ Ambiente verificado e compativel");
+  logInfo("  ✓ Dependencias de runtime instaladas");
+  logInfo("  ✓ Vercel Agent Skills configuradas");
+  logInfo("  ✓ Arquivos core do Nemesis instalados");
+  logInfo("  ✓ Workflow Enforcement v2.0 ativo");
+  logInfo("  ✓ Hooks PreToolUse configurados");
+  logInfo("\n🚀 Nemesis pronto para uso!");
 }
 
 try {

@@ -30,6 +30,16 @@ export { WorkflowRunner } from './workflow-runner';
 export { validateCodeContent } from './hook/code-validator';
 export { validateFileScope, hasScopeActive, readScope } from './hook/scope-validator';
 
+// Environment Detection and Package Manager Adaptation
+export { detectEnvironment, validateEnvironmentCompatibility, type EnvironmentInfo } from './detectors/environment-detector';
+export { PackageManagerAdapter, type AdaptedCommand, type CommandMapping } from './adapters/package-manager-adapter';
+
+// Re-exportar módulos que serão criados nas próximas fases
+export { IAActionValidator, type IAAction, type ValidationResult as IAValidationResult } from './validators/ia-action-validator';
+export { RuleEngine, type Rule, type ValidationContext, type RuleViolation, type ValidationResult as EngineValidationResult } from './engine/rule-engine';
+export { BehavioralOverride, type ComplianceResult, type BehavioralPattern } from './behavioral/override-system';
+export { GapDetector, type GapAnalysis, type RuleComprehension, type ActionPlan } from './analysis/gap-detector';
+
 // Convenience exports for common usage patterns
 import { WorkflowRunner } from './workflow-runner';
 import type { ExecutionOptions, EnforcementConfig } from './types';
@@ -66,5 +76,36 @@ export function createEnforcementConfig(overrides: Partial<EnforcementConfig> = 
     allowedLanguages: ['bash', 'javascript', 'typescript', 'python', 'markdown'],
     mandatoryRules: ['.windsurf/rules/rule-main-rules.md'],
     ...overrides
+  };
+}
+
+/**
+ * Função principal para setup do enforcement engine
+ */
+export async function setupEnforcementEngine(): Promise<{
+  environment: any // EnvironmentInfo
+  adapter: any // PackageManagerAdapter as value
+  isCompatible: boolean
+  issues: string[]
+  recommendations: string[]
+}> {
+  const { detectEnvironment, validateEnvironmentCompatibility } = await import('./detectors/environment-detector')
+  const { PackageManagerAdapter } = await import('./adapters/package-manager-adapter')
+  
+  // Detectar ambiente
+  const environment = detectEnvironment();
+  
+  // Validar compatibilidade
+  const { compatible, issues, recommendations } = validateEnvironmentCompatibility(environment);
+  
+  // Criar adaptador
+  const adapter = new PackageManagerAdapter(environment);
+  
+  return {
+    environment,
+    adapter,
+    isCompatible: compatible,
+    issues,
+    recommendations
   };
 }
