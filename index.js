@@ -150,11 +150,11 @@ function updatePackageJsonScripts() {
     delete packageJson.scripts[key];
   });
 
-  packageJson.scripts["nemesis:validate"] = "yarn tsx .nemesis/workflow-enforcement/cli/validate.ts";
-  packageJson.scripts["nemesis:enforce"] = "yarn tsx .nemesis/workflow-enforcement/cli/enforce.ts";
-  packageJson.scripts["nemesis:test"] = "yarn tsx .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
-  packageJson.scripts["nemesis:pretool"] = "yarn tsx .nemesis/workflow-enforcement/cli/pretool-hook.ts";
-  packageJson.scripts["nemesis:install-hooks"] = "node .nemesis/workflow-enforcement/cli/install-hooks.js";
+  packageJson.scripts["nemesis:validate"] = "bun tsx .nemesis/workflow-enforcement/cli/validate.ts";
+  packageJson.scripts["nemesis:enforce"] = "bun tsx .nemesis/workflow-enforcement/cli/enforce.ts";
+  packageJson.scripts["nemesis:test"] = "bun tsx .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
+  packageJson.scripts["nemesis:pretool"] = "bun tsx .nemesis/workflow-enforcement/cli/pretool-hook.ts";
+  packageJson.scripts["nemesis:install-hooks"] = "bun tsx .nemesis/workflow-enforcement/cli/install-hooks.js";
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 
