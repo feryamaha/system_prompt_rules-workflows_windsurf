@@ -1,0 +1,34 @@
+{
+  "hooks": {
+    "pre_write_code": [
+      {
+        "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+        "show_output": true
+      }
+    ],
+    "pre_run_command": [
+      {
+        "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+        "show_output": true
+      }
+    ],
+    "pre_read_code": [
+      {
+        "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+        "show_output": true
+      }
+    ],
+    "pre_user_prompt": [
+      {
+        "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+        "show_output": false
+      }
+    ],
+    "pre_mcp_tool_use": [
+      {
+        "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+        "show_output": true
+      }
+    ]
+  }
+}

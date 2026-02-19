@@ -14,17 +14,18 @@ import { PermissionGate } from '../permission-gate';
 import { ViolationLogger } from '../violation-logger';
 import { validateCodeContent } from '../hook/code-validator';
 import { validateFileScope, hasScopeActive } from '../hook/scope-validator';
+import { WindsurfHookInput } from '../types';
 
 /**
  * Formato de entrada oficial Windsurf PreToolUse
  */
 interface PreToolInput {
-  tool_name: 'Edit' | 'Write' | 'Bash' | 'Read' | 'Grep' | 'LSP';
-  tool_input: {
+  agent_action_name: 'Edit' | 'Write' | 'Bash' | 'Read' | 'Grep' | 'LSP';
+  tool_info: {
     file_path?: string;
-    command?: string;
-    old_string?: string;
-    new_string?: string;
+    command_line?: string;
+    edits?: Array<{ old_string: string; new_string: string }>;
+    CodeContent?: string;
     search_path?: string;
     query?: string;
     includes?: string[];
@@ -276,34 +277,36 @@ async function main(): Promise<number> {
     }
     
     // Validar estrutura do input
-    if (!data.tool_name || !data.tool_input) {
+    if (!data.agent_action_name || !data.tool_info) {
       console.error('NEMESIS ERROR: Estrutura de input invalida');
-      console.error('Esperado: { tool_name: string, tool_input: object }');
+      console.error('Esperado: { agent_action_name: string, tool_info: object }');
       return 1;
     }
     
     let result: ValidationResult;
     
     // Validar baseado no tipo de ferramenta
-    switch (data.tool_name) {
+    switch (data.agent_action_name) {
       case 'Edit':
       case 'Write':
         result = await validateFileOperation(
-          data.tool_input.file_path,
-          data.tool_name
+          data.tool_info.file_path,
+          data.agent_action_name
         );
         // Se passou na validacao de arquivo, validar conteudo do codigo
-        if (result.valid && (data.tool_input.new_string || data.tool_input.CodeContent)) {
-          const codeContent = (data.tool_input.new_string || data.tool_input.CodeContent) as string;
+        if (result.valid && (data.tool_info.edits || data.tool_info.CodeContent)) {
+          const codeContent = data.tool_info.edits ? 
+            data.tool_info.edits.map(e => e.new_string).join('\n') : 
+            (data.tool_info.CodeContent as string);
           result = validateCodeContent(
-            data.tool_input.file_path || '',
+            data.tool_info.file_path || '',
             codeContent
           );
         }
         break;
         
       case 'Bash':
-        result = await validateCommand(data.tool_input.command);
+        result = await validateCommand(data.tool_info.command_line);
         break;
         
       case 'Read':
@@ -314,7 +317,7 @@ async function main(): Promise<number> {
         
       default:
         // Ferramentas desconhecidas - permite com warning
-        console.warn(`[NEMESIS WARNING] Ferramenta nao reconhecida: ${data.tool_name}`);
+        console.warn(`[NEMESIS WARNING] Ferramenta nao reconhecida: ${data.agent_action_name}`);
         result = { valid: true };
     }
     
@@ -342,7 +345,7 @@ async function main(): Promise<number> {
         type: 'rule_violation',
         message: result.reason || 'Violação detectada pelo PreToolUse hook',
         rule: result.rule,
-        command: data.tool_input.command || data.tool_input.file_path,
+        command: data.tool_info.command_line || data.tool_info.file_path,
         timestamp: new Date()
       });
       

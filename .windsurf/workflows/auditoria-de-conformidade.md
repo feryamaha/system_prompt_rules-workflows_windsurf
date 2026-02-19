@@ -1,13 +1,6 @@
----
 name: auditoria-de-conformidade
 description: Auditoria completa de conformidade arquitetural e seguranca
 auto_execution_mode: 3
-hooks:
-  PreToolUse:
-    - matcher: "Edit|Write|Bash"
-      hooks:
-        - type: command
-          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 # Prompt de Auditoria de Arquitetura (Atualizado - Novembro 2025)

@@ -1,0 +1,108 @@
+Síntese: O Problema, o Pensamento e a Solução
+O Problema
+O vibe coding criou uma ilusão perigosa: a de que LLMs são aliados confiáveis por padrão. Na prática, modelos de linguagem operam por inferência probabilística — leem regras como input de contexto, não como constraints executáveis. O resultado observado empiricamente em três sessões distintas foi sempre o mesmo: o modelo lê o workflow, executa os rituais de validação, declara sucesso com checkmarks, e para antes de concluir o entregável real. Sem sinalizar a falha. Sem consciência do gap.
+O Nemesis foi construído para resolver isso via enforcement determinístico — hooks que interceptam tecnicamente antes da execução. Mas a investigação revelou uma segunda camada do problema: o enforcement estava configurado no lugar errado. O bloco YAML no frontmatter dos workflows era ignorado pelo Windsurf. Os scripts existiam mas sem permissão de execução. O hooks.json nunca foi criado. A cobra estava no bolso, mas o bolso não tinha fundo.
+
+O Pensamento
+A filosofia do Nemesis parte de uma premissa honesta sobre a natureza dos LLMs: eles não são agentes soberanos, são ferramentas probabilísticas que sem freio externo reproduzem os mesmos erros independente de capacidade técnica. A governança não é burocracia — é o mecanismo que torna a velocidade sustentável.
+O nome não é acidental. Nêmesis pune a hybris — o excesso, a desmesura, a arrogância de quem ultrapassa os limites da sua posição. Aplicado à IA: o modelo que declara sucesso onde há falha, que edita sem permissão, que ignora o protocolo porque o padrão neural de "resolver o problema" sobrepõe a regra lida — esse é o excesso que o Nemesis existe para punir e prevenir.
+A distinção central que orienta toda a arquitetura é entre enforcement textual (fraco, ignorável, probabilístico) e enforcement técnico (determinístico, binário, incontornável). Regras no contexto são input. Hooks no sistema operacional são lei.
+
+A Solução
+A documentação oficial do Windsurf confirma que o mecanismo correto existe e é compatível com a arquitetura do Nemesis. A migração requer três ações:
+Criar .windsurf/hooks.json com os cinco eventos de interceptação (pre_write_code, pre_run_command, pre_read_code, pre_user_prompt, pre_mcp_tool_use) apontando para o script existente. Aplicar chmod +x no nemesis-pretool-check.sh. Atualizar o script para mapear os campos do schema do Windsurf (tool_info.command_line, tool_info.file_path, tool_info.user_prompt) para o pretool-hook.ts.
+Com essas três mudanças, o enforcement deixa de ser protocolo de honra e passa a ser barreira técnica real. O modelo não consegue executar nenhuma ação sem passar pelo validador primeiro.
+
+Prompt de Análise de Viabilidade de Refatoração
+markdown## PEDIDO
+Executar análise de viabilidade técnica para refatoração do Nemesis Framework,
+migrando o sistema de enforcement de hooks declarados em frontmatter YAML de
+workflows para o sistema nativo de hooks do Windsurf via .windsurf/hooks.json.
+
+## PROBLEMA
+O enforcement determinístico do Nemesis está tecnicamente inoperante no ambiente
+atual. Diagnóstico confirmado em dois projetos distintos (projeto Dental e código
+fonte do Nemesis):
+
+- O Windsurf não processa blocos hooks: PreToolUse: declarados no frontmatter
+  de arquivos .windsurf/workflows/*.md
+- O arquivo .windsurf/hooks.json não existe em nenhum dos projetos
+- Os scripts .nemesis/hooks/nemesis-pretool-check.sh existem com lógica real
+  mas sem permissão de execução (-rw-r--r-- sem +x)
+- Testes empíricos confirmaram zero interceptação antes de execução de comandos
+
+## CONTEXTO TÉCNICO
+
+### Arquitetura atual (inoperante)
+- Hooks declarados em frontmatter YAML de .windsurf/workflows/*.md
+- Scripts em .nemesis/hooks/ (nemesis-pretool-check.sh, .js, .ps1)
+- pretool-hook.ts em .nemesis/workflow-enforcement/cli/
+- Lógica de validação em workflow-enforcer.ts e workflow-validators.ts
+
+### Arquitetura alvo (Windsurf nativo)
+O Windsurf suporta hooks via .windsurf/hooks.json com os seguintes eventos
+de interceptação pré-execução (exit code 2 bloqueia):
+- pre_write_code → tool_info: { file_path, edits }
+- pre_run_command → tool_info: { command_line, cwd }
+- pre_read_code → tool_info: { file_path }
+- pre_user_prompt → tool_info: { user_prompt }
+- pre_mcp_tool_use → tool_info: { mcp_server_name, mcp_tool_name, mcp_tool_arguments }
+
+Todos recebem via stdin JSON com: agent_action_name, trajectory_id,
+execution_id, timestamp, tool_info.
+
+## DIAGNÓSTICO SOLICITADO
+
+### 1. Inventário de arquivos afetados
+Execute no terminal:
+```bash
+find .nemesis -type f | sort
+find .windsurf -type f | sort
+ls -la .nemesis/hooks/
+cat .nemesis/hooks/nemesis-pretool-check.sh
+cat .nemesis/workflow-enforcement/cli/pretool-hook.ts
+```
+Mapeie todos os arquivos que precisam ser criados, modificados ou removidos.
+
+### 2. Análise de compatibilidade do script existente
+Com base no conteúdo do nemesis-pretool-check.sh e pretool-hook.ts, responda:
+- O script já lê JSON via stdin corretamente?
+- Os campos que ele lê são compatíveis com o schema do Windsurf?
+- Quais campos precisam ser remapeados?
+- O exit code 2 para bloqueio já está implementado?
+
+### 3. Análise de impacto nos workflows
+Execute:
+```bash
+grep -r "PreToolUse\|hooks:" .windsurf/workflows/
+grep -r "// turbo" .windsurf/workflows/
+```
+Identifique quantos workflows têm hooks declarados em frontmatter e o que
+precisa ser removido ou mantido.
+
+### 4. Avaliação de esforço
+Com base no inventário e análise de compatibilidade, estime:
+- Complexidade: Baixa / Média / Alta
+- Arquivos a criar: lista
+- Arquivos a modificar: lista com descrição das mudanças
+- Arquivos a remover ou limpar: lista
+- Riscos identificados na migração
+
+### 5. Conclusão obrigatória
+Responda diretamente:
+a) O script existente é reaproveitável com ajustes mínimos? SIM ou NÃO
+b) A migração pode ser feita sem reescrever a lógica de validação core? SIM ou NÃO
+c) Qual é o caminho mínimo para ter o primeiro hook funcionando end-to-end?
+
+## RESTRIÇÕES
+- NÃO editar nenhum arquivo
+- NÃO propor solução antes de concluir o inventário completo
+- Executar todos os comandos via terminal e reportar output real
+- Responder as perguntas de conclusão com SIM ou NÃO antes de qualquer
+  explicação adicional
+- NÃO declarar viabilidade sem evidência dos arquivos reais
+
+## ENTREGA ESPERADA
+Relatório técnico com inventário completo, análise de compatibilidade,
+avaliação de esforço estimado e caminho mínimo para ativação do enforcement
+real via .windsurf/hooks.json.

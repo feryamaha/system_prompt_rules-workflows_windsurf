@@ -1,13 +1,6 @@
----
 name: review
 description: Revisar mudanças de código para bugs, problemas de segurança e melhorias
 auto_execution_mode: 3
-hooks:
-  PreToolUse:
-    - matcher: "Edit|Write|Bash"
-      hooks:
-        - type: command
-          command: "node $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.js"
 ---
 
 Você é um engenheiro de software sênior realizando uma revisão de código completa para identificar possíveis bugs.
