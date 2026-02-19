@@ -20,6 +20,95 @@ function logError(message) {
   process.stderr.write(`${message}\n`);
 }
 
+function createWindsurfHooksJson() {
+  logInfo("\nCriando .windsurf/hooks.json...");
+  
+  const windsurfDir = path.join(ROOT_DIR, '.windsurf');
+  const hooksJsonPath = path.join(windsurfDir, 'hooks.json');
+  
+  // Garantir que .windsurf/ existe
+  fs.ensureDirSync(windsurfDir);
+  
+  const hooksConfig = {
+    "hooks": {
+      "pre_write_code": [
+        {
+          "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+          "show_output": true
+        }
+      ],
+      "pre_run_command": [
+        {
+          "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+          "show_output": true
+        }
+      ],
+      "pre_read_code": [
+        {
+          "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+          "show_output": true
+        }
+      ],
+      "pre_user_prompt": [
+        {
+          "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+          "show_output": false
+        }
+      ],
+      "pre_mcp_tool_use": [
+        {
+          "command": "bash $PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh",
+          "show_output": true
+        }
+      ]
+    }
+  };
+  
+  try {
+    fs.writeFileSync(hooksJsonPath, JSON.stringify(hooksConfig, null, 2), 'utf8');
+    logInfo("  ✓ .windsurf/hooks.json criado com sucesso");
+    logInfo("  ✓ 5 eventos de interceptação configurados");
+    return true;
+  } catch (error) {
+    logError(`  ❌ Falha ao criar .windsurf/hooks.json: ${error.message}`);
+    return false;
+  }
+}
+
+function ensureHookPermissions() {
+  logInfo("\nAplicando permissões aos hooks...");
+  
+  const shellScript = path.join(ROOT_DIR, '.nemesis/hooks/nemesis-pretool-check.sh');
+  const jsScript = path.join(ROOT_DIR, '.nemesis/hooks/nemesis-pretool-check.js');
+  const psScript = path.join(ROOT_DIR, '.nemesis/hooks/nemesis-pretool-check.ps1');
+  
+  const hooks = [
+    { path: shellScript, name: 'Shell script (Bash)' },
+    { path: jsScript, name: 'JavaScript hook' },
+    { path: psScript, name: 'PowerShell script' }
+  ];
+  
+  let permissionsApplied = 0;
+  
+  for (const hook of hooks) {
+    if (fs.existsSync(hook.path)) {
+      try {
+        fs.chmodSync(hook.path, '755');
+        logInfo(`  ✓ Permissões aplicadas: ${hook.name}`);
+        permissionsApplied++;
+      } catch (error) {
+        logError(`  ❌ Falha ao aplicar permissões: ${hook.name} - ${error.message}`);
+      }
+    } else {
+      logInfo(`  ℹ Hook não encontrado: ${hook.name}`);
+    }
+  }
+  
+  if (permissionsApplied > 0) {
+    logInfo(`  ✓ ${permissionsApplied} hooks com permissões atualizadas`);
+  }
+}
+
 function checkDependencyInstalled(dependencyName) {
   try {
     execSync(`node -e "require.resolve('${dependencyName}')"`, {
@@ -108,9 +197,10 @@ function updateGitignore() {
 
 function validateNemesisStructure() {
   const requiredFiles = [
-    ".nemesis/workflow-enforcement/cli/enforce.ts",
-    ".nemesis/workflow-enforcement/cli/validate.ts",
-    ".nemesis/workflow-enforcement/cli/test-all-workflows.ts"
+    ".windsurf/hooks.json", // NOVO - Obrigatório para enforcement nativo
+    ".nemesis/hooks/nemesis-pretool-check.sh", // NOVO - Hook principal com permissão
+    "src/workflow-enforcement/cli/pretool-hook.ts", // NOVO - Schema atualizado
+    "src/workflow-enforcement/types.ts" // NOVO - Schema Windsurf
   ];
 
   logInfo("\nValidando estrutura do Nemesis...");
@@ -124,7 +214,81 @@ function validateNemesisStructure() {
     }
   }
 
-  logInfo("  ✓ Todos os arquivos CLI estao presentes");
+  // Validação adicional para .windsurf/hooks.json
+  const hooksJsonPath = path.join(ROOT_DIR, '.windsurf/hooks.json');
+  try {
+    const hooksConfig = JSON.parse(fs.readFileSync(hooksJsonPath, 'utf8'));
+    if (!hooksConfig.hooks || !hooksConfig.hooks.pre_write_code) {
+      logError("❌ .windsurf/hooks.json inválido - estrutura incorreta");
+      process.exit(1);
+    }
+    logInfo("  ✓ .windsurf/hooks.json validado");
+  } catch (error) {
+    logError(`❌ .windsurf/hooks.json malformado: ${error.message}`);
+    process.exit(1);
+  }
+
+  // Validação de permissão do hook bash
+  const shellScript = path.join(ROOT_DIR, '.nemesis/hooks/nemesis-pretool-check.sh');
+  try {
+    const stats = fs.statSync(shellScript);
+    if (!(stats.mode & parseInt('111', 8))) { // Verifica permissão de execução
+      logError("❌ .nemesis/hooks/nemesis-pretool-check.sh sem permissão de execução");
+      process.exit(1);
+    }
+    logInfo("  ✓ Permissões de hook validadas");
+  } catch (error) {
+    logError(`❌ Falha ao validar permissões: ${error.message}`);
+    process.exit(1);
+  }
+
+  logInfo("  ✓ Todos os arquivos obrigatórios presentes e válidos");
+}
+
+function cleanWorkflowFrontmatter() {
+  logInfo("\nLimpando frontmatter YAML dos workflows...");
+  
+  const workflowsDir = path.join(ROOT_DIR, '.windsurf/workflows');
+  
+  if (!fs.existsSync(workflowsDir)) {
+    logInfo("  ℹ Diretório de workflows não encontrado");
+    return;
+  }
+  
+  const workflowFiles = fs.readdirSync(workflowsDir).filter(file => file.endsWith('.md'));
+  let cleanedCount = 0;
+  
+  for (const file of workflowFiles) {
+    const filePath = path.join(workflowsDir, file);
+    
+    try {
+      let content = fs.readFileSync(filePath, 'utf8');
+      const originalContent = content;
+      
+      // Remover blocos hooks: PreToolUse: do frontmatter YAML
+      // Padrão: --- ... hooks: ... --- (remove o bloco inteiro)
+      const frontmatterHookPattern = /---[\s\S]*?hooks:[\s\S]*?---/;
+      
+      if (frontmatterHookPattern.test(content)) {
+        // Substituir o bloco completo por apenas ---
+        content = content.replace(frontmatterHookPattern, '---');
+        fs.writeFileSync(filePath, content, 'utf8');
+        logInfo(`  ✓ Frontmatter limpo: ${file}`);
+        cleanedCount++;
+      } else {
+        logInfo(`  ℹ Sem frontmatter para limpar: ${file}`);
+      }
+      
+    } catch (error) {
+      logError(`  ❌ Erro ao limpar ${file}: ${error.message}`);
+    }
+  }
+  
+  if (cleanedCount > 0) {
+    logInfo(`  ✓ ${cleanedCount} workflows limpos`);
+  } else {
+    logInfo(`  ℹ Nenhum workflow precisou de limpeza`);
+  }
 }
 
 function updatePackageJsonScripts() {
@@ -143,6 +307,7 @@ function updatePackageJsonScripts() {
     packageJson.scripts = {};
   }
 
+  // Remover scripts antigos do nemesis
   const nemesisScripts = Object.keys(packageJson.scripts).filter(
     key => key.startsWith("nemesis:")
   );
@@ -150,11 +315,13 @@ function updatePackageJsonScripts() {
     delete packageJson.scripts[key];
   });
 
-  packageJson.scripts["nemesis:validate"] = "bun tsx .nemesis/workflow-enforcement/cli/validate.ts";
-  packageJson.scripts["nemesis:enforce"] = "bun tsx .nemesis/workflow-enforcement/cli/enforce.ts";
-  packageJson.scripts["nemesis:test"] = "bun tsx .nemesis/workflow-enforcement/cli/test-all-workflows.ts";
-  packageJson.scripts["nemesis:pretool"] = "bun tsx .nemesis/workflow-enforcement/cli/pretool-hook.ts";
-  packageJson.scripts["nemesis:install-hooks"] = "bun tsx .nemesis/workflow-enforcement/cli/install-hooks.js";
+  // Scripts atualizados com paths corretos (src/ em vez de .nemesis/)
+  packageJson.scripts["nemesis:validate"] = "bun run src/workflow-enforcement/cli/validate.ts";
+  packageJson.scripts["nemesis:enforce"] = "bun run src/workflow-enforcement/cli/enforce.ts";
+  packageJson.scripts["nemesis:test"] = "bun test";
+  packageJson.scripts["nemesis:pretool"] = "bun run src/workflow-enforcement/cli/pretool-hook.ts";
+  packageJson.scripts["nemesis:scope"] = "bun run src/workflow-enforcement/cli/scope.ts";
+  packageJson.scripts["nemesis:install-hooks"] = "bun run src/workflow-enforcement/cli/install-hooks.js";
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + "\n");
 
@@ -163,6 +330,7 @@ function updatePackageJsonScripts() {
   logInfo(`  - nemesis:enforce`);
   logInfo(`  - nemesis:test`);
   logInfo(`  - nemesis:pretool`);
+  logInfo(`  - nemesis:scope`);
   logInfo(`  - nemesis:install-hooks`);
 }
 
@@ -534,6 +702,19 @@ async function runInstallation() {
   } else {
     logInfo(`  ℹ Diretório de hooks não encontrado no pacote fonte`);
   }
+
+  // Aplicar permissões aos hooks instalados
+  ensureHookPermissions();
+
+  // Criar .windsurf/hooks.json para ativar enforcement nativo
+  const hooksJsonCreated = createWindsurfHooksJson();
+  if (!hooksJsonCreated) {
+    logError("❌ Falha crítica ao criar .windsurf/hooks.json");
+    process.exit(1);
+  }
+
+  // Limpar frontmatter YAML dos workflows copiados
+  cleanWorkflowFrontmatter();
 
   // Copiar arquivos específicos (smart-components.json)
   logInfo("\nInstalando arquivos de configuração...");
