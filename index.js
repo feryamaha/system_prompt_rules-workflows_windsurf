@@ -93,7 +93,7 @@ function ensureHookPermissions() {
   for (const hook of hooks) {
     if (fs.existsSync(hook.path)) {
       try {
-        fs.chmodSync(hook.path, '755');
+        fs.chmodSync(hook.path, 0o755); // CORRIGIDO: Usar 0o755 em vez de '755'
         logInfo(`  ✓ Permissões aplicadas: ${hook.name}`);
         permissionsApplied++;
       } catch (error) {
@@ -199,8 +199,8 @@ function validateNemesisStructure() {
   const requiredFiles = [
     ".windsurf/hooks.json", // NOVO - Obrigatório para enforcement nativo
     ".nemesis/hooks/nemesis-pretool-check.sh", // NOVO - Hook principal com permissão
-    "src/workflow-enforcement/cli/pretool-hook.ts", // NOVO - Schema atualizado
-    "src/workflow-enforcement/types.ts" // NOVO - Schema Windsurf
+    ".nemesis/workflow-enforcement/cli/pretool-hook.ts", // CORRIGIDO - Path no hospedeiro
+    ".nemesis/workflow-enforcement/types.ts" // CORRIGIDO - Path no hospedeiro
   ];
 
   logInfo("\nValidando estrutura do Nemesis...");
@@ -232,7 +232,7 @@ function validateNemesisStructure() {
   const shellScript = path.join(ROOT_DIR, '.nemesis/hooks/nemesis-pretool-check.sh');
   try {
     const stats = fs.statSync(shellScript);
-    if (!(stats.mode & parseInt('111', 8))) { // Verifica permissão de execução
+    if (!(stats.mode & 0o111)) { // CORRIGIDO: Usar 0o111 em vez de parseInt('111', 8)
       logError("❌ .nemesis/hooks/nemesis-pretool-check.sh sem permissão de execução");
       process.exit(1);
     }
@@ -243,52 +243,6 @@ function validateNemesisStructure() {
   }
 
   logInfo("  ✓ Todos os arquivos obrigatórios presentes e válidos");
-}
-
-function cleanWorkflowFrontmatter() {
-  logInfo("\nLimpando frontmatter YAML dos workflows...");
-  
-  const workflowsDir = path.join(ROOT_DIR, '.windsurf/workflows');
-  
-  if (!fs.existsSync(workflowsDir)) {
-    logInfo("  ℹ Diretório de workflows não encontrado");
-    return;
-  }
-  
-  const workflowFiles = fs.readdirSync(workflowsDir).filter(file => file.endsWith('.md'));
-  let cleanedCount = 0;
-  
-  for (const file of workflowFiles) {
-    const filePath = path.join(workflowsDir, file);
-    
-    try {
-      let content = fs.readFileSync(filePath, 'utf8');
-      const originalContent = content;
-      
-      // Remover blocos hooks: PreToolUse: do frontmatter YAML
-      // Padrão: --- ... hooks: ... --- (remove o bloco inteiro)
-      const frontmatterHookPattern = /---[\s\S]*?hooks:[\s\S]*?---/;
-      
-      if (frontmatterHookPattern.test(content)) {
-        // Substituir o bloco completo por apenas ---
-        content = content.replace(frontmatterHookPattern, '---');
-        fs.writeFileSync(filePath, content, 'utf8');
-        logInfo(`  ✓ Frontmatter limpo: ${file}`);
-        cleanedCount++;
-      } else {
-        logInfo(`  ℹ Sem frontmatter para limpar: ${file}`);
-      }
-      
-    } catch (error) {
-      logError(`  ❌ Erro ao limpar ${file}: ${error.message}`);
-    }
-  }
-  
-  if (cleanedCount > 0) {
-    logInfo(`  ✓ ${cleanedCount} workflows limpos`);
-  } else {
-    logInfo(`  ℹ Nenhum workflow precisou de limpeza`);
-  }
 }
 
 function updatePackageJsonScripts() {
@@ -713,9 +667,6 @@ async function runInstallation() {
     process.exit(1);
   }
 
-  // Limpar frontmatter YAML dos workflows copiados
-  cleanWorkflowFrontmatter();
-
   // Copiar arquivos específicos (smart-components.json)
   logInfo("\nInstalando arquivos de configuração...");
   let specificFilesCopied = 0;
@@ -725,7 +676,7 @@ async function runInstallation() {
 
     if (fs.existsSync(sourceFile)) {
       fs.ensureDirSync(path.dirname(targetFile));
-      fs.copyFileSync(sourceFile, targetFile, { overwrite: true });
+      fs.copyFileSync(sourceFile, targetFile); // CORRIGIDO: Remover opções que podem causar erro
       logInfo(`  ✓ ${file} instalado`);
       specificFilesCopied++;
     } else {
