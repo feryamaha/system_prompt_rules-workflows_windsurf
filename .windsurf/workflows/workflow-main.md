@@ -1,14 +1,7 @@
----
 name: workflow-main
 description: Protocolo de Execução Obrigatório para Resposta a Solicitações
 trigger: always_on
 auto_execution_mode: 3
-hooks:
-  PreToolUse:
-    - matcher: "Edit|Write|Bash"
-      hooks:
-        - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
 ## PreToolUse Hook

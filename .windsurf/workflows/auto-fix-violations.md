@@ -1,13 +1,6 @@
----
 name: auto-fix-violations
 description: Corrige automaticamente violações detectadas pelo Nemesis Enforcement
 auto_execution_mode: 3
-hooks:
-  PreToolUse:
-    - matcher: "Edit|Write|Bash"
-      hooks:
-        - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
 ## PreToolUse Hook

@@ -94,7 +94,54 @@ export interface PreToolValidationResult {
 }
 
 /**
- * Input para validacao PreToolUse
+ * Schema oficial Windsurf Cascade Hooks
+ */
+export interface WindsurfHookInput {
+  agent_action_name: WindsurfHookEvent;
+  trajectory_id: string;
+  execution_id: string;
+  timestamp: string;
+  tool_info: WindsurfToolInfo;
+}
+
+export type WindsurfHookEvent =
+  | 'pre_write_code'
+  | 'pre_read_code'
+  | 'pre_run_command'
+  | 'pre_user_prompt'
+  | 'pre_mcp_tool_use'
+  | 'post_write_code'
+  | 'post_read_code'
+  | 'post_run_command'
+  | 'post_cascade_response'
+  | 'post_mcp_tool_use'
+  | 'post_setup_worktree';
+
+export interface WindsurfToolInfo {
+  // pre_write_code / post_write_code
+  file_path?: string;
+  edits?: Array<{ old_string: string; new_string: string }>;
+  // pre_run_command / post_run_command
+  command_line?: string;
+  cwd?: string;
+  // pre_read_code / post_read_code
+  // (usa file_path acima)
+  // pre_user_prompt
+  user_prompt?: string;
+  // pre_mcp_tool_use / post_mcp_tool_use
+  mcp_server_name?: string;
+  mcp_tool_name?: string;
+  mcp_tool_arguments?: Record<string, unknown>;
+  mcp_result?: string;
+  // post_cascade_response
+  response?: string;
+  // post_setup_worktree
+  worktree_path?: string;
+  root_workspace_path?: string;
+}
+
+/**
+ * Input para validacao PreToolUse (LEGADO - manter para compatibilidade)
  */
 export interface PreToolValidationInput {
   toolName: 'Edit' | 'Write' | 'Bash' | 'Read' | 'Grep' | string;

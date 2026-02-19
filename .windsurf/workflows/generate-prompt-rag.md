@@ -1,13 +1,6 @@
----
 name: generate-prompt-rag
 description: Converte pedido informal do usuário em prompt RAG estruturado simples
 auto_execution_mode: 3
-hooks:
-  PreToolUse:
-    - matcher: "Edit|Write|Bash"
-      hooks:
-        - type: command
-          command: "$PROJECT_DIR/.nemesis/hooks/nemesis-pretool-check.sh"
 ---
 
 ## PreToolUse Hook
